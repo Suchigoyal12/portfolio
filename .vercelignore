@@ -1,0 +1,25 @@
+# Files listed here stay in the private repo but are never uploaded to the
+# deployed site. Exclusion happens at the upload level, not by unlinking —
+# an unlinked page is still reachable at its own URL.
+
+# ── Non-public: the detailed UiPath Admin Shell case study ──────────────
+# The .html shell is only 25 lines; the case study text lives in the .jsx.
+# Excluding the shell alone would leave the full prose fetchable.
+# All 7 frames/ diagrams are used by this page and by nothing else.
+project-admin-shell.html
+site/page-project-admin-shell.jsx
+frames/
+
+# ── Not part of the site ────────────────────────────────────────────────
+# Generic printable-document scaffold, unrelated to the portfolio.
+doc-page.js
+# Release Notes annotation explorations — design rounds, superseded.
+site/release-notes-annotation-style-options.html
+site/release-notes-annotation-styles-v2.html
+site/release-notes-annotation-styles-v3.html
+
+# ── Internal documentation ──────────────────────────────────────────────
+# HANDOFF, MIGRATION_BRIEF, PROJECT_CONTEXT, DESIGN_SYSTEM and the uploads
+# prompt file. No page loads a .md at runtime — every mention in the code
+# is a comment — so excluding these changes nothing on screen.
+*.md
