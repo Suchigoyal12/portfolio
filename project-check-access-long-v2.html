@@ -650,7 +650,7 @@
         <h2>Tracing access from start to finish<span class="acc">.</span></h2>
         <p class="body">The final experience connects access management with auditing, allowing administrators to move from assigning roles to fully understanding and tracing access across services and folders.</p>
         <div class="reels">
-          <figure class="reel" data-reel data-src="disclose-progressively.mov" data-poster="disclose-progressively.png">
+          <figure class="reel" data-reel data-src="disclose-progressively.mp4" data-poster="disclose-progressively.png">
             <figcaption class="take">
               <div class="eyebrow">01 — Disclose Progressively</div>
               <p class="bold">Overview first, detail on demand.</p>
@@ -658,7 +658,7 @@
             </figcaption>
             <div class="media"></div>
           </figure>
-          <figure class="reel" data-reel data-src="scope-seperation.mov" data-poster="scope-seperation.png">
+          <figure class="reel" data-reel data-src="scope-seperation.mp4" data-poster="scope-seperation.png">
             <figcaption class="take">
               <div class="eyebrow">02 — Scope Separation</div>
               <p class="bold">Tenant, service, and folder, never confused.</p>
@@ -666,7 +666,7 @@
             </figcaption>
             <div class="media"></div>
           </figure>
-          <figure class="reel" data-reel data-src="trace-origins.mov" data-poster="trace-origins.png">
+          <figure class="reel" data-reel data-src="trace-origins.mp4" data-poster="trace-origins.png">
             <figcaption class="take">
               <div class="eyebrow">03 — Trace Origins</div>
               <p class="bold">Every assignment surfaces its own source.</p>
@@ -853,10 +853,10 @@
   })();
 
   /* ── 09 WALKTHROUGH MEDIA REELS ──────────────────────────────
-     Flip to true once the .mov files are added to the project.
+     MP4 (H.264) reels live at the project root; flag is on.
      true  → autoplay-on-scroll <video> with coral progress bar
      false → static <img> using the SAME poster asset (current) */
-  const USE_VIDEO = false;
+  const USE_VIDEO = true;
   (function () {
     const reels = [...document.querySelectorAll('[data-reel]')];
     if (!reels.length) return;

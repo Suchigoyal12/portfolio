@@ -4,3 +4,9 @@
 # Claude Design editor state
 .thumbnail
 .design-canvas.state.json
+
+# Source video masters (ProRes, ~390MB total). Kept locally in uploads/ as
+# the originals to re-encode from; never committed. GitHub hard-rejects any
+# file over 100MB and all three exceed it. The web-ready .mp4 files built
+# from these ARE committed, at the project root.
+*.mov
