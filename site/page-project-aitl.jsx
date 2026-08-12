@@ -1370,7 +1370,7 @@ EU AI Act coming into force.
           {/* ───────── NEXT PROJECT ───────── */}
           <section style={{ padding: "56px 64px", borderTop: "1px solid var(--line)" }}>
             <a
-            href="UiPath Admin Shell - Public Version.html"
+            href="admin-shell-public.html"
             onClick={(e) => { if (window.parent && window.parent !== window) { e.preventDefault(); window.parent.postMessage({ type: "work:focus", key: "admin-shell" }, "*"); } }}
             style={{
               textDecoration: "none",

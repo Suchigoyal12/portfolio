@@ -20,7 +20,7 @@ const SITE = {
 };
 
 const NAV = [
-{ id: "home", label: "Index", href: "Homepage.html", num: "00" },
+{ id: "home", label: "Index", href: "index.html", num: "00" },
 { id: "works", label: "Works", href: "works.html", num: "01" },
 { id: "process", label: "Process", href: "process.html", num: "02" },
 { id: "about", label: "About", href: "about.html", num: "03" },
@@ -70,7 +70,7 @@ const PROJECTS = [
   "Re-architecting the UiPath admin shell — the connective tissue every admin page is built inside, turning a sprawl of disconnected pages into one navigable system.",
   tags: ["Information Architecture", "Navigation", "Design System", "Multi-Tenant"],
   metric: "SHIPPED 25.1",
-  href: "UiPath Admin Shell - Public Version.html"
+  href: "admin-shell-public.html"
 },
 {
   id: "release-comms",
@@ -569,7 +569,7 @@ function TopNav({ active, owner }) {
         backdropFilter: "blur(8px)"
       }}>
       
-      <a href="Homepage.html" style={{ textDecoration: "none", display: "flex", alignItems: "baseline", gap: 10 }}>
+      <a href="index.html" style={{ textDecoration: "none", display: "flex", alignItems: "baseline", gap: 10 }}>
         <span
           style={{
             fontFamily: serifFamily,
@@ -664,7 +664,7 @@ function LeftRail({ active, owner, sections, currentSection, status }) {
         overflowY: "auto"
       }}>
       
-      <a href="Homepage.html" onClick={(e) => { e.preventDefault(); try { window.top.location.href = "Homepage.html"; } catch (err) { window.location.href = "Homepage.html"; } }} style={{ textDecoration: "none" }}>
+      <a href="index.html" onClick={(e) => { e.preventDefault(); try { window.top.location.href = "index.html"; } catch (err) { window.location.href = "index.html"; } }} style={{ textDecoration: "none" }}>
         <div style={{ fontFamily: "'Archivo', sans-serif", fontWeight: 600, fontSize: 16, letterSpacing: "-0.03em", lineHeight: 1, color: "var(--ink)" }}>
           SuCHI
         </div>

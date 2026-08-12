@@ -1,4 +1,4 @@
-/* Shared contact modal — the ONE implementation. Used by Homepage.html, about.html, Work.html
+/* Shared contact modal — the ONE implementation. Used by index.html, about.html, work.html
    (site-work/stage.jsx calls window.openContactModal()). Do not fork this. */
 (function(){
 if(window.openContactModal)return; // guard: double-include is a no-op

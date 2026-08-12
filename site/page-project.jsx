@@ -530,7 +530,7 @@ function ProjectDetailPage({ projectId }) {
                     <a className="evo-step" href="project-check-access-long-v2.html#v1">
                       <span className="evo-tip">Read in detail ↗</span>
                       <div className="evo-tile">
-                        <img src="uploads/sentiment_content_24dp_333E50_FILL0_wght400_GRAD0_opsz24 1.png" alt="sentiment" />
+                        <img src="uploads/sentiment-icon.png" alt="sentiment" />
                       </div>
                       <div className="evo-label">Private Preview</div>
                       <div className="evo-desc">Enterprise admin insight.</div>
@@ -556,7 +556,7 @@ function ProjectDetailPage({ projectId }) {
                     <a className="evo-step" href="project-check-access-long-v2.html#v2">
                       <span className="evo-tip">Read in detail ↗</span>
                       <div className="evo-tile">
-                        <img src="uploads/Container.png" alt="verified" />
+                        <img src="uploads/container.png" alt="verified" />
                       </div>
                       <div className="evo-label">The Solution</div>
                       <div className="evo-desc">Centralized, explicit, and traceable.</div>
@@ -771,7 +771,7 @@ const NEXT_CARD_KEY = {
   "project-check-access.html": "check-access",
   "project-check-access-long-v2.html": "check-access",
   "project-ai-trust-layer.html": "ai-trust",
-  "UiPath Admin Shell - Public Version.html": "admin-shell",
+  "admin-shell-public.html": "admin-shell",
   "project-admin-shell.html": "admin-shell",
   "project-release-notes.html": "release-notes"
 };

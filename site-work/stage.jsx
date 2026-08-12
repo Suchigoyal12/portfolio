@@ -474,7 +474,7 @@ function WorkStage() {
   const offsetX = Math.max(0, (vp.w - STAGE_CAP) / 2);
 
   const chromeProps = {
-    onClose: () => {if (isNativeFs()) toggleFs();else window.location.href = "Homepage.html";},
+    onClose: () => {if (isNativeFs()) toggleFs();else window.location.href = "index.html";},
     onPrev: () => adjacent(-1),
     onNext: () => adjacent(1),
     onFullscreen: toggleFs

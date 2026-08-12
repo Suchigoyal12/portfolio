@@ -50,7 +50,7 @@ const WORK_CARDS = [
     key: "admin-shell",
     n: 3,
     title: "RE-ARCHITECTING THE UIPATH ADMIN SHELL",
-    href: "UiPath Admin Shell - Public Version.html",
+    href: "admin-shell-public.html",
     num: "03",
     headline: "admin\nshell",
     label: "design system",

@@ -510,7 +510,7 @@ function AdminShellProjectPage() {
           }}>
           
             <a
-            href="UiPath Admin Shell - Public Version.html"
+            href="admin-shell-public.html"
             onClick={(e) => {if (history.length > 1) {history.back();e.preventDefault();}}}
             style={{
               fontFamily: window.monoFamily,

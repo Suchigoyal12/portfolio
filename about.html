@@ -29,7 +29,7 @@
   a { color: var(--ink); transition: color 0.15s ease; }
   a:hover { color: var(--accent); }
 
-  /* ---------- Page shell — reused from Homepage.html ---------- */
+  /* ---------- Page shell — reused from index.html ---------- */
   .canvas { height:100vh; overflow:hidden; background:var(--surface); }
   .stage { position:relative; width:min(1440px, 100vw); height:100%; margin:0 auto; }
   @media (max-width: 899px) { .canvas { display:none; } }
@@ -38,7 +38,7 @@
 
   .mono-label { font-family:'JetBrains Mono', monospace; font-size:10px; letter-spacing:0.08em; text-transform:uppercase; color:var(--muted); }
 
-  /* ---------- Zone 1: Left rail — markup + CSS reused from Homepage.html ---------- */
+  /* ---------- Zone 1: Left rail — markup + CSS reused from index.html ---------- */
   .rail-nav { position:absolute; left:24px; top:54.511%; display:flex; flex-direction:column; gap:10px; }
   .rail-nav a { font-family:'JetBrains Mono', monospace; font-weight:700; font-size:10px; letter-spacing:0.08em; line-height:1.46; text-transform:uppercase; text-decoration:none; color:var(--muted); position:relative; }
   .rail-nav a.active { color: var(--accent); padding-left:14px; }
@@ -141,8 +141,8 @@
 
     <!-- Zone 1: Left rail -->
     <nav class="rail-nav">
-      <a href="Homepage.html">my context</a>
-      <a href="Work.html">the work</a>
+      <a href="index.html">my context</a>
+      <a href="work.html">the work</a>
       <a href="about.html" class="active">who am i?</a>
       <a href="contact%20(old).html" data-contact aria-haspopup="dialog">contact</a>
     </nav>
@@ -165,8 +165,8 @@
 
   <div class="mobile-stack">
     <nav class="rail-nav" style="position: static; margin-bottom: 40px;">
-      <a href="Homepage.html" style="font-size: 12px;">my context</a>
-      <a href="Work.html" style="font-size: 12px;">the work</a>
+      <a href="index.html" style="font-size: 12px;">my context</a>
+      <a href="work.html" style="font-size: 12px;">the work</a>
       <a href="about.html" class="active" style="font-size: 12px;">who am i?</a>
       <a href="contact%20(old).html" data-contact aria-haspopup="dialog" style="font-size: 12px;">contact</a>
     </nav>
@@ -421,7 +421,7 @@
       m.style.setProperty('--ph-dur', (setW / PH_PX_PER_SEC).toFixed(2) + 's');
     });
   }
-  /* ---------- Responsive shell — ported from Homepage.html fit() ----------
+  /* ---------- Responsive shell — ported from index.html fit() ----------
      Frame 1440, anchor 1300, identical band boundaries to Homepage so the rail and the
      left column sit at the same absolute position on both pages at every width.
      • >=1440: pure CSS (stage capped 1440, centered); anchors handed back to CSS.
