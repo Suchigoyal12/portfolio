@@ -829,7 +829,6 @@ function PageShell({ active, navMode = "top", sections, currentSection, status, 
       <main>{children({ tweaks, owner })}</main>
       }
       {navMode !== "rail" && <SiteFooter />}
-      {TweaksPanelEl}
     </div>);
 
 }

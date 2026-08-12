@@ -636,7 +636,6 @@ function ReleaseNotesProjectPage() {
         </section>
 
       </main>
-      {TweaksPanelEl}
     </div>);
 
 }

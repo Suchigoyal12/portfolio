@@ -17,6 +17,9 @@ frames/
 site/_archive/
 
 # ── Not part of the site ────────────────────────────────────────────────
+# Developer control panel (themes, type scales). No longer loaded by any
+# page. Kept in the repo; never published.
+tweaks-panel.jsx
 # Generic printable-document scaffold, unrelated to the portfolio.
 doc-page.js
 # Release Notes annotation explorations — design rounds, superseded.
