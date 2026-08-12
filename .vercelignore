@@ -10,6 +10,12 @@ project-admin-shell.html
 site/page-project-admin-shell.jsx
 frames/
 
+# ── Archived design, kept for reference ─────────────────────────────────
+# Components removed from live pages but preserved so the design can be
+# recovered. Loaded by nothing. Must not deploy — password-gate.jsx still
+# contains the old passcode string.
+site/_archive/
+
 # ── Not part of the site ────────────────────────────────────────────────
 # Generic printable-document scaffold, unrelated to the portfolio.
 doc-page.js
