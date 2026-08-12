@@ -1,0 +1,6 @@
+# macOS
+.DS_Store
+
+# Claude Design editor state
+.thumbnail
+.design-canvas.state.json

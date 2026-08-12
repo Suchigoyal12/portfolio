@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Annotation Styles — Round 3 · Color + Mix</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;0,9..40,800&family=JetBrains+Mono:wght@400;500&family=Cormorant+Garamond:ital,wght@1,500;1,600&display=swap" rel="stylesheet" />
+<style>
+  :root{
+    --bg:#E8E4DC; --surface:#FBFAF6; --ink:#1C1C1A; --ink-inverse:#F4F1E9;
+    --muted:#8A857C; --line:#D9D4C8; --accent:#B5522E;
+    --sans:'DM Sans', sans-serif; --mono:'JetBrains Mono', ui-monospace, monospace;
+    --serif:'Cormorant Garamond', serif;
+
+    /* extended annotation palette — derived in oklch from the terracotta accent,
+       held at the same lightness/chroma band so they read as one earthy family */
+    --c-terra:  oklch(0.556 0.124 38);   /* brand terracotta            */
+    --c-petrol: oklch(0.520 0.072 205);  /* muted deep teal             */
+    --c-ochre:  oklch(0.630 0.098 78);   /* burnt golden ochre          */
+    --c-indigo: oklch(0.510 0.088 268);  /* slate indigo                */
+    --c-moss:   oklch(0.560 0.074 138);  /* dusty olive / moss          */
+  }
+  *{ box-sizing:border-box; }
+  html,body{ margin:0; }
+  body{
+    background:var(--bg); color:var(--ink); font-family:var(--sans);
+    -webkit-font-smoothing:antialiased; padding:56px 24px 110px;
+  }
+  .wrap{ max-width:940px; margin:0 auto; }
+
+  /* header */
+  .eyebrow{ font-family:var(--mono); font-size:11px; letter-spacing:.12em; text-transform:uppercase; color:var(--muted); }
+  h1{ font-family:var(--sans); font-weight:800; font-size:clamp(34px,5vw,54px); line-height:1.0; letter-spacing:-0.03em; margin:14px 0 0; }
+  h1 .dot{ color:var(--accent); }
+  .lede{ font-family:var(--serif); font-style:italic; font-size:23px; line-height:1.4; color:var(--ink); margin:18px 0 0; max-width:680px; }
+  .note{ font-family:var(--sans); font-size:14px; line-height:1.6; color:var(--muted); margin:18px 0 0; max-width:680px; }
+  .note b{ color:var(--ink); font-weight:600; }
+  .rule{ height:1px; background:var(--line); border:0; margin:40px 0; }
+
+  /* palette strip */
+  .palette{ margin-top:34px; border:1px solid var(--line); border-radius:14px; background:var(--surface); padding:22px 24px; }
+  .palette h3{ font-family:var(--sans); font-weight:700; font-size:15px; margin:0 0 4px; }
+  .palette p{ font-family:var(--sans); font-size:13.5px; line-height:1.55; color:var(--muted); margin:0 0 18px; max-width:680px; }
+  .swatches{ display:grid; grid-template-columns:repeat(5,1fr); gap:14px; }
+  .sw{ }
+  .sw .chip{ height:46px; border-radius:8px; box-shadow:inset 0 0 0 1px rgba(0,0,0,.06); }
+  .sw .nm{ font-family:var(--sans); font-weight:600; font-size:13px; margin-top:9px; }
+  .sw .role{ font-family:var(--mono); font-size:9.5px; letter-spacing:.08em; text-transform:uppercase; color:var(--muted); margin-top:3px; }
+  @media (max-width:640px){ .swatches{ grid-template-columns:repeat(2,1fr);} }
+
+  /* option block */
+  .opt{ margin-top:54px; }
+  .opt-head{ display:flex; align-items:baseline; gap:14px; margin-bottom:14px; }
+  .opt-num{
+    font-family:var(--mono); font-size:12px; font-weight:500; letter-spacing:.06em;
+    color:#fff; background:var(--ink); border-radius:6px; padding:5px 9px; flex-shrink:0;
+  }
+  .opt-title{ font-family:var(--sans); font-weight:700; font-size:22px; letter-spacing:-0.01em; }
+  .opt-title .meta{ font-family:var(--mono); font-weight:400; font-size:11px; letter-spacing:.08em; color:var(--muted); text-transform:uppercase; margin-left:8px; }
+  .opt-desc{ font-family:var(--sans); font-size:14px; line-height:1.55; color:var(--muted); margin:0 0 18px; max-width:700px; }
+  .opt-desc b{ color:var(--ink); font-weight:600; }
+
+  /* framed screenshot — container-query context so cqw scales annotations with width */
+  .frame{
+    position:relative; width:100%; container-type:inline-size;
+    border:1px solid var(--line); border-radius:12px; overflow:hidden;
+    background:#fff; box-shadow:0 18px 44px -34px rgba(20,20,18,.5);
+  }
+  .frame img{ display:block; width:100%; height:auto; }
+  .anno{ position:absolute; z-index:2; }
+
+  /* ===== 1 · Color-coded solid pills ===== */
+  .h1p{
+    display:inline-flex; align-items:center; gap:.55em;
+    background:var(--c); color:#fff; border-radius:999px; padding:.5em .88em;
+    font-family:var(--sans); font-weight:600; font-size:1.5cqw; line-height:1; white-space:nowrap;
+    box-shadow:0 .25em .7em -.2em color-mix(in srgb, var(--c) 60%, transparent);
+  }
+  .h1p .dot{ width:.58em; height:.58em; border-radius:.14em; background:#fff; opacity:.95; flex-shrink:0; }
+
+  /* ===== 2 · Numbered frosted chips ===== */
+  .h2c{
+    display:inline-flex; align-items:center; gap:.5em;
+    background:color-mix(in srgb, #fff 80%, transparent); color:var(--ink);
+    border:1px solid color-mix(in srgb, var(--c) 45%, transparent);
+    border-radius:999px; padding:.32em .8em .32em .32em;
+    font-family:var(--sans); font-weight:600; font-size:1.5cqw; line-height:1; white-space:nowrap;
+    box-shadow:0 .3em .8em -.4em rgba(20,20,18,.5); backdrop-filter:blur(6px) saturate(1.1);
+  }
+  .h2c .num{
+    width:1.55em; height:1.55em; flex-shrink:0; border-radius:999px; background:var(--c); color:#fff;
+    display:grid; place-items:center; font-family:var(--mono); font-size:.78em; font-weight:500;
+  }
+
+  /* ===== 3 · Color ticket (mono spine) ===== */
+  .h3t{
+    display:inline-flex; align-items:stretch; border-radius:.28em; overflow:hidden;
+    background:var(--surface); border:1px solid var(--line);
+    box-shadow:0 .25em .7em -.35em rgba(20,20,18,.5);
+    font-family:var(--mono); font-size:1.18cqw; line-height:1; white-space:nowrap;
+  }
+  .h3t .bar{ width:.5em; background:var(--c); flex-shrink:0; }
+  .h3t .txt{ padding:.62em .8em; letter-spacing:.06em; text-transform:uppercase; color:var(--ink); font-weight:500; }
+  .h3t .txt b{ color:var(--c); font-weight:600; }
+
+  /* ===== 4 · Region tint + numbered tab ===== */
+  .h4box{
+    position:absolute; z-index:2; border:1.5px solid var(--c); border-radius:.5em;
+    background:color-mix(in srgb, var(--c) 9%, transparent);
+    box-shadow:0 0 0 .25em color-mix(in srgb,#fff 35%,transparent);
+  }
+  .h4tab{
+    position:absolute; top:-0.05em; left:-0.05em; transform:translateY(-100%);
+    display:inline-flex; align-items:center; gap:.45em;
+    background:var(--c); color:#fff; border-radius:.4em .4em .4em 0; padding:.4em .6em;
+    font-family:var(--sans); font-weight:600; font-size:1.32cqw; line-height:1; white-space:nowrap;
+  }
+  .h4tab .n{ font-family:var(--mono); font-size:.82em; background:rgba(255,255,255,.25); border-radius:.3em; padding:.12em .34em; font-weight:500; }
+
+  .legend{ margin-top:16px; display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:9px 28px; }
+  .legend-item{ display:flex; align-items:center; gap:10px; font-family:var(--sans); font-size:14px; color:var(--ink); }
+  .legend-num{
+    width:20px; height:20px; flex-shrink:0; border-radius:5px; background:var(--c); color:#fff;
+    display:grid; place-items:center; font-family:var(--mono); font-size:11px;
+  }
+
+  .picker{
+    margin-top:60px; border:1px solid var(--line); border-radius:16px; background:var(--surface); padding:26px 28px;
+  }
+  .picker h3{ font-family:var(--sans); font-weight:700; font-size:17px; margin:0 0 6px; }
+  .picker p{ font-family:var(--sans); font-size:14px; line-height:1.6; color:var(--muted); margin:0; }
+  .picker b{ color:var(--ink); font-weight:600; }
+</style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="eyebrow">RELEASE NOTES / 004 — ANNOTATION STUDY · ROUND 3</div>
+    <h1>Color &amp; mix-match<span class="dot">.</span></h1>
+    <p class="lede">A small earthy palette beyond terracotta — and hybrid callouts that mix the best of the earlier rounds.</p>
+    <p class="note">The system ships one accent (terracotta). These four companions are derived in <b>oklch</b> at the same lightness band, so they sit next to it as one archival family rather than reading as “new brand colors.” Each callout gets its own hue, which also makes them easier to tell apart on a busy screenshot. Pick a treatment <i>and</i> say whether you want the multi-color coding or a single hue.</p>
+
+    <div class="palette">
+      <h3>Extended annotation palette</h3>
+      <p>Terracotta stays the lead. The other four are muted neighbours — petrol, ochre, indigo, moss — used only for callouts, never for primary UI.</p>
+      <div class="swatches" id="swatches"></div>
+    </div>
+
+    <hr class="rule" />
+    <div id="options"></div>
+
+    <div class="picker">
+      <h3>Which direction?</h3>
+      <p>Reply with a number — <b>1</b> solid color pills, <b>2</b> numbered frosted chips, <b>3</b> color ticket, <b>4</b> region tint + tab, or <b>5</b> the mixed frame (regions for zones, chips for points). Tell me too: <b>multi-color</b> coding or all-terracotta, and I'll roll it across Before / After / Widget / Popup.</p>
+    </div>
+  </div>
+
+<script>
+  const IMG = "assets/release-notes/after.png";
+
+  const PALETTE = [
+    { nm:"Terracotta", role:"Lead · brand", v:"var(--c-terra)" },
+    { nm:"Petrol",     role:"Callout",      v:"var(--c-petrol)" },
+    { nm:"Ochre",      role:"Callout",      v:"var(--c-ochre)" },
+    { nm:"Indigo",     role:"Callout",      v:"var(--c-indigo)" },
+    { nm:"Moss",       role:"Callout",      v:"var(--c-moss)" },
+  ];
+
+  // Shared anchors, each assigned a palette hue.
+  const ANN = [
+    { n:1, label:"Scope switch",          c:"var(--c-terra)",  pill:{ right:"3%", top:"8.5%"  }, region:{x:66,y:5, w:31,h:10} },
+    { n:2, label:"Improved findability",  c:"var(--c-petrol)", pill:{ left:"2%",  top:"18.5%" }, region:{x:3, y:19,w:36,h:11} },
+    { n:3, label:"Update-type filter",    c:"var(--c-ochre)",  pill:{ left:"2%",  top:"41%"   }, region:{x:3, y:43,w:20,h:13} },
+    { n:4, label:"Platform overview",     c:"var(--c-indigo)", pill:{ right:"2%", top:"30%"   }, region:{x:60,y:27,w:37,h:12} },
+    { n:5, label:"One scroll read",       c:"var(--c-moss)",   pill:{ left:"33%", top:"61%"   }, region:{x:28,y:50,w:46,h:30} },
+  ];
+
+  const OPTIONS = [
+    { num:"1", title:"Solid color pills", meta:"bold · multi-color",
+      desc:"Round-one solid pill, but each callout in its own hue. <b>Confident and instantly scannable</b> — the color does the grouping. Best when callouts are spread out.",
+      render:f => ANN.forEach(a=>{
+        const p=el("span","anno h1p"); p.style.setProperty("--c",a.c); applyPos(p,a.pill);
+        p.append(el("span","dot"), txt(a.label)); f.append(p);
+      }) },
+
+    { num:"2", title:"Numbered frosted chips", meta:"light · multi-color",
+      desc:"Frosted glass + a numbered colored disc. <b>Lightest multi-color option</b> — the screenshot reads through, the number ties each chip to a legend, the hue tells them apart.",
+      render:f => ANN.forEach(a=>{
+        const p=el("span","anno h2c"); p.style.setProperty("--c",a.c); applyPos(p,a.pill);
+        const num=el("span","num"); num.textContent=a.n;
+        p.append(num, txt(a.label)); f.append(p);
+      }) },
+
+    { num:"3", title:"Color ticket", meta:"editorial · multi-color",
+      desc:"The mono ticket, with a <b>colored spine</b> per callout. Keeps the technical / spec-sheet voice while the hue carries the grouping. Quietest of the bordered options.",
+      render:f => ANN.forEach(a=>{
+        const p=el("span","anno h3t"); p.style.setProperty("--c",a.c); applyPos(p,a.pill);
+        p.append(el("span","bar"));
+        const t=el("span","txt"); t.textContent=a.label; p.append(t); f.append(p);
+      }) },
+
+    { num:"4", title:"Region tint + numbered tab", meta:"areas · multi-color",
+      desc:"Each <b>zone</b> tinted in its own hue with a numbered corner tab + legend. The color makes overlapping or adjacent regions readable in a way a single accent can't.",
+      legend:true,
+      render:f => ANN.forEach(a=>{
+        const box=el("div","h4box"); box.style.setProperty("--c",a.c);
+        box.style.left=a.region.x+"%"; box.style.top=a.region.y+"%";
+        box.style.width=a.region.w+"%"; box.style.height=a.region.h+"%";
+        const tab=el("span","h4tab");
+        const n=el("span","n"); n.textContent=a.n; tab.append(n, txt(a.label));
+        box.append(tab); f.append(box);
+      }) },
+
+    { num:"5", title:"Mixed on one frame", meta:"zones + points",
+      desc:"The actual <b>mix &amp; match</b>: the big content area gets a tinted <b>region</b>, the precise controls get <b>frosted chips</b>. One frame, two treatments, color-coded — this is usually the most honest way to annotate a real screen.",
+      legend:true,
+      render:f => ANN.forEach(a=>{
+        if(a.n===5){ // the broad zone → region
+          const box=el("div","h4box"); box.style.setProperty("--c",a.c);
+          box.style.left=a.region.x+"%"; box.style.top=a.region.y+"%";
+          box.style.width=a.region.w+"%"; box.style.height=a.region.h+"%";
+          const tab=el("span","h4tab");
+          const n=el("span","n"); n.textContent=a.n; tab.append(n, txt(a.label));
+          box.append(tab); f.append(box);
+        } else { // precise points → frosted chips
+          const p=el("span","anno h2c"); p.style.setProperty("--c",a.c); applyPos(p,a.pill);
+          const num=el("span","num"); num.textContent=a.n;
+          p.append(num, txt(a.label)); f.append(p);
+        }
+      }) },
+  ];
+
+  function el(tag,cls){ const e=document.createElement(tag); if(cls)e.className=cls; return e; }
+  function txt(s){ return document.createTextNode(s); }
+  function applyPos(node,pos){ ["left","right","top","bottom"].forEach(k=>{ if(pos[k]!=null) node.style[k]=pos[k]; }); }
+
+  // palette swatches
+  const sw=document.getElementById("swatches");
+  PALETTE.forEach(p=>{
+    const c=el("div","sw");
+    const chip=el("div","chip"); chip.style.background=p.v;
+    const nm=el("div","nm"); nm.textContent=p.nm;
+    const role=el("div","role"); role.textContent=p.role;
+    c.append(chip,nm,role); sw.append(c);
+  });
+
+  // option frames
+  const host=document.getElementById("options");
+  OPTIONS.forEach(o=>{
+    const block=el("div","opt");
+    const head=el("div","opt-head");
+    const N=el("span","opt-num"); N.textContent=o.num;
+    const T=el("span","opt-title"); T.textContent=o.title;
+    const M=el("span","meta"); M.textContent=o.meta; T.append(M);
+    head.append(N,T); block.append(head);
+    const d=el("p","opt-desc"); d.innerHTML=o.desc; block.append(d);
+
+    const frame=el("div","frame");
+    const img=el("img"); img.src=IMG; img.alt="Restructured documentation — "+o.title; img.loading="lazy";
+    frame.append(img);
+    o.render(frame);
+    block.append(frame);
+
+    if(o.legend){
+      const leg=el("div","legend");
+      ANN.forEach(a=>{
+        const it=el("div","legend-item");
+        const num=el("span","legend-num"); num.style.setProperty("--c",a.c); num.textContent=a.n;
+        it.append(num,txt(a.label)); leg.append(it);
+      });
+      block.append(leg);
+    }
+    host.append(block);
+  });
+</script>
+</body>
+</html>

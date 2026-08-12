@@ -1,0 +1,926 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Suchi. Portfolio 26 — Homepage (Static Structural Pass)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@600&family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500;1,600&family=DM+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  /* ==========================================================
+     Colors pulled EXACTLY from the Figma frame
+     ("Claude- Homepage" page → "homepage" 1440×900 frame).
+     NOTE: these do not all match DESIGN_SYSTEM.md's documented
+     tokens (--ink #1C1C1A, --muted #8A857C, --accent #B5522E,
+     --line #D9D4C8). Figma wins per this pass — flagged here for
+     the upcoming Figma vs. work.html vs. DESIGN_SYSTEM.md audit.
+     ========================================================== */
+  :root {
+    --bg-landing:   #FBFAF6;  /* homepage-only background fill — decoupled from work.html's --paper (same value today by design, but independent token so paper/card changes there can't leak here) */
+    --ink:           #111110; /* single ink color for all text, matches work.html */
+    --muted:         #8A857C; /* matches work.html */
+    --accent:        #B5522E; /* matches work.html */
+    --line:          #D9D4C8; /* matches work.html */
+    --panel-fill:    rgba(210, 235, 254, 0.38); /* #D2EBFE @ 38% — Figma-exact (not 40%) */
+  }
+
+  * { box-sizing: border-box; }
+  html, body {
+    margin: 0; padding: 0;
+    height: 100%;
+    background: var(--bg-landing);
+    font-family: 'DM Sans', sans-serif;
+    overflow: hidden; /* matches work.html — full-viewport shell, no page scroll on desktop */
+  }
+  @media (max-width: 899px) { html, body { overflow: auto; } }
+  ::selection { background: var(--accent); color: #fff; }
+  a { color: var(--ink); transition: color 0.15s ease; }
+  a:hover { color: var(--accent); }
+
+  /* ---------- Outer shell — proportional anchoring with a cap. The
+       .stage is capped at 1440px wide and centers with symmetric side
+       margins above that; at/below 1440 it fills 100vw. It always fills
+       viewport height. Zones are anchored PROPORTIONALLY (horizontal
+       offsets as % of stage width, vertical offsets as % of stage
+       height) so the composition fills both dimensions like the
+       pre-responsive version — but every font-size, letter-spacing and
+       dot size stays fixed px so type never scales. On short windows the
+       proportional gaps compress rather than the type shrinking.
+       ---------- */
+  .canvas {
+    height: 100vh;
+    overflow: hidden;
+    background: var(--bg-landing);
+  }
+  .stage {
+    position: relative;
+    width: min(1440px, 100vw);
+    height: 100%;
+    margin: 0 auto;
+  }
+  @media (max-width: 899px) { .canvas { display: none; } }
+  .mobile-stack { display: none; }
+  @media (max-width: 899px) {
+    .mobile-stack {
+      display: block;
+      min-height: 100%;
+      background: var(--bg-landing);
+      padding: 48px 20px 96px;
+    }
+  }
+
+  .mono-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+
+  /* ---------- Zone 1: Left rail ---------- */
+  .photo {
+    position: absolute;
+    left: 24px;
+    top: 15.556%;
+    width: 127px;
+    height: 174.76px; /* tied to vw, not vh — keeps the photo's aspect ratio locked */
+    overflow: hidden;
+  }
+  .photo img { width: 100%; height: 100%; object-fit: cover; display: block; }
+
+  .rail-nav {
+    position: absolute;
+    left: 24px;
+    top: 54.511%;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  .rail-nav a {
+    font-family: 'JetBrains Mono', monospace;
+    font-weight: 700;
+    font-size: 10px;
+    letter-spacing: 0.08em;
+    line-height: 1.46;
+    text-transform: uppercase;
+    text-decoration: none;
+    color: var(--muted);
+    position: relative;
+  }
+  .rail-nav a.active { color: var(--accent); padding-left: 14px; }
+  .rail-nav a.active::before { content: ">"; position: absolute; left: 0; top: 0; }
+
+  .wordmark {
+    position: absolute;
+    left: 24px;
+    bottom: 2.444%;
+  }
+  .wordmark .mark {
+    font-family: 'Archivo', sans-serif;
+    font-weight: 600;
+    font-size: 64px;
+    letter-spacing: -0.06em;
+    line-height: 1.09;
+    color: var(--accent); /* whole wordmark is one solid color in Figma, not two-tone */
+  }
+  .wordmark .phon {
+    display: inline-flex;
+    align-items: center;
+    gap: 3px;
+    margin-top: 0; /* directly adjacent to the wordmark in Figma — no gap */
+    position: relative;
+  }
+  .phon-control {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    background: none;
+    border: none;
+    padding: 0;
+    margin: 0;
+    cursor: pointer;
+    font: inherit;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .phon-syllables {
+    display: flex;
+    align-items: center;
+    gap: 2.5px;
+  }
+  .speaker-icon {
+    width: 16px;
+    height: 16px;
+    position: relative;
+    flex: none;
+  }
+  .speaker-icon img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    display: block;
+  }
+  .wordmark .phon-text {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    letter-spacing: 1px;
+    text-transform: lowercase;
+    color: var(--muted);
+    transition: color 0.15s ease;
+  }
+  .wordmark .phon-dot {
+    width: 2px;
+    height: 2px;
+    border-radius: 50%;
+    background: var(--muted);
+    flex: none;
+    transition: background 0.15s ease;
+  }
+  .phon-tooltip {
+    position: absolute;
+    left: calc(100% + 4px);
+    top: 50%;
+    transform: translate(0, -50%);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    line-height: 1.5;
+    white-space: nowrap;
+    color: var(--muted);
+    background: var(--bg-landing);
+    border: 1px solid var(--line);
+    border-radius: 2px;
+    padding: 6px 12px;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.15s ease, transform 0.15s ease;
+    z-index: 2;
+  }
+  .phon-tooltip.is-visible { opacity: 1; transform: translate(0, -50%); }
+
+  /* ---------- Zone 2: Quick Background panel ---------- */
+  .panel {
+    position: absolute;
+    left: 23.274%;
+    top: 15.556%;
+    width: 366.86px;
+    height: 428px;
+    background: var(--panel-fill);
+    padding-top: 64px;
+  }
+  .panel .mono-label { margin-bottom: 8px; }
+  .panel .panel-fluid { position: absolute; inset: 0; width: 100%; height: 100%; display: none; z-index: 0; pointer-events: none; }
+  .panel .mono-label, .panel .body-text, .panel .pull-quote { position: relative; z-index: 1; }
+  .panel .body-text {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+    line-height: 1.5; /* 18.75 / 12.5 */
+    color: var(--ink);
+    margin: 0;
+    max-width: 235px;
+  }
+  .panel .pull-quote {
+    font-family: 'Cormorant Garamond', serif;
+    font-style: italic;
+    font-weight: 600;
+    font-size: 24px;
+    line-height: 1.2;
+    color: var(--ink);
+    margin: 64px 0 0;
+    max-width: 235px;
+  }
+
+  /* ---------- Zone 3: Tooling ---------- */
+  .tooling {
+    position: absolute;
+    right: 29.643%; /* 426.86 / 1440, anchored proportionally from the right */
+    top: 41.278%;
+    width: 275.14px;
+  }
+  .tooling .mono-label { margin-bottom: 8px; }
+  .pill-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+  .pill-row {
+    display: flex;
+    gap: 6px;
+  }
+  .pill {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--ink);
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    padding: 6px 12px;
+    white-space: nowrap;
+    transition: color 0.15s ease, border-color 0.15s ease, opacity 0.15s ease;
+  }
+  .pill:hover { color: var(--accent); border-color: var(--accent); }
+
+  /* Tooling group-hover: highlight hovered pill's group, dim the rest, swap heading */
+  .tool-heading { position: relative; display: inline-block; }
+  .tool-heading .th-sizer { visibility: hidden; white-space: nowrap; }
+  .tool-heading .th-label { position: absolute; left: 0; top: 0; white-space: nowrap; opacity: 0; transition: opacity 0.15s ease, color 0.15s ease; }
+  .tool-heading .th-default { opacity: 1; color: var(--muted); }
+  .tool-heading .th-group { color: var(--accent); }
+  .tooling:has(.pill[data-tool-group="design"]:hover) .th-default,
+  .tooling:has(.pill[data-tool-group="build"]:hover) .th-default,
+  .tooling:has(.pill[data-tool-group="ai"]:hover) .th-default { opacity: 0; }
+  .tooling:has(.pill[data-tool-group="design"]:hover) .th-design { opacity: 1; }
+  .tooling:has(.pill[data-tool-group="build"]:hover) .th-build { opacity: 1; }
+  .tooling:has(.pill[data-tool-group="ai"]:hover) .th-ai { opacity: 1; }
+  .tooling:has(.pill[data-tool-group="design"]:hover) .pill[data-tool-group="design"],
+  .tooling:has(.pill[data-tool-group="build"]:hover) .pill[data-tool-group="build"],
+  .tooling:has(.pill[data-tool-group="ai"]:hover) .pill[data-tool-group="ai"] { color: var(--accent); border-color: var(--accent); }
+  .tooling:has(.pill[data-tool-group="design"]:hover) .pill:not([data-tool-group="design"]),
+  .tooling:has(.pill[data-tool-group="build"]:hover) .pill:not([data-tool-group="build"]),
+  .tooling:has(.pill[data-tool-group="ai"]:hover) .pill:not([data-tool-group="ai"]) { opacity: 0.78; }
+
+  @media (prefers-reduced-motion: reduce) {
+    a, .pill, .cursor-tag, .tool-heading .th-label { transition-duration: 0.001ms !important; }
+  }
+
+  /* ---------- Zone 4: Right rail ---------- */
+  .right-rail {
+    position: absolute;
+    right: 24px;
+    top: 22.667%;
+    width: 366.86px;
+  }
+  .right-rail .exp-block .mono-label { margin-bottom: 8px; }
+  .right-rail .edu-block { margin-top: 28px; }
+  .right-rail .edu-block .mono-label { margin-bottom: 8px; }
+
+  .uipath-link { display: block; width: fit-content; cursor: none; }
+  .cursor-tag {
+    position: fixed;
+    top: 0; left: 0;
+    z-index: 999;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--muted);
+    background: var(--bg-landing);
+    border: 1px solid var(--line);
+    border-radius: 2px;
+    padding: 6px 12px;
+    pointer-events: none;
+    opacity: 0;
+    transform: translate(-9999px, -9999px) scale(0.9);
+    transition: opacity 0.15s ease, transform 0.15s ease;
+    white-space: nowrap;
+  }
+  .cursor-tag.is-visible { opacity: 1; }
+  .cursor-tag .arrow { color: var(--accent); font-size: 11px; }
+  .uipath-logo {
+    display: block;
+    height: 15px;
+    width: auto;
+    margin-bottom: 8px;
+  }
+  .iitg-logo {
+    display: block;
+    width: 33px;
+    height: 33px;
+    margin-bottom: 8px;
+  }
+
+  .role-row {
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+    margin-bottom: 4px;
+  }
+  .role-row .date {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--ink);
+    width: 59px;
+    flex: none;
+  }
+  .role-row .role {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--ink);
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+  }
+  .role-row .role .sep {
+    width: 3px;
+    height: 3px;
+    border-radius: 50%;
+    background: #A5A5A5;
+  }
+
+  /* ---------- Bottom-right lockup ---------- */
+  .lockup {
+    position: absolute;
+    right: 24px;
+    bottom: 2.444%;
+    text-align: right;
+  }
+  .lockup .h1 {
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 800;
+    font-size: 38px;
+    line-height: 0.95; /* 36.1 / 38 */
+    letter-spacing: -0.76px;
+    color: var(--ink);
+    text-transform: uppercase;
+    margin: 0;
+  }
+  .lockup .sub {
+    font-family: 'Cormorant Garamond', serif;
+    font-style: italic;
+    font-weight: 600;
+    font-size: 32px;
+    line-height: 0.91; /* 29 / 32 */
+    color: var(--muted);
+    margin-top: 0; /* directly adjacent in Figma */
+  }
+</style>
+<template id="__bundler_thumbnail">
+  <svg viewBox="0 0 400 400" xmlns="http://www.w3.org/2000/svg">
+    <rect width="400" height="400" fill="#FBFAF6"/>
+    <text x="200" y="220" text-anchor="middle" font-family="serif" font-style="italic" font-size="60" fill="#C95B33">Su</text>
+  </svg>
+</template>
+</head>
+<body>
+
+  <div class="canvas">
+    <div class="stage">
+
+    <!-- Zone 1: Left rail -->
+    <div class="photo"><img src="uploads/homepage%20photo.jpg.png" alt="Profile photo"></div>
+
+    <nav class="rail-nav">
+      <a href="Homepage.html" class="active">my context</a>
+      <a href="Work.html">the work</a>
+      <a href="about.html">who am i?</a>
+      <a href="contact%20(old).html" data-contact aria-haspopup="dialog">contact</a>
+    </nav>
+
+    <div class="wordmark">
+      <div class="mark">SuCHI</div>
+      <div class="phon">
+        <button type="button" class="phon-control" aria-label="Play pronunciation of soo-chee" style="align-items: center">
+          <span class="speaker-icon"><img src="uploads/speaker%20icon%20new.png" alt="" style="width: 15px; height: 15px"></span>
+          <span class="phon-syllables">
+            <span class="phon-text">soo</span>
+            <span class="phon-dot"></span>
+            <span class="phon-text">chee</span>
+          </span>
+        </button>
+        <span class="phon-tooltip" id="phonTooltip">soo ~ shoe<br>chee ~ bee</span>
+      </div>
+    </div>
+
+    <!-- Zone 2: Quick Background panel -->
+    <div class="panel">
+      <canvas class="panel-fluid" aria-hidden="true"></canvas>
+      <div class="mono-label">/ quick background</div>
+      <p class="body-text">The (un)glamorous work holds everything up. UiPath's admin layer- the control plane behind every business automation, 10,000+ customer enterprises. Joined as the most junior designer on it. Led it within the year. Systems, governance, the edge cases that decide whether software earns trust. Depth over breadth.</p>
+      <p class="pull-quote">growing at the intersection of design &amp; technology</p>
+    </div>
+
+    <!-- Zone 3: Tooling -->
+    <div class="tooling">
+      <div class="mono-label tool-heading">
+        <span class="th-sizer">/ ai experiments</span>
+        <span class="th-label th-default">/ tooling</span>
+        <span class="th-label th-group th-design">/ design</span>
+        <span class="th-label th-group th-build">/ build</span>
+        <span class="th-label th-group th-ai">/ ai experiments</span>
+      </div>
+      <div class="pill-grid" style="gap: 10px">
+        <div style="display: flex; flex-direction: column; gap: 4px;">
+          <div class="pill-row">
+            <span class="pill" data-tool-group="design" style="font-size: 9px">Figma</span>
+            <span class="pill" data-tool-group="design" style="font-size: 9px">Adobe suite</span>
+          </div>
+          <div class="pill-row">
+            <span class="pill" data-tool-group="design" style="font-size: 9px">GOOGLE STITCH</span>
+            <span class="pill" data-tool-group="design" style="font-size: 9px">JITTER</span>
+          </div>
+        </div>
+        <div style="display: flex; flex-direction: column; gap: 4px;">
+          <div class="pill-row">
+            <span class="pill" data-tool-group="build" style="font-size: 9px">Claude</span>
+            <span class="pill" data-tool-group="build" style="font-size: 9px">cursor</span>
+            <span class="pill" data-tool-group="build" style="font-size: 9px">GITHUB</span>
+          </div>
+          <div class="pill-row">
+            <span class="pill" data-tool-group="build" style="font-size: 9px">HTML</span>
+            <span class="pill" data-tool-group="build" style="font-size: 9px">CSS</span>
+            <span class="pill" data-tool-group="build" style="font-size: 9px">JS</span>
+            <span class="pill" data-tool-group="build" style="font-size: 9px">REACT</span>
+          </div>
+        </div>
+        <div style="display: flex; flex-direction: column; gap: 4px;">
+          <div class="pill-row">
+            <span class="pill" data-tool-group="ai" style="font-size: 9px">AI STUDIO</span>
+            <span class="pill" data-tool-group="ai" style="font-size: 9px">Antigravity</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Zone 4: Right rail -->
+    <div class="right-rail">
+      <div class="exp-block">
+        <div class="mono-label">/ experience</div>
+        <a class="uipath-link uipath-hover-target" href="https://www.uipath.com/" target="_blank" rel="noopener noreferrer" aria-label="Visit UiPath (opens in new tab)"><img class="uipath-logo" src="uploads/Uipath-logo-light.png" alt="UiPath"></a>
+        <div class="role-row">
+          <span class="date">&lsquo;24-&rsquo;25</span>
+          <span class="role">Associate Product Designer</span>
+        </div>
+        <div class="role-row">
+          <span class="date">&lsquo;23</span>
+          <span class="role">Product Design Intern</span>
+        </div>
+      </div>
+      <div class="edu-block">
+        <div class="mono-label">/ education</div>
+        <img class="iitg-logo" src="uploads/IITG_logo%20(2)%202.png" alt="IIT Guwahati">
+        <div class="role-row">
+          <span class="date">&lsquo;20-&rsquo;24</span>
+          <span class="role">b.des. <span class="sep"></span> iit Guwahati</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="lockup" style="bottom: 0px">
+      <p class="h1">Design</p>
+      <p class="h1">Technologist</p>
+      <p class="sub" style="font-weight: 500">beyond product design</p>
+    </div>
+
+    </div>
+  </div>
+
+  <!-- Mobile fallback (<900px) — mirrors work.html's stacked MobileList pattern -->
+  <div class="mobile-stack">
+    <div class="photo" style="position: static; width: 127px; height: 175px; margin-bottom: 24px;"><img src="uploads/homepage%20photo.jpg.png" alt="Profile photo"></div>
+
+    <div class="wordmark" style="position: static; margin-bottom: 28px;">
+      <div class="mark" style="font-size: 48px;">SuCHI</div>
+      <div class="phon">
+        <button type="button" class="phon-control" aria-label="Play pronunciation of soo-chee">
+          <span class="speaker-icon" style="width: 14px; height: 14px;"><img src="uploads/speaker%20icon%20new.png" alt=""></span>
+          <span class="phon-syllables">
+            <span class="phon-text" style="font-size: 12px;">soo</span>
+            <span class="phon-dot"></span>
+            <span class="phon-text" style="font-size: 12px;">chee</span>
+          </span>
+        </button>
+        <span class="phon-tooltip">soo ~ shoe<br>chee ~ bee</span>
+      </div>
+    </div>
+
+    <nav class="rail-nav" style="position: static; margin-bottom: 40px;">
+      <a href="Homepage.html" class="active" style="font-size: 12px;">my context</a>
+      <a href="Work.html" style="font-size: 12px;">the work</a>
+      <a href="about.html" style="font-size: 12px;">who am i?</a>
+      <a href="contact%20(old).html" data-contact aria-haspopup="dialog" style="font-size: 12px;">contact</a>
+    </nav>
+
+    <div class="panel" style="position: static; width: 100%; height: auto; padding: 24px;">
+      <div class="mono-label" style="font-size: 11px;">/ quick background</div>
+      <p class="body-text" style="max-width: none; margin-top: 8px;">The (un)glamorous work holds everything up. UiPath's admin layer- the control plane behind every business automation, 10,000+ customer enterprises. Joined as the most junior designer on it. Led it within the year. Systems, governance, the edge cases that decide whether software earns trust. Depth over breadth.</p>
+      <p class="pull-quote" style="font-size: 22px; max-width: none; margin-top: 32px;">growing at the intersection of design &amp; technology</p>
+    </div>
+
+    <div class="tooling" style="position: static; width: 100%; margin-top: 40px;">
+      <div class="mono-label tool-heading" style="font-size: 11px;">
+        <span class="th-sizer">/ ai experiments</span>
+        <span class="th-label th-default">/ tooling</span>
+        <span class="th-label th-group th-design">/ design</span>
+        <span class="th-label th-group th-build">/ build</span>
+        <span class="th-label th-group th-ai">/ ai experiments</span>
+      </div>
+      <div class="pill-grid" style="margin-top: 8px; flex-wrap: wrap; flex-direction: row;">
+        <span class="pill" data-tool-group="design" style="font-size: 11px; padding: 8px 14px;">Figma</span>
+        <span class="pill" data-tool-group="design" style="font-size: 11px; padding: 8px 14px;">Adobe suite</span>
+        <span class="pill" data-tool-group="design" style="font-size: 11px; padding: 8px 14px;">Framer</span>
+        <span class="pill" data-tool-group="build" style="font-size: 11px; padding: 8px 14px;">Claude</span>
+        <span class="pill" data-tool-group="build" style="font-size: 11px; padding: 8px 14px;">cursor</span>
+        <span class="pill" data-tool-group="ai" style="font-size: 11px; padding: 8px 14px;">v0</span>
+        <span class="pill" data-tool-group="build" style="font-size: 11px; padding: 8px 14px;">react</span>
+        <span class="pill" data-tool-group="build" style="font-size: 11px; padding: 8px 14px;">github</span>
+        <span class="pill" data-tool-group="design" style="font-size: 11px; padding: 8px 14px;">Google stitch</span>
+        <span class="pill" data-tool-group="ai" style="font-size: 11px; padding: 8px 14px;">Antigravity</span>
+      </div>
+    </div>
+
+    <div class="right-rail" style="position: static; width: 100%; margin-top: 40px;">
+      <div class="exp-block">
+        <div class="mono-label" style="font-size: 11px;">/ experience</div>
+        <a class="uipath-link uipath-hover-target" href="https://www.uipath.com/" target="_blank" rel="noopener noreferrer" aria-label="Visit UiPath (opens in new tab)" style="margin-top: 8px;"><img class="uipath-logo" src="uploads/Uipath-logo-light.png" alt="UiPath" style="height: 16px;"></a>
+        <div class="role-row" style="font-size: 13px;">
+          <span class="date" style="font-size: 13px; width: 64px;">&lsquo;24-&rsquo;25</span>
+          <span class="role" style="font-size: 13px;">Associate Product Designer</span>
+        </div>
+        <div class="role-row">
+          <span class="date" style="font-size: 13px; width: 64px;">&lsquo;23</span>
+          <span class="role" style="font-size: 13px;">Product Design Intern</span>
+        </div>
+      </div>
+      <div class="edu-block">
+        <div class="mono-label" style="font-size: 11px;">/ education</div>
+        <img class="iitg-logo" src="uploads/IITG_logo%20(2)%202.png" alt="IIT Guwahati" style="width: 36px; height: 36px; margin-top: 8px;">
+        <div class="role-row">
+          <span class="date" style="font-size: 13px; width: 64px;">&lsquo;20-&rsquo;24</span>
+          <span class="role" style="font-size: 13px;">b.des. <span class="sep"></span> iit Guwahati</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="lockup" style="position: static; text-align: left; margin-top: 48px;">
+      <p class="h1" style="font-size: 30px;">Design</p>
+      <p class="h1" style="font-size: 30px;">Technologist</p>
+      <p class="sub" style="font-size: 24px; margin-top: 4px;">beyond product design</p>
+    </div>
+  </div>
+
+<script>
+/* ============================================================
+   Responsive shell — two bands below the 1440 cap. ≥1440 is pure CSS
+   (stage capped at 1440, centered) and is never touched here.
+   • 1300–1440: full-size type, NO scaling. The panel and tooling
+     columns are re-anchored (lerp) so tooling/right bias rightward into
+     the available space and never converge onto the blue panel.
+   • 900–1300: uniform scale s = clientWidth/1300 (s=1 at 1300, ≈0.69 at
+     900) applied to the whole .stage as one unit — scatter preserved,
+     nothing overlaps. Centered via left:50% + translateX(-50%), origin
+     top-center; stage height = clientHeight/s so it fills the viewport.
+   • <900: CSS hides .canvas and .mobile-stack takes over.
+   ============================================================ */
+(function () {
+  const stage   = document.querySelector('.canvas .stage');
+  const panel   = document.querySelector('.canvas .panel');
+  const tooling = document.querySelector('.canvas .tooling');
+  if (!stage || !panel || !tooling) return;
+
+  // Column anchors: [value@1440, value@1300] in px (left edges).
+  const PANEL_L   = [335.14, 190];   // panel biases left toward the rail as width drops
+  const TOOLING_L = [738,    585];   // tooling packs rightward, glued near the right rail
+
+  function clearScale() {
+    stage.style.left = '';
+    stage.style.transform = '';
+    stage.style.transformOrigin = '';
+    stage.style.height = '';
+  }
+
+  function fit() {
+    const forced = window.__fw || parseInt((location.search.match(/[?&]fw=(\d+)/) || [])[1], 10) || 0;
+    const w = forced || document.documentElement.clientWidth;
+    const h = document.documentElement.clientHeight;
+    if (w < 900) return; // mobile-stack owns this
+
+    if (w >= 1440) {
+      // Pure CSS layout — strip every inline override.
+      clearScale();
+      stage.style.width = '';
+      panel.style.left = '';
+      tooling.style.left = '';
+      return;
+    }
+
+    if (w >= 1300) {
+      // Band A: full type, re-anchor the two middle columns.
+      clearScale();
+      stage.style.width = w + 'px';
+      const t = (w - 1300) / 140; // 0 at 1300 → 1 at 1440
+      panel.style.left   = (PANEL_L[1]   + (PANEL_L[0]   - PANEL_L[1])   * t) + 'px';
+      tooling.style.left = (TOOLING_L[1] + (TOOLING_L[0] - TOOLING_L[1]) * t) + 'px';
+      return;
+    }
+
+    // Band B: uniform scale-down of the whole stage, using the 1300 layout.
+    const s = w / 1300;
+    stage.style.width = '1300px';
+    stage.style.height = (h / s) + 'px';
+    panel.style.left = PANEL_L[1] + 'px';
+    tooling.style.left = TOOLING_L[1] + 'px';
+    stage.style.left = '50%';
+    stage.style.transformOrigin = 'top center';
+    stage.style.transform = 'translateX(-50%) scale(' + s + ')';
+  }
+
+  fit();
+  window.addEventListener('resize', fit);
+  window.__fit = fit;
+
+  // --- temporary test hook: ?fw=NNNN renders that width, scaled to fit the preview ---
+  (function () {
+    const forced = parseInt((location.search.match(/[?&]fw=(\d+)/) || [])[1], 10) || 0;
+    if (!forced) return;
+    const canvasEl = document.querySelector('.canvas');
+    if (forced >= 1440) stage.style.width = '1440px';
+    const real = document.documentElement.clientWidth;
+    canvasEl.style.transformOrigin = 'top left';
+    canvasEl.style.transform = 'scale(' + (real / forced) + ')';
+  })();
+})();
+</script>
+<script>
+/* ============================================================
+   Quick Background panel — fluid-repel cursor interaction.
+   Level-set field: phi = min(rectSDF, CAP) - A*exp(-d^2/2σ^2)
+   Fill blue where phi > T. Void reveals paper (--bg-landing).
+   Scoped to .canvas .panel only. Touch/reduced-motion => flat blue.
+   ============================================================ */
+(function () {
+  // ---- Tunable constants ----
+  const A     = 42;   // repulsion strength / void depth
+  const SIGMA = 24;   // void spread
+  const CAP   = 14;   // interior plateau
+  const AA    = 0.9;  // edge crispness — lower is sharper
+  const KVOL  = 0.35; // compensating bulge, redistributed inward only (eraser <-> fluid)
+  const M     = 0;    // rest rect = full panel box (outer edge pinned, blue aligns to text)
+  const CR    = 0;    // corner radius — matches the panel's square corners
+  const TRAIL = 1.4;  // velocity wake
+
+  const SETTLE_MS   = 900;  // keep animating this long after pointer leaves
+  const SMOOTH      = 0.35; // pointer smoothing per frame
+  const GAUSS_CUT   = 3.4;  // only evaluate exp() within this many σ
+
+  const panel = document.querySelector('.canvas .panel');
+  if (!panel) return;
+  const canvas = panel.querySelector('.panel-fluid');
+  if (!canvas) return;
+
+  const coarse  = window.matchMedia('(hover: none)').matches;
+  const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  // No-JS / incapable devices keep the CSS flat blue fill untouched.
+  if (coarse || reduced) return;
+
+  // Blue fill + paper read from the real tokens.
+  const rootStyle = getComputedStyle(document.documentElement);
+  const paper = (rootStyle.getPropertyValue('--bg-landing').trim()) || '#FBFAF6';
+  const fill  = (rootStyle.getPropertyValue('--panel-fill').trim()) || 'rgba(210,235,254,0.38)';
+  const m = fill.match(/rgba?\(([^)]+)\)/i);
+  const parts = m ? m[1].split(',').map(s => parseFloat(s)) : [210, 235, 254, 0.38];
+  const R = parts[0] || 210, G = parts[1] || 235, B = parts[2] || 254;
+  const BASE_A = (parts[3] === undefined ? 1 : parts[3]); // 0.38
+
+  // Panel paints paper now; the canvas paints the blue fluid on top.
+  panel.style.background = paper;
+  canvas.style.display = 'block';
+
+  const ctx = canvas.getContext('2d');
+  let W = 0, H = 0, dpr = 1, img = null;
+
+  function resize() {
+    dpr = window.devicePixelRatio || 1;
+    const r = panel.getBoundingClientRect();
+    W = Math.max(1, Math.round(r.width  * dpr));
+    H = Math.max(1, Math.round(r.height * dpr));
+    canvas.width = W;
+    canvas.height = H;
+    img = ctx.createImageData(W, H);
+  }
+  resize();
+
+  // Pointer state in device px, relative to the panel.
+  let targetX = -1e5, targetY = -1e5;   // off-panel = flat
+  let smoothX = -1e5, smoothY = -1e5;
+  let prevX = -1e5, prevY = -1e5;
+  let raf = null, leaving = false, leaveAt = 0;
+
+  function onMove(e) {
+    const r = panel.getBoundingClientRect();
+    targetX = (e.clientX - r.left) * dpr;
+    targetY = (e.clientY - r.top)  * dpr;
+  }
+  function onEnter(e) {
+    leaving = false;
+    onMove(e);
+    if (smoothX < -9e4) { smoothX = targetX; smoothY = targetY; prevX = targetX; prevY = targetY; }
+    start();
+  }
+  function onLeave() {
+    leaving = true;
+    leaveAt = performance.now();
+    targetX = -1e5; targetY = -1e5;   // let the void ease closed
+  }
+
+  panel.addEventListener('pointerenter', onEnter);
+  panel.addEventListener('pointermove', onMove);
+  panel.addEventListener('pointerleave', onLeave);
+
+  const hh = M;                 // corner radius already 0; keep inset via M
+  function draw() {
+    // Smooth pointer + velocity wake center.
+    smoothX += (targetX - smoothX) * SMOOTH;
+    smoothY += (targetY - smoothY) * SMOOTH;
+    const vx = smoothX - prevX, vy = smoothY - prevY;
+    prevX = smoothX; prevY = smoothY;
+    const cxp = smoothX + vx * TRAIL;
+    const cyp = smoothY + vy * TRAIL;
+
+    // Inset rounded-rect (CR=0 => plain rect) geometry.
+    const bx = M, by = M, bw = W - 2 * M, bh = H - 2 * M;
+    const cx = bx + bw / 2, cy = by + bh / 2;
+    const ex = bw / 2 - CR, ey = bh / 2 - CR;
+    const perim = 2 * (bw + bh);
+
+    // Volume conservation: estimate carved area from cursor depth. The
+    // compensation is applied LOCALLY (weighted by the Gaussian) so it only
+    // redistributes fluid around the void — never a global level shift that
+    // would move the far edges.
+    let cursorSDF;
+    {
+      const qx = Math.abs(cxp - cx) - ex, qy = Math.abs(cyp - cy) - ey;
+      const ox = Math.max(qx, 0), oy = Math.max(qy, 0);
+      const sd = Math.hypot(ox, oy) + Math.min(Math.max(qx, qy), 0) - CR;
+      cursorSDF = -sd; // positive inside
+    }
+    const s = Math.min(cursorSDF, CAP);
+    const ratio = (s - 0) / A;                 // base threshold 0 for the estimate
+    let carvedArea = 0;
+    if (ratio > 0 && ratio < 1) carvedArea = Math.PI * (-2 * SIGMA * SIGMA * Math.log(ratio));
+    else if (ratio <= 0) carvedArea = Math.PI * (GAUSS_CUT * SIGMA) * (GAUSS_CUT * SIGMA);
+    const carveComp = KVOL * carvedArea / perim; // positive magnitude, applied locally
+
+    // Gaussian influence box (only evaluate exp within GAUSS_CUT*σ).
+    const gR = GAUSS_CUT * SIGMA;
+    const gx0 = Math.max(0, Math.floor(cxp - gR)), gx1 = Math.min(W - 1, Math.ceil(cxp + gR));
+    const gy0 = Math.max(0, Math.floor(cyp - gR)), gy1 = Math.min(H - 1, Math.ceil(cyp + gR));
+    const inv2s2 = 1 / (2 * SIGMA * SIGMA);
+    const invAA = 1 / (2 * AA);
+    const data = img.data;
+
+    for (let y = 0; y < H; y++) {
+      const dyc = Math.abs(y - cy) - ey;
+      const inGX = (y >= gy0 && y <= gy1);
+      const gdy = y - cyp;
+      let row = y * W * 4;
+      for (let x = 0; x < W; x++, row += 4) {
+        // rounded-rect SDF (positive inside) of the REST rectangle
+        const qx = Math.abs(x - cx) - ex;
+        const ox = Math.max(qx, 0), oy = Math.max(dyc, 0);
+        const sd = Math.sqrt(ox * ox + oy * oy) + Math.min(Math.max(qx, dyc), 0) - CR;
+        const restSDF = -sd;
+        // Pin the outer boundary: no fluid can exist past the rest rect,
+        // independent of the volume/threshold term. Only inward carving.
+        if (restSDF < 0) { data[row + 3] = 0; continue; }
+        let phi = restSDF > CAP ? CAP : restSDF; // interior plateau
+        // subtract Gaussian only near the cursor
+        let g = 0;
+        if (inGX && x >= gx0 && x <= gx1) {
+          const gdx = x - cxp;
+          const d2 = gdx * gdx + gdy * gdy;
+          g = Math.exp(-d2 * inv2s2);
+          phi -= A * g;
+        }
+        // Local threshold shift: compensation acts only in the void's
+        // neighborhood (weighted by g), bulging fluid inward around the void.
+        const localT = -carveComp * g;
+        let a = 0.5 + (phi - localT) * invAA;
+        if (a <= 0) { data[row + 3] = 0; continue; }
+        if (a > 1) a = 1;
+        data[row]     = R;
+        data[row + 1] = G;
+        data[row + 2] = B;
+        data[row + 3] = (a * BASE_A * 255) | 0;
+      }
+    }
+    ctx.putImageData(img, 0, 0);
+  }
+
+  function loop() {
+    draw();
+    if (leaving && performance.now() - leaveAt > SETTLE_MS) {
+      raf = null;
+      return; // settled — stop until next pointerenter
+    }
+    raf = requestAnimationFrame(loop);
+  }
+  function start() { if (!raf) raf = requestAnimationFrame(loop); }
+  function stop() { if (raf) { cancelAnimationFrame(raf); raf = null; } }
+
+  document.addEventListener('visibilitychange', function () {
+    if (document.hidden) stop();
+  });
+
+  if (window.ResizeObserver) {
+    new ResizeObserver(function () {
+      resize();
+      draw(); // keep the flat/at-rest fill correct after size changes
+    }).observe(panel);
+  } else {
+    window.addEventListener('resize', function () { resize(); draw(); });
+  }
+
+  draw(); // initial at-rest frame: full flat blue fill (no cursor => no void)
+})();
+</script>
+<div class="cursor-tag" id="cursorTag"><span class="arrow">&#8599;</span><span>Visit UiPath</span></div>
+<script>
+(function(){
+  const tag = document.getElementById('cursorTag');
+  let raf = null, tx = 0, ty = 0;
+  function move(e){
+    tx = e.clientX + 16; ty = e.clientY + 16;
+    if (!raf) raf = requestAnimationFrame(() => {
+      tag.style.transform = `translate(${tx}px, ${ty}px) scale(1)`;
+      raf = null;
+    });
+  }
+  document.querySelectorAll('.uipath-hover-target').forEach(function(el){
+    el.addEventListener('mouseenter', function(e){
+      tag.classList.add('is-visible');
+      move(e);
+      document.addEventListener('mousemove', move);
+    });
+    el.addEventListener('mouseleave', function(){
+      tag.classList.remove('is-visible');
+      document.removeEventListener('mousemove', move);
+    });
+  });
+})();
+</script>
+<audio id="suchiAudio" preload="none" src="assets/audio/suchi-pronunciation.mp3"></audio>
+<script>
+(function(){
+  const USE_AUDIO = false; // flip to true once suchi-pronunciation.mp3 is in place
+
+  function showTooltip(tooltip){
+    if (!tooltip) return;
+    tooltip.classList.add('is-visible');
+    clearTimeout(tooltip._hideTimer);
+    tooltip._hideTimer = setTimeout(function(){ tooltip.classList.remove('is-visible'); }, 1500);
+  }
+
+  document.querySelectorAll('.phon-control').forEach(function(btn){
+    btn.addEventListener('click', function(){
+      if (USE_AUDIO) {
+        const audio = document.getElementById('suchiAudio');
+        audio.currentTime = 0;
+        audio.play();
+      } else {
+        showTooltip(btn.parentElement.querySelector('.phon-tooltip'));
+      }
+    });
+  });
+})();
+</script>
+<script src="contact-modal.js"></script>
+</body>
+</html>
