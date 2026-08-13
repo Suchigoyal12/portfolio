@@ -110,14 +110,17 @@
   }
 
   /* ---------- Photo marquee — ambient-motion exception, DESIGN_SYSTEM.md §4.7 ---------- */
-  /* Breaks out of the 254px designer column so 4:3 frames read at a usable size. */
-  /* Slot size is viewport-height-derived so the strip always fits the fixed 100vh canvas;
-     JS measures the resolved width and recomputes --ph-set-w / --ph-dur (see phMeasure). */
-  .ph-marquee { --ph-w:200px; width:900px; overflow:hidden; margin-top:-16px; }
-  .ph-track { display:flex; gap:var(--ph-gap); height:116px; width:max-content; animation:ph-scroll var(--ph-dur) linear infinite; will-change:transform; }
+  /* Breaks out of the 254px designer column so the frames read at a usable size. */
+  /* Uniform HEIGHT, flexible width: every slot is --ph-h tall and takes whatever width
+     its photo's own aspect ratio implies, so nothing is ever cropped. Widths therefore
+     differ per slot, and phMeasure sums the real ones rather than assuming a constant. */
+  .ph-marquee { --ph-h:200px; width:900px; overflow:hidden; margin-top:-16px; }
+  .ph-track { display:flex; gap:var(--ph-gap); height:var(--ph-h); width:max-content; align-items:stretch; animation:ph-scroll var(--ph-dur) linear infinite; will-change:transform; }
   @keyframes ph-scroll { from { transform:translate3d(0,0,0); } to { transform:translate3d(calc(-1 * var(--ph-set-w)),0,0); } }
   .ph-marquee:hover .ph-track { animation-play-state:paused; }
-  .ph-slot { position:relative; flex:none; width:var(--ph-w); aspect-ratio:4/3; border:1px solid var(--line); background:var(--surface); background-image:repeating-linear-gradient(135deg, rgba(138,133,124,0.10) 0 10px, transparent 10px 20px); }
+  .ph-slot { position:relative; flex:none; height:100%; width:auto; border:1px solid var(--line); background:var(--surface); background-image:repeating-linear-gradient(135deg, rgba(138,133,124,0.10) 0 10px, transparent 10px 20px); }
+  /* height drives, width follows — the photo is never cropped or distorted. */
+  .ph-slot img { display:block; height:100%; width:auto; }
   .ph-slot .n { position:absolute; left:8px; bottom:7px; font-family:'JetBrains Mono', monospace; font-size:9px; letter-spacing:0.1em; color:var(--muted); }
   @media (max-width: 899px) { .ph-marquee { width:100%; } }
   /* Safety net: on genuinely short viewports the branch can exceed 100vh — let it scroll
@@ -180,22 +183,34 @@
 <script>
   /* ---------- Photo marquee config — DESIGN_SYSTEM.md §4.7 ----------
      Swap PHOTOS for 4–10 entries; all geometry below re-derives. No logic edits needed. */
-  const PHOTOS = [1, 2, 3, 4, 5, 6];      // placeholders — real photos drop in here later
+  // 4–10 entries. Sources are pre-normalised to a common 600px height; w/h below are the
+  // real intrinsic pixels and are emitted as width/height attributes so the browser knows
+  // each slot's aspect ratio BEFORE the image loads. Without them the slots measure zero
+  // width on first layout and the seamless-loop maths (phMeasure) would be wrong.
+  const PHOTOS = [
+    { src: 'assets/about/1.png', w: 1051, h: 600 },
+    { src: 'assets/about/2.png', w: 844,  h: 600 },
+    { src: 'assets/about/3.png', w: 1011, h: 600 },
+    { src: 'assets/about/4.png', w: 528,  h: 600 },
+    { src: 'assets/about/5.png', w: 890,  h: 600 },
+    { src: 'assets/about/6.png', w: 398,  h: 600 },
+    { src: 'assets/about/7.png', w: 924,  h: 600 }
+  ];
   const PH_GAP = 12;                       // px between slots
   const PH_PX_PER_SEC = 22;                // ambient speed constant — tune this, not duration
-  // Slot width comes from CSS (--ph-w, height-clamped); everything else derives from it + count.
+  // Slot height comes from CSS (--ph-h); each slot's width follows its photo's ratio.
 
-  const phSlot = (i, dupe) =>
+  const phSlot = (p, dupe) =>
     '<div class="ph-slot' + (dupe ? ' ph-dupe' : '') + '"' + (dupe ? ' aria-hidden="true"' : '') + '>' +
-      '<span class="n">' + String(i + 1).padStart(2, '0') + '</span>' +
+      '<img src="' + p.src + '" width="' + p.w + '" height="' + p.h + '" alt="" draggable="false">' +
     '</div>';
 
   // Full set duplicated once → rendered strip is PHOTOS.length × 2, so the reset is seamless.
   const PHOTO_MARQUEE_HTML =
     '<div class="ph-marquee" style="--ph-gap:' + PH_GAP + 'px">' +
       '<div class="ph-track">' +
-        PHOTOS.map((_, i) => phSlot(i, false)).join('') +
-        PHOTOS.map((_, i) => phSlot(i, true)).join('') +
+        PHOTOS.map((p) => phSlot(p, false)).join('') +
+        PHOTOS.map((p) => phSlot(p, true)).join('') +
       '</div>' +
     '</div>';
 
@@ -412,19 +427,30 @@
     applyLayout();
   }
 
-  // Measure the resolved slot width and re-derive the loop-reset point + duration.
-  // Count-driven: swapping PHOTOS to 4 or 10 needs no change here.
+  // Sum the FIRST SET's real slot widths and re-derive the loop-reset point + duration.
+  // Slots no longer share a width — each one is as wide as its photo's ratio makes it —
+  // so this adds up the actual widths instead of multiplying one by the count.
+  // Count-driven still: swapping PHOTOS to 4 or 10 needs no change here.
   function phMeasure() {
     document.querySelectorAll('.ph-marquee').forEach(m => {
-      const slot = m.querySelector('.ph-slot');
-      if (!slot) return;
-      const w = slot.offsetWidth; // layout px — getBoundingClientRect() would return scaled px under fit()
-      if (!w) return;
-      const setW = PHOTOS.length * (w + PH_GAP);
+      const slots = m.querySelectorAll('.ph-slot');
+      if (!slots.length) return;
+      let setW = 0;
+      for (let i = 0; i < PHOTOS.length && i < slots.length; i++) {
+        const w = slots[i].offsetWidth; // layout px — getBoundingClientRect() would return scaled px under fit()
+        if (!w) return;                 // not laid out yet; a later call will catch it
+        setW += w + PH_GAP;
+      }
+      if (!setW) return;
       m.style.setProperty('--ph-set-w', setW + 'px');
       m.style.setProperty('--ph-dur', (setW / PH_PX_PER_SEC).toFixed(2) + 's');
     });
   }
+  // Safety net: width/height attributes make the pre-load layout correct, but if a photo's
+  // attributes ever drift from its real pixels, re-measuring on load self-corrects.
+  document.addEventListener('load', (e) => {
+    if (e.target && e.target.tagName === 'IMG' && e.target.closest('.ph-slot')) phMeasure();
+  }, true);
   /* ---------- Responsive shell — ported from index.html fit() ----------
      Frame 1440, anchor 1300, identical band boundaries to Homepage so the rail and the
      left column sit at the same absolute position on both pages at every width.
