@@ -386,19 +386,15 @@ function WorkStage() {
         setFs(false);
       }
     } else {
-      // enter
+      // enter — in-page fullscreen ONLY. Deliberately does not call
+      // requestFullscreen(): that takes the whole browser window fullscreen
+      // and hides the browser's own chrome, which is not what this control
+      // means. The stage window expands within the page instead.
+      // nativeFsRef stays false, which is exactly what keeps the
+      // native-reconciliation backstops from tearing this session down —
+      // every one of them is guarded on it.
       setFs(true);
-      const el = document.documentElement;
-      const req = el.requestFullscreen || el.webkitRequestFullscreen;
-      if (document.fullscreenEnabled && req) {
-        nativeFsRef.current = true;
-        try {
-          const p = req.call(el);
-          if (p && p.catch) p.catch(() => {nativeFsRef.current = false;}); // rejected → stay in pseudo-fs
-        } catch (e) {nativeFsRef.current = false; /* stay in pseudo-fs */}
-      } else {
-        nativeFsRef.current = false;
-      }
+      nativeFsRef.current = false;
     }
   }
 
@@ -413,6 +409,11 @@ function WorkStage() {
   // our fullscreen UI state whenever a native session ends.
   React.useEffect(() => {
     const onChange = () => {
+      // Guarded like the other backstops: only a native session is reconciled
+      // against document.fullscreenElement. A pseudo-fs session has none, so
+      // without this guard a stray fullscreenchange — F11 in some browsers —
+      // would call setFs(false) and silently drop our in-page fullscreen.
+      if (!nativeFsRef.current) return;
       const active = isNativeFs();
       setFs(active);
       if (!active) nativeFsRef.current = false;
@@ -474,7 +475,10 @@ function WorkStage() {
   const offsetX = Math.max(0, (vp.w - STAGE_CAP) / 2);
 
   const chromeProps = {
-    onClose: () => {if (isNativeFs()) toggleFs();else window.location.href = "index.html";},
+    // Keyed on our own fs state, not isNativeFs(): fullscreen is now in-page
+    // and has no fullscreenElement, so testing native here would send Close
+    // to the homepage while fullscreen rather than exiting fullscreen first.
+    onClose: () => {if (fsRef.current) exitFsAnywhere();else window.location.href = "index.html";},
     onPrev: () => adjacent(-1),
     onNext: () => adjacent(1),
     onFullscreen: toggleFs
