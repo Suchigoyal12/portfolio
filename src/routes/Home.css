@@ -101,27 +101,9 @@
 }
 .route-home .photo img { width: 100%; height: 100%; object-fit: cover; display: block; }
 
-.route-home .rail-nav {
-  position: absolute;
-  left: 24px;
-  top: 54.511%;
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-}
-.route-home .rail-nav a {
-  font-family: 'JetBrains Mono', monospace;
-  font-weight: 700;
-  font-size: 10px;
-  letter-spacing: 0.08em;
-  line-height: 1.46;
-  text-transform: uppercase;
-  text-decoration: none;
-  color: var(--muted);
-  position: relative;
-}
-.route-home .rail-nav a.active { color: var(--accent); padding-left: 14px; }
-.route-home .rail-nav a.active::before { content: ">"; position: absolute; left: 0; top: 0; }
+/* The .rail-nav rules stood here. Identical to About's, so they now live
+   once in RailLayout.css — brief 2.7, four copies into one. */
+
 
 .route-home .wordmark {
   position: absolute;

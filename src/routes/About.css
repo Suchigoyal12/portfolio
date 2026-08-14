@@ -41,10 +41,8 @@
 .route-about .mono-label { font-family:'JetBrains Mono', monospace; font-size:10px; letter-spacing:0.08em; text-transform:uppercase; color:var(--muted); }
 
 /* ---------- Zone 1: Left rail — markup + CSS reused from index.html ---------- */
-.route-about .rail-nav { position:absolute; left:24px; top:54.511%; display:flex; flex-direction:column; gap:10px; }
-.route-about .rail-nav a { font-family:'JetBrains Mono', monospace; font-weight:700; font-size:10px; letter-spacing:0.08em; line-height:1.46; text-transform:uppercase; text-decoration:none; color:var(--muted); position:relative; }
-.route-about .rail-nav a.active { color: var(--accent); padding-left:14px; }
-.route-about .rail-nav a.active::before { content:">"; position:absolute; left:0; top:0; }
+/* The .rail-nav rules stood here, commented in the original as "markup + CSS
+   reused from index.html". They now live once in RailLayout.css. */
 
 /* ---------- Toggles — placement/spacing per Figma frame "about" ---------- */
 .route-about .mode-toggle { position:absolute; top:12.444%; display:flex; align-items:center; gap:var(--s-2); padding:0 0 36px 0; background:none; border:0; cursor:pointer; -webkit-tap-highlight-color:transparent; }

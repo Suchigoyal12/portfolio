@@ -24,3 +24,42 @@ html.rail-route body {
     overflow: auto;
   }
 }
+
+/* ---------- The main site rail ----------
+ * Byte-identical in legacy/index.html and legacy/about.html — About's copy is
+ * even commented "markup + CSS reused from index.html". Both pages' copies are
+ * deleted; this is the one that remains, paired with SiteRail.jsx.
+ *
+ * Scoped to .rail-route so it reaches only Homepage and About, matching the two
+ * pages that declared it. The colours resolve from whichever route wrapper is
+ * mounted — the two pages agree on --muted and --accent, and each keeps its own
+ * declaration, so nothing had to be hoisted with it.
+ *
+ * The leading `html` is load-bearing, not decoration. In the original these
+ * rules sat in the same file as, and after, `a:hover { color: var(--accent) }`
+ * — equal specificity, later wins, so rail items do not take the hover colour.
+ * Split across files that tie breaks the other way, because each page's CSS
+ * loads after the layout's. `html.rail-route .rail-nav a` outweighs
+ * `.route-home a:hover` outright and restores the original outcome.
+ */
+html.rail-route .rail-nav {
+  position: absolute;
+  left: 24px;
+  top: 54.511%;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+html.rail-route .rail-nav a {
+  font-family: 'JetBrains Mono', monospace;
+  font-weight: 700;
+  font-size: 10px;
+  letter-spacing: 0.08em;
+  line-height: 1.46;
+  text-transform: uppercase;
+  text-decoration: none;
+  color: var(--muted);
+  position: relative;
+}
+html.rail-route .rail-nav a.active { color: var(--accent); padding-left: 14px; }
+html.rail-route .rail-nav a.active::before { content: ">"; position: absolute; left: 0; top: 0; }

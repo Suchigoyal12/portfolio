@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useRef } from "react";
-import { Link } from "react-router-dom";
+import SiteRail from "../layouts/SiteRail.jsx";
 import { useFit } from "../hooks/useFit.js";
 import { usePanelFluid } from "../hooks/usePanelFluid.js";
 import "./Home.css";
@@ -122,12 +122,7 @@ export default function Home() {
           {/* Zone 1: Left rail */}
           <div className="photo"><img src="/uploads/homepage-photo.png" alt="Profile photo" /></div>
 
-          <nav className="rail-nav">
-            <Link to="/" className="active">my context</Link>
-            <Link to="/work">the work</Link>
-            <Link to="/about">who am i?</Link>
-            <a href="contact%20(old).html" data-contact aria-haspopup="dialog">contact</a>
-          </nav>
+          <SiteRail />
 
           <div className="wordmark">
             <div className="mark">SuCHI</div>
@@ -264,12 +259,7 @@ export default function Home() {
           </div>
         </div>
 
-        <nav className="rail-nav" style={{ position: "static", marginBottom: 40 }}>
-          <Link to="/" className="active" style={{ fontSize: 12 }}>my context</Link>
-          <Link to="/work" style={{ fontSize: 12 }}>the work</Link>
-          <Link to="/about" style={{ fontSize: 12 }}>who am i?</Link>
-          <a href="contact%20(old).html" data-contact aria-haspopup="dialog" style={{ fontSize: 12 }}>contact</a>
-        </nav>
+        <SiteRail variant="mobile" />
 
         <div className="panel" style={{ position: "static", width: "100%", height: "auto", padding: 24 }}>
           <div className="mono-label" style={{ fontSize: 11 }}>/ quick background</div>

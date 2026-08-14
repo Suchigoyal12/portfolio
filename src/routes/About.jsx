@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
-import { Link } from "react-router-dom";
+import SiteRail from "../layouts/SiteRail.jsx";
 import { useFit } from "../hooks/useFit.js";
 import { usePersonTimeline } from "../hooks/usePersonTimeline.js";
 import { LYRICS, PHOTOS, PH_GAP, PH_PX_PER_SEC } from "./aboutContent.js";
@@ -246,12 +246,7 @@ export default function About() {
         <div className="stage" ref={stageRef}>
 
           {/* Zone 1: Left rail */}
-          <nav className="rail-nav">
-            <Link to="/">my context</Link>
-            <Link to="/work">the work</Link>
-            <Link to="/about" className="active">who am i?</Link>
-            <a href="contact%20(old).html" data-contact aria-haspopup="dialog">contact</a>
-          </nav>
+          <SiteRail />
 
           {/* Mode toggles */}
           {toggles}
@@ -263,12 +258,7 @@ export default function About() {
       </div>
 
       <div className="mobile-stack">
-        <nav className="rail-nav" style={{ position: "static", marginBottom: 40 }}>
-          <Link to="/" style={{ fontSize: 12 }}>my context</Link>
-          <Link to="/work" style={{ fontSize: 12 }}>the work</Link>
-          <Link to="/about" className="active" style={{ fontSize: 12 }}>who am i?</Link>
-          <a href="contact%20(old).html" data-contact aria-haspopup="dialog" style={{ fontSize: 12 }}>contact</a>
-        </nav>
+        <SiteRail variant="mobile" />
         <div className="mode-content" id="modeContentMobile" style={{ position: "static", left: "auto", top: "auto" }}>{branch("mobile")}</div>
       </div>
     </div>
