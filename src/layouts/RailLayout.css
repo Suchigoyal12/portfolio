@@ -1,0 +1,26 @@
+/* Rail-route shell.
+ *
+ * legacy/index.html and legacy/about.html both open with
+ *
+ *   html, body { height: 100%; overflow: hidden; }
+ *   @media (max-width: 899px) { html, body { overflow: auto; } }
+ *
+ * — a full-viewport composition with no page scroll on desktop. That rule
+ * targets elements above any route wrapper, so it cannot be nested and cannot
+ * be page CSS: left global it would reach the project pages, which have to
+ * scroll. RailLayout adds .rail-route to <html> on mount and removes it on
+ * unmount, so the rule exists exactly while a rail route is on screen.
+ */
+
+html.rail-route,
+html.rail-route body {
+  height: 100%;
+  overflow: hidden;
+}
+
+@media (max-width: 899px) {
+  html.rail-route,
+  html.rail-route body {
+    overflow: auto;
+  }
+}

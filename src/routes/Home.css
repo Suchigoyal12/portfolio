@@ -1,0 +1,406 @@
+/* Ported from legacy/index.html's inline <style>. Declarations are verbatim —
+ * no class renamed, no value changed, no rule reordered, comments kept.
+ *
+ * Three mechanical differences, and nothing else:
+ *
+ *   1. Every selector is nested under .route-home. Homepage and About share
+ *      ten class names and disagree on three of them (.canvas and
+ *      .mobile-stack paint different backgrounds, .stage gets a short-window
+ *      override on About only, .pill is 10px here and 9px there), and both
+ *      files declare their own custom properties. In one bundle the second
+ *      stylesheet would silently win. Scoping raises every rule here by the
+ *      same (0,1,0), so the cascade within the page is unchanged.
+ *
+ *   2. :root becomes .route-home. The custom properties still cover
+ *      everything that reads them, because everything that reads them is
+ *      inside the wrapper.
+ *
+ *   3. `* { box-sizing: border-box }` and the html/body margin reset are gone
+ *      — they live in base.css now, shared by every route.
+ *
+ * The `html, body { height: 100%; overflow: hidden }` rule cannot be nested,
+ * because it targets elements above the wrapper. RailLayout attaches it via a
+ * class on <html>; see RailLayout.css.
+ */
+
+/* ==========================================================
+   Colors pulled EXACTLY from the Figma frame
+   ("Claude- Homepage" page → "homepage" 1440×900 frame).
+   NOTE: these do not all match DESIGN_SYSTEM.md's documented
+   tokens (--ink #1C1C1A, --muted #8A857C, --accent #B5522E,
+   --line #D9D4C8). Figma wins per this pass — flagged here for
+   the upcoming Figma vs. work.html vs. DESIGN_SYSTEM.md audit.
+   ========================================================== */
+.route-home {
+  --bg-landing:   #FBFAF6;  /* homepage-only background fill — decoupled from work.html's --paper (same value today by design, but independent token so paper/card changes there can't leak here) */
+  --ink:           #111110; /* single ink color for all text, matches work.html */
+  --muted:         #8A857C; /* matches work.html */
+  --accent:        #B5522E; /* matches work.html */
+  --line:          #D9D4C8; /* matches work.html */
+  --panel-fill:    rgba(210, 235, 254, 0.38); /* #D2EBFE @ 38% — Figma-exact (not 40%) */
+
+  /* From `html, body` in the original. The height and overflow halves of that
+     rule target elements above this wrapper and live in RailLayout.css. */
+  height: 100%;
+  background: var(--bg-landing);
+  font-family: 'DM Sans', sans-serif;
+}
+
+.route-home ::selection { background: var(--accent); color: #fff; }
+.route-home a { color: var(--ink); transition: color 0.15s ease; }
+.route-home a:hover { color: var(--accent); }
+
+/* ---------- Outer shell — proportional anchoring with a cap. The
+     .stage is capped at 1440px wide and centers with symmetric side
+     margins above that; at/below 1440 it fills 100vw. It always fills
+     viewport height. Zones are anchored PROPORTIONALLY (horizontal
+     offsets as % of stage width, vertical offsets as % of stage
+     height) so the composition fills both dimensions like the
+     pre-responsive version — but every font-size, letter-spacing and
+     dot size stays fixed px so type never scales. On short windows the
+     proportional gaps compress rather than the type shrinking.
+     ---------- */
+.route-home .canvas {
+  height: 100vh;
+  overflow: hidden;
+  background: var(--bg-landing);
+}
+.route-home .stage {
+  position: relative;
+  width: min(1440px, 100vw);
+  height: 100%;
+  margin: 0 auto;
+}
+@media (max-width: 899px) { .route-home .canvas { display: none; } }
+.route-home .mobile-stack { display: none; }
+@media (max-width: 899px) {
+  .route-home .mobile-stack {
+    display: block;
+    min-height: 100%;
+    background: var(--bg-landing);
+    padding: 48px 20px 96px;
+  }
+}
+
+.route-home .mono-label {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+/* ---------- Zone 1: Left rail ---------- */
+.route-home .photo {
+  position: absolute;
+  left: 24px;
+  top: 15.556%;
+  width: 127px;
+  height: 174.76px; /* tied to vw, not vh — keeps the photo's aspect ratio locked */
+  overflow: hidden;
+}
+.route-home .photo img { width: 100%; height: 100%; object-fit: cover; display: block; }
+
+.route-home .rail-nav {
+  position: absolute;
+  left: 24px;
+  top: 54.511%;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.route-home .rail-nav a {
+  font-family: 'JetBrains Mono', monospace;
+  font-weight: 700;
+  font-size: 10px;
+  letter-spacing: 0.08em;
+  line-height: 1.46;
+  text-transform: uppercase;
+  text-decoration: none;
+  color: var(--muted);
+  position: relative;
+}
+.route-home .rail-nav a.active { color: var(--accent); padding-left: 14px; }
+.route-home .rail-nav a.active::before { content: ">"; position: absolute; left: 0; top: 0; }
+
+.route-home .wordmark {
+  position: absolute;
+  left: 24px;
+  bottom: 2.444%;
+}
+.route-home .wordmark .mark {
+  font-family: 'Archivo', sans-serif;
+  font-weight: 600;
+  font-size: 64px;
+  letter-spacing: -0.06em;
+  line-height: 1.09;
+  color: var(--accent); /* whole wordmark is one solid color in Figma, not two-tone */
+}
+.route-home .wordmark .phon {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  margin-top: 0; /* directly adjacent to the wordmark in Figma — no gap */
+  position: relative;
+}
+.route-home .phon-control {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  background: none;
+  border: none;
+  padding: 0;
+  margin: 0;
+  cursor: pointer;
+  font: inherit;
+  -webkit-tap-highlight-color: transparent;
+}
+.route-home .phon-syllables {
+  display: flex;
+  align-items: center;
+  gap: 2.5px;
+}
+.route-home .speaker-icon {
+  width: 16px;
+  height: 16px;
+  position: relative;
+  flex: none;
+}
+.route-home .speaker-icon img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  display: block;
+}
+.route-home .wordmark .phon-text {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12px;
+  letter-spacing: 1px;
+  text-transform: lowercase;
+  color: var(--muted);
+  transition: color 0.15s ease;
+}
+.route-home .wordmark .phon-dot {
+  width: 2px;
+  height: 2px;
+  border-radius: 50%;
+  background: var(--muted);
+  flex: none;
+  transition: background 0.15s ease;
+}
+.route-home .phon-tooltip {
+  position: absolute;
+  left: calc(100% + 4px);
+  top: 50%;
+  transform: translate(0, -50%);
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  line-height: 1.5;
+  white-space: nowrap;
+  color: var(--muted);
+  background: var(--bg-landing);
+  border: 1px solid var(--line);
+  border-radius: 2px;
+  padding: 6px 12px;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.15s ease, transform 0.15s ease;
+  z-index: 2;
+}
+.route-home .phon-tooltip.is-visible { opacity: 1; transform: translate(0, -50%); }
+
+/* ---------- Zone 2: Quick Background panel ---------- */
+.route-home .panel {
+  position: absolute;
+  left: 23.274%;
+  top: 15.556%;
+  width: 366.86px;
+  height: 428px;
+  background: var(--panel-fill);
+  padding-top: 64px;
+}
+.route-home .panel .mono-label { margin-bottom: 8px; }
+.route-home .panel .panel-fluid { position: absolute; inset: 0; width: 100%; height: 100%; display: none; z-index: 0; pointer-events: none; }
+.route-home .panel .mono-label, .route-home .panel .body-text, .route-home .panel .pull-quote { position: relative; z-index: 1; }
+.route-home .panel .body-text {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 14px;
+  line-height: 1.5; /* 18.75 / 12.5 */
+  color: var(--ink);
+  margin: 0;
+  max-width: 235px;
+}
+.route-home .panel .pull-quote {
+  font-family: 'Cormorant Garamond', serif;
+  font-style: italic;
+  font-weight: 600;
+  font-size: 24px;
+  line-height: 1.2;
+  color: var(--ink);
+  margin: 64px 0 0;
+  max-width: 235px;
+}
+
+/* ---------- Zone 3: Tooling ---------- */
+.route-home .tooling {
+  position: absolute;
+  right: 29.643%; /* 426.86 / 1440, anchored proportionally from the right */
+  top: 41.278%;
+  width: 275.14px;
+}
+.route-home .tooling .mono-label { margin-bottom: 8px; }
+.route-home .pill-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.route-home .pill-row {
+  display: flex;
+  gap: 6px;
+}
+.route-home .pill {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ink);
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  padding: 6px 12px;
+  white-space: nowrap;
+  transition: color 0.15s ease, border-color 0.15s ease, opacity 0.15s ease;
+}
+.route-home .pill:hover { color: var(--accent); border-color: var(--accent); }
+
+/* Tooling group-hover: highlight hovered pill's group, dim the rest, swap heading */
+.route-home .tool-heading { position: relative; display: inline-block; }
+.route-home .tool-heading .th-sizer { visibility: hidden; white-space: nowrap; }
+.route-home .tool-heading .th-label { position: absolute; left: 0; top: 0; white-space: nowrap; opacity: 0; transition: opacity 0.15s ease, color 0.15s ease; }
+.route-home .tool-heading .th-default { opacity: 1; color: var(--muted); }
+.route-home .tool-heading .th-group { color: var(--accent); }
+.route-home .tooling:has(.pill[data-tool-group="design"]:hover) .th-default,
+.route-home .tooling:has(.pill[data-tool-group="build"]:hover) .th-default,
+.route-home .tooling:has(.pill[data-tool-group="ai"]:hover) .th-default { opacity: 0; }
+.route-home .tooling:has(.pill[data-tool-group="design"]:hover) .th-design { opacity: 1; }
+.route-home .tooling:has(.pill[data-tool-group="build"]:hover) .th-build { opacity: 1; }
+.route-home .tooling:has(.pill[data-tool-group="ai"]:hover) .th-ai { opacity: 1; }
+.route-home .tooling:has(.pill[data-tool-group="design"]:hover) .pill[data-tool-group="design"],
+.route-home .tooling:has(.pill[data-tool-group="build"]:hover) .pill[data-tool-group="build"],
+.route-home .tooling:has(.pill[data-tool-group="ai"]:hover) .pill[data-tool-group="ai"] { color: var(--accent); border-color: var(--accent); }
+.route-home .tooling:has(.pill[data-tool-group="design"]:hover) .pill:not([data-tool-group="design"]),
+.route-home .tooling:has(.pill[data-tool-group="build"]:hover) .pill:not([data-tool-group="build"]),
+.route-home .tooling:has(.pill[data-tool-group="ai"]:hover) .pill:not([data-tool-group="ai"]) { opacity: 0.78; }
+
+@media (prefers-reduced-motion: reduce) {
+  .route-home a, .route-home .pill, .route-home .cursor-tag, .route-home .tool-heading .th-label { transition-duration: 0.001ms !important; }
+}
+
+/* ---------- Zone 4: Right rail ---------- */
+.route-home .right-rail {
+  position: absolute;
+  right: 24px;
+  top: 22.667%;
+  width: 366.86px;
+}
+.route-home .right-rail .exp-block .mono-label { margin-bottom: 8px; }
+.route-home .right-rail .edu-block { margin-top: 28px; }
+.route-home .right-rail .edu-block .mono-label { margin-bottom: 8px; }
+
+.route-home .uipath-link { display: block; width: fit-content; cursor: none; }
+.route-home .cursor-tag {
+  position: fixed;
+  top: 0; left: 0;
+  z-index: 999;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--muted);
+  background: var(--bg-landing);
+  border: 1px solid var(--line);
+  border-radius: 2px;
+  padding: 6px 12px;
+  pointer-events: none;
+  opacity: 0;
+  transform: translate(-9999px, -9999px) scale(0.9);
+  transition: opacity 0.15s ease, transform 0.15s ease;
+  white-space: nowrap;
+}
+.route-home .cursor-tag.is-visible { opacity: 1; }
+.route-home .cursor-tag .arrow { color: var(--accent); font-size: 11px; }
+.route-home .uipath-logo {
+  display: block;
+  height: 15px;
+  width: auto;
+  margin-bottom: 8px;
+}
+.route-home .iitg-logo {
+  display: block;
+  width: 33px;
+  height: 33px;
+  margin-bottom: 8px;
+}
+
+.route-home .role-row {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  margin-bottom: 4px;
+}
+.route-home .role-row .date {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ink);
+  width: 59px;
+  flex: none;
+}
+.route-home .role-row .role {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ink);
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+}
+.route-home .role-row .role .sep {
+  width: 3px;
+  height: 3px;
+  border-radius: 50%;
+  background: #A5A5A5;
+}
+
+/* ---------- Bottom-right lockup ---------- */
+.route-home .lockup {
+  position: absolute;
+  right: 24px;
+  bottom: 2.444%;
+  text-align: right;
+}
+.route-home .lockup .h1 {
+  font-family: 'DM Sans', sans-serif;
+  font-weight: 800;
+  font-size: 38px;
+  line-height: 0.95; /* 36.1 / 38 */
+  letter-spacing: -0.76px;
+  color: var(--ink);
+  text-transform: uppercase;
+  margin: 0;
+}
+.route-home .lockup .sub {
+  font-family: 'Cormorant Garamond', serif;
+  font-style: italic;
+  font-weight: 600;
+  font-size: 32px;
+  line-height: 0.91; /* 29 / 32 */
+  color: var(--muted);
+  margin-top: 0; /* directly adjacent in Figma */
+}
