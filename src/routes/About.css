@@ -1,0 +1,153 @@
+/* Ported from legacy/about.html's inline <style>. Declarations verbatim, every
+ * selector nested under .route-about, :root folded into the wrapper, and the
+ * global box-sizing / margin resets dropped because base.css owns them. The
+ * `html, body { height:100%; overflow:hidden }` half lives in RailLayout.css.
+ * Same three mechanical changes as Home.css and nothing else.
+ *
+ * ⚠ ONE THING IS DELIBERATELY LEFT BROKEN — see the block above the
+ * `max-height: 780px` media query near the end of this file. Do not tidy it
+ * without reading that note; making the CSS valid changes how the page renders.
+ */
+
+/* Tokens: DESIGN_SYSTEM.md §0.2 — single source of truth. */
+.route-about {
+  --bg:          #E8E4DC;
+  --surface:     #FBFAF6;
+  --ink:         #111110;
+  --ink-inverse: #F4F1E9;
+  --muted:       #8A857C;
+  --line:        #D9D4C8;
+  --accent:      #B5522E;
+  --ink-panel:   #0E0E0C;
+  --highlight:   #FFFECE; /* marker wash — from Figma frame "about- designer" */
+  --live:        #1F8A5B; /* transport/"live" state — DESIGN_SYSTEM.md §0.2 */
+  /* spacing — DESIGN_SYSTEM.md §2.1 */
+  --s-1:4px; --s-2:8px; --s-3:12px; --s-4:16px; --s-5:20px; --s-6:24px; --s-8:32px; --s-10:40px; --s-12:48px; --s-14:56px; --s-16:64px; --s-18:72px;
+
+  /* From `html, body` in the original; the height/overflow half is RailLayout's. */
+  height:100%; background:var(--surface); font-family:'DM Sans', sans-serif; color:var(--ink);
+}
+.route-about ::selection { background: var(--accent); color:#fff; }
+.route-about a { color: var(--ink); transition: color 0.15s ease; }
+.route-about a:hover { color: var(--accent); }
+
+/* ---------- Page shell — reused from index.html ---------- */
+.route-about .canvas { height:100vh; overflow:hidden; background:var(--surface); }
+.route-about .stage { position:relative; width:min(1440px, 100vw); height:100%; margin:0 auto; }
+@media (max-width: 899px) { .route-about .canvas { display:none; } }
+.route-about .mobile-stack { display:none; }
+@media (max-width: 899px) { .route-about .mobile-stack { display:block; min-height:100%; background:var(--surface); padding:48px 20px 96px; } }
+
+.route-about .mono-label { font-family:'JetBrains Mono', monospace; font-size:10px; letter-spacing:0.08em; text-transform:uppercase; color:var(--muted); }
+
+/* ---------- Zone 1: Left rail — markup + CSS reused from index.html ---------- */
+.route-about .rail-nav { position:absolute; left:24px; top:54.511%; display:flex; flex-direction:column; gap:10px; }
+.route-about .rail-nav a { font-family:'JetBrains Mono', monospace; font-weight:700; font-size:10px; letter-spacing:0.08em; line-height:1.46; text-transform:uppercase; text-decoration:none; color:var(--muted); position:relative; }
+.route-about .rail-nav a.active { color: var(--accent); padding-left:14px; }
+.route-about .rail-nav a.active::before { content:">"; position:absolute; left:0; top:0; }
+
+/* ---------- Toggles — placement/spacing per Figma frame "about" ---------- */
+.route-about .mode-toggle { position:absolute; top:12.444%; display:flex; align-items:center; gap:var(--s-2); padding:0 0 36px 0; background:none; border:0; cursor:pointer; -webkit-tap-highlight-color:transparent; }
+.route-about .mode-toggle.is-designer { left:221px; }
+.route-about .mode-toggle.is-person { left:578px; }
+.route-about .mode-toggle .radio { position:relative; width:12px; height:12px; display:flex; align-items:center; justify-content:center; flex:none; }
+.route-about .mode-toggle .radio::before { content:""; width:9.6px; height:9.6px; border-radius:50%; border:1px solid var(--muted); display:block; transition:border-color 0.16s cubic-bezier(0.2,0,0,1); }
+.route-about .mode-toggle .radio::after { content:""; position:absolute; width:4.8px; height:4.8px; border-radius:50%; background:var(--accent); opacity:0; }
+.route-about .mode-toggle .label { font-family:'JetBrains Mono', monospace; font-weight:400; font-size:10px; letter-spacing:0.08em; text-transform:uppercase; color:var(--muted); transition:color 0.16s cubic-bezier(0.2,0,0,1); }
+.route-about .mode-toggle[aria-checked="true"] { cursor:default; }
+.route-about .mode-toggle[aria-checked="true"] .radio::before { border-color:var(--accent); }
+.route-about .mode-toggle[aria-checked="true"] .radio::after { opacity:1; }
+
+/* ---------- Content area ---------- */
+.route-about .mode-content { position:absolute; left:221px; top:188px; max-width:680px; }
+.route-about .mode-content .stub { font-family:'JetBrains Mono', monospace; font-size:10px; letter-spacing:0.08em; text-transform:uppercase; color:var(--ink); }
+
+/* ---------- DESIGNER branch — per Figma frame "about- designer" ---------- */
+.route-about .designer { display:flex; flex-direction:column; gap:48px; width:235px; }
+.route-about .designer .block { display:flex; flex-direction:column; gap:var(--s-2); }
+.route-about .designer .mono-label { margin:0; } /* .mono-label is div-scoped on Homepage; reset UA <p> margin so the 8px block gap holds */
+.route-about .designer .positioning { margin:0; font-family:'DM Sans', sans-serif; font-weight:400; font-size:14px; line-height:1.5; color:var(--ink); text-wrap:pretty; }
+.route-about .designer .hl { background:var(--highlight); box-decoration-break:clone; -webkit-box-decoration-break:clone; }
+.route-about .designer .signature { font-family:'JetBrains Mono', monospace; font-weight:400; font-size:10px; letter-spacing:0.08em; line-height:1.6; text-transform:uppercase; color:var(--muted); }
+.route-about .designer .motto { margin:0; font-family:'Cormorant Garamond', serif; font-weight:600; font-style:italic; font-size:24px; line-height:1.2; letter-spacing:0; color:var(--ink); }
+.route-about .designer .pill-row { display:flex; flex-wrap:wrap; gap:6px; }
+.route-about .designer .pill { font-family:'JetBrains Mono', monospace; font-size:9px; letter-spacing:0.08em; text-transform:uppercase; color:var(--ink); border:1px solid var(--line); border-radius:999px; padding:6px 12px; white-space:nowrap; transition:color 0.15s ease, border-color 0.15s ease, opacity 0.15s ease; }
+.route-about .designer .pill:hover { color:var(--accent); border-color:var(--accent); }
+@media (prefers-reduced-motion: reduce) { .route-about .designer .pill { transition-duration:0.001ms !important; } }
+@media (max-width: 899px) { .route-about .designer { width:auto; max-width:340px; } }
+
+/* ---------- PERSON branch — per Figma "about- person/landing" + "about- person/on-play" ---------- */
+/* Frame coords are 1440x900, panel origin = .mode-content (221,188). Offsets below are frame-derived. */
+.route-about .person { position:relative; display:flow-root; }
+.route-about .person .eyebrow { margin:0; }                           /* flush with .mode-content top, matching the designer branch's first block */
+.route-about .person .eyebrow .hl { background:var(--highlight); padding:2px 5px; box-decoration-break:clone; -webkit-box-decoration-break:clone; }
+.route-about .play-btn { display:flex; align-items:center; gap:var(--s-2); margin:20px 0 0; padding:0; background:none; border:0; cursor:pointer; color:var(--live); transition:color 0.16s cubic-bezier(0.2,0,0,1); -webkit-tap-highlight-color:transparent; }
+.route-about .play-btn svg { display:block; width:14px; height:14px; flex:none; }
+.route-about .play-btn .play-label { font-family:'JetBrains Mono', monospace; font-size:10px; letter-spacing:0.08em; text-transform:uppercase; color:inherit; }
+/* Lyrics crop: frame is 273x200 at 9px/16 (12.5 lines); held proportional at 13px/1.55. */
+/* Stepped reveal: the panel stays hidden until the first play, then stays up for the session. */
+/* Edge fade: ~one line-height (20px) top and bottom so the crop feathers instead of slicing glyphs. */
+.route-about .lyrics { -webkit-mask-image:linear-gradient(to bottom, transparent 0, #000 20px, #000 calc(100% - 20px), transparent 100%); mask-image:linear-gradient(to bottom, transparent 0, #000 20px, #000 calc(100% - 20px), transparent 100%); position:relative; width:272px; max-height:300px; padding-top:20px; padding-bottom:20px; margin-top:44px; overflow-y:auto; overscroll-behavior:contain; scrollbar-width:none; -ms-overflow-style:none; opacity:0; visibility:hidden; transform:translateY(12px); transition:opacity 0.4s cubic-bezier(0.16,1,0.3,1), transform 0.4s cubic-bezier(0.16,1,0.3,1); }
+.route-about .lyrics.is-revealed { opacity:1; visibility:visible; transform:none; }
+.route-about .lyrics::-webkit-scrollbar { display:none; }
+/* Authored verse: each break is intentional, so a wrapped line hangs at --s-3 to read as a continuation. */
+.route-about .lyrics p { margin:0 0 var(--s-5); font-family:'DM Sans', sans-serif; font-weight:400; font-style:italic; font-size:13px; line-height:1.55; white-space:pre-line; text-wrap:pretty; color:var(--ink); opacity:0.45; transition:color 0.16s cubic-bezier(0.2,0,0,1), opacity 0.16s cubic-bezier(0.2,0,0,1); }
+.route-about .lyrics p:last-child { margin-bottom:0; }
+.route-about .lyrics p.is-active { color:var(--accent); opacity:1; }
+.route-about .lyrics p[role="button"] { cursor:pointer; }
+.route-about .lyrics p[role="button"]:focus-visible { outline:none; }
+/* frame x993 y91 w372 — exact at >=1440. Below 1440 the left edge is driven by fit()'s
+   anchor lerp (772 -> 632) and then by the uniform stage scale; CSS carries the 1440 value only. */
+/* Revealed with the lyrics on first play (stepped reveal). */
+.route-about .shelf { position:absolute; left:772px; top:-61px; width:372px; display:flex; flex-direction:column; align-items:center; opacity:0; visibility:hidden; transform:translateY(12px); transition:opacity 0.4s cubic-bezier(0.16,1,0.3,1), transform 0.4s cubic-bezier(0.16,1,0.3,1); }
+.route-about .shelf.is-revealed { opacity:1; visibility:visible; transform:none; }
+.route-about .shelf img { display:block; width:100%; height:auto; }
+.route-about .shelf .shelf-cap { margin:24px 0 0; text-align:center; width:calc(100% + 14px);   /* = 386px at full size: 314 in-frame at 13px, scaled 16/13 for the DS type size so it holds one line */ font-family:'Cormorant Garamond', serif; font-weight:600; font-style:italic; font-size:16px; line-height:1.3; color:var(--ink); }
+@media (max-width: 899px) { .route-about .shelf { position:static; width:100%; max-width:340px; margin-top:40px; } .route-about .shelf .shelf-cap { width:auto; max-width:314px; } .route-about .lyrics { width:auto; max-width:340px; } }
+/* Reduced motion: no crop, no highlight, no control — static readable text (§4.6). */
+@media (prefers-reduced-motion: reduce) {
+  .route-about .lyrics { -webkit-mask-image:none; mask-image:none; }
+  .route-about .lyrics, .route-about .shelf { max-height:none; overflow:visible; opacity:1; visibility:visible; transform:none; transition:none; }
+  .route-about .lyrics p { opacity:1; color:var(--ink); transition:none; }
+}
+
+/* ---------- Photo marquee — ambient-motion exception, DESIGN_SYSTEM.md §4.7 ---------- */
+/* Breaks out of the 254px designer column so the frames read at a usable size. */
+/* Uniform HEIGHT, flexible width: every slot is --ph-h tall and takes whatever width
+   its photo's own aspect ratio implies, so nothing is ever cropped. Widths therefore
+   differ per slot, and phMeasure sums the real ones rather than assuming a constant. */
+.route-about .ph-marquee { --ph-h:200px; width:900px; overflow:hidden; margin-top:-16px; }
+.route-about .ph-track { display:flex; gap:var(--ph-gap); height:var(--ph-h); width:max-content; align-items:stretch; animation:ph-scroll var(--ph-dur) linear infinite; will-change:transform; }
+@keyframes ph-scroll { from { transform:translate3d(0,0,0); } to { transform:translate3d(calc(-1 * var(--ph-set-w)),0,0); } }
+.route-about .ph-marquee:hover .ph-track { animation-play-state:paused; }
+.route-about .ph-slot { position:relative; flex:none; height:100%; width:auto; border:1px solid var(--line); background:var(--surface); background-image:repeating-linear-gradient(135deg, rgba(138,133,124,0.10) 0 10px, transparent 10px 20px); }
+/* height drives, width follows — the photo is never cropped or distorted. */
+.route-about .ph-slot img { display:block; height:100%; width:auto; }
+.route-about .ph-slot .n { position:absolute; left:8px; bottom:7px; font-family:'JetBrains Mono', monospace; font-size:9px; letter-spacing:0.1em; color:var(--muted); }
+@media (max-width: 899px) { .route-about .ph-marquee { width:100%; } }
+
+/* ⚠ PRESERVED BUG — DO NOT TIDY. The four lines below are copied byte for byte
+   from legacy/about.html, including the stray text after the first comment
+   closes. That text is not inside a comment, so the CSS parser treats it as a
+   selector and swallows the `max-height: 780px` rule that follows it: the rule
+   is absent from the CSSOM on the live site, verified at 1400x700.
+
+   Which means the short-viewport safety net has never actually worked. On a
+   wide-but-short window (>=1300 x <=780) the About canvas does not scroll and
+   the photo strip can sit out of reach. Repairing the comment would switch
+   that rule on and change how the page renders — a behaviour change, not a
+   parity fix, so it is Suchi's call and not part of this port.
+   Written down, not fixed. */
+
+/* Safety net: on genuinely short viewports the branch can exceed 100vh — let it scroll
+   rather than clipping the strip out of reach (the 899px-width rule doesn't cover height). */
+   Scoped to >=1300 (Bands A/>=1440, where fit() writes no inline height); below 1300 the
+   uniform scale shrinks the branch faster than the viewport, so the hatch isn't needed. */
+@media (max-height: 780px) and (min-width: 1300px) { .route-about .canvas { overflow-y:auto; } .route-about .stage { height:auto; min-height:100%; padding-bottom:48px; } }
+/* Reduced motion: no loop at all — static wrapped rows, first set only (§4.7). */
+@media (prefers-reduced-motion: reduce) {
+  .route-about .ph-marquee { overflow:visible; }
+  .route-about .ph-track { animation:none !important; flex-wrap:wrap; width:100%; height:auto; row-gap:var(--ph-gap); }
+  .route-about .ph-track .ph-dupe { display:none; }
+  .route-about .ph-track .ph-slot:nth-child(n+7) { display:none; } /* static cap: 6 slots max */
+}

@@ -16,13 +16,17 @@ body {
   padding: 0;
 }
 
-/* All nine static pages open with `* { box-sizing: border-box }`, so every
- * ported width is authored against it. Found the hard way: the contact
- * modal is `width: min(560px, 92vw)` with a 1px border, and without this
- * it rendered 562px wide against the original's 560. Same class of bug
- * would hit any ported page that sizes a bordered box. */
-*,
-*::before,
-*::after {
+/* All nine static pages open with exactly this, so every ported width is
+ * authored against it. Found the hard way: the contact modal is
+ * `width: min(560px, 92vw)` with a 1px border, and without the reset it
+ * rendered 562px wide against the original's 560.
+ *
+ * `*` and nothing more — deliberately. The modern habit is to write
+ * `*, *::before, *::after`, and doing that here is a visible regression:
+ * `*` does not match pseudo-elements, so in the original About's radio
+ * markers (.radio::before, a 9.6px circle with a 1px border) sit in
+ * content-box and paint 11.6px across. Adding the pseudo-element selectors
+ * shrinks them to 9.6px. Caught by the pixel diff on the About port. */
+* {
   box-sizing: border-box;
 }
