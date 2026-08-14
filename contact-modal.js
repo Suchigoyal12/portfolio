@@ -45,7 +45,7 @@ function open(){
 <div class="cm-rows">
 <a class="cm-row" href="mailto:suchigoyal12@gmail.com"><span class="k">email</span><span class="v">suchigoyal12@gmail.com</span><span class="a">↗</span></a>
 <a class="cm-row" href="https://linkedin.com/in/suchigoyal12" target="_blank" rel="noreferrer"><span class="k">linkedin</span><span class="v">linkedin.com/in/suchigoyal12</span><span class="a">↗</span></a>
-<a class="cm-row" href="#"><span class="k">resume</span><span class="v">PDF · 2026</span><span class="a">↗</span></a>
+<a class="cm-row" href="/suchi-resume.pdf" target="_blank" rel="noopener noreferrer"><span class="k">resume</span><span class="v">Suchi Resume</span><span class="a">↗</span></a>
 </div>
 <div class="cm-clocks${same?" solo":""}"><div><div class="cm-clabel"><span class="cm-dot"></span>Suchi · Bangalore</div><div class="cm-time"><span data-blr>${fmt("Asia/Kolkata",now)}</span> <span class="cm-tz">IST</span></div></div>
 ${same?"":`<div><div class="cm-clabel">Your time</div><div class="cm-time"><span data-loc>${fmt(localTz(),now)}</span> <span class="cm-tz">${tzShort(now)}</span></div></div>`}</div></div></div>`;
