@@ -25,6 +25,11 @@
 # imported by nothing, which is what keeps it off the site.
 legacy/
 
+# ── Approved design mocks ──────────────────────────────────────────────
+# Reference artifacts a route was built against, kept so parity can be
+# re-checked later. Not part of the site and imported by nothing.
+design/
+
 # ── Image and video masters, kept for re-export ────────────────────────
 # The 600px PNG originals for the About marquee, and the ProRes video
 # sources. The site serves the WebP and MP4 built from these.

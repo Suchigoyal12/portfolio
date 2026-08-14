@@ -13,6 +13,7 @@ import CheckAccessFull from "./routes/CheckAccessFull.jsx";
 import AiTrustLayer from "./routes/AiTrustLayer.jsx";
 import AdminShell from "./routes/AdminShell.jsx";
 import ReleaseNotes from "./routes/ReleaseNotes.jsx";
+import NotFound from "./routes/NotFound.jsx";
 
 // Two layouts, per brief 2.2, and they are not interchangeable:
 //
@@ -44,6 +45,11 @@ export default function App() {
           <Route path="/work/admin-shell" element={<AdminShell />} />
           <Route path="/work/release-notes" element={<ReleaseNotes />} />
         </Route>
+
+        {/* Last, and in neither layout — a not-found page gets no site rail,
+            no fit() scaling and no stage chrome. Everything Vercel cannot
+            match to a real file arrives here. */}
+        <Route path="*" element={<NotFound />} />
       </Routes>
     </ContactProvider>
   );
