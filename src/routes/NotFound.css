@@ -23,6 +23,11 @@
   --accent: #B5522E;
   --nf-ease: cubic-bezier(0.22, 1, 0.36, 1);
 
+  /* Exactly one viewport, never more. The page scrolled before because
+     body's default 8px margin sat under a 100vh child — base.css zeroes
+     it, and box-sizing keeps the padding inside the 100vh rather than
+     adding to it. min-height rather than height so the mobile layout can
+     still grow if it has to. */
   min-height: 100vh;
   display: flex;
   align-items: center;
@@ -35,15 +40,18 @@
   -webkit-font-smoothing: antialiased;
 }
 
+.nf,
 .nf *,
 .nf *::before,
 .nf *::after { box-sizing: border-box; }
 
+/* 1300px is the same reference width the homepage and About are authored
+   against — not a coincidence to tidy away later. */
 .nf-sheet {
   width: min(1300px, 100%);
   border-top: 1px solid var(--line);
   border-bottom: 1px solid var(--line);
-  padding: clamp(48px, 9vh, 120px) 0;
+  padding: clamp(40px, 7vh, 72px) 0;
   display: grid;
   grid-template-columns: minmax(160px, 1fr) minmax(0, 3fr);
   gap: clamp(24px, 4vw, 64px);
@@ -72,11 +80,13 @@
   text-decoration: none;
 }
 
+/* 10px / 0.08em — the homepage's mono label size, and `mono-sm` in
+   DESIGN_SYSTEM.md. The mock's 11px/0.09em matched neither. */
 .nf-status {
   margin: 0;
   font-family: "JetBrains Mono", monospace;
-  font-size: 11px;
-  letter-spacing: 0.09em;
+  font-size: 10px;
+  letter-spacing: 0.08em;
   text-transform: uppercase;
   color: var(--accent);
 }
@@ -85,27 +95,35 @@
 
 /* Cormorant 400, not the mock's 300: 300 is in neither DESIGN_SYSTEM.md
    nor the app's font request, so it would have silently rounded to 400
-   anyway. Confirmed with Suchi rather than assumed. */
+   anyway. Confirmed with Suchi rather than assumed.
+
+   32px, down from the mock's 72px. The homepage is a fixed composition
+   with a tight range — its largest serif is the 24px pull-quote and its
+   body is 14px — so a 72px display belonged to a different page than the
+   one it links back to. 32px sits just above the pull-quote and well
+   under the 64px wordmark, which is the only thing on the homepage
+   allowed to be large. Fixed rather than clamped, like the homepage. */
 .nf-display {
   margin: 0;
   font-family: "Cormorant Garamond", serif;
   font-weight: 400;
-  font-size: clamp(38px, 5.4vw, 72px);
-  line-height: 1.06;
-  letter-spacing: -0.015em;
+  font-size: 32px;
+  line-height: 1.2;
+  letter-spacing: -0.01em;
   max-width: 18ch;
 }
 
+/* 14px / 1.5 — the homepage's .body-text, exactly. */
 .nf-sub {
-  margin: clamp(20px, 2.6vh, 28px) 0 0;
-  font-size: clamp(15px, 1.15vw, 17px);
-  line-height: 1.55;
+  margin: 16px 0 0;
+  font-size: 14px;
+  line-height: 1.5;
   color: var(--muted);
   max-width: 46ch;
 }
 
 .nf-actions {
-  margin-top: clamp(32px, 5vh, 52px);
+  margin-top: 32px;
   display: flex;
   flex-wrap: wrap;
   gap: 28px;
