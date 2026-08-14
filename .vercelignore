@@ -10,6 +10,12 @@ project-admin-shell.html
 site/page-project-admin-shell.jsx
 frames/
 
+# ── Image masters, kept for re-export ───────────────────────────────────
+# The 600px PNG originals for the About marquee. Kept in the repo as the
+# sources to re-encode from when the photos change; the site serves the
+# 400px WebP built from them, so the PNGs must never ship.
+assets/about/*.png
+
 # ── Archived design, kept for reference ─────────────────────────────────
 # Components removed from live pages but preserved so the design can be
 # recovered. Loaded by nothing. Must not deploy — password-gate.jsx still
