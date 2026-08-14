@@ -15,3 +15,14 @@ body {
   margin: 0;
   padding: 0;
 }
+
+/* All nine static pages open with `* { box-sizing: border-box }`, so every
+ * ported width is authored against it. Found the hard way: the contact
+ * modal is `width: min(560px, 92vw)` with a 1px border, and without this
+ * it rendered 562px wide against the original's 560. Same class of bug
+ * would hit any ported page that sizes a bordered box. */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
