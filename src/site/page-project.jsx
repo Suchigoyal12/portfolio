@@ -763,10 +763,17 @@ function CSSection({ id, no, data, children, hideBody, frameSlot }) {
 
 }
 
+// The two entries pointing at project-design-system.html and
+// project-onboarding.html are gone — brief 2.7. Neither page was ever part of
+// this export; they were addresses for work that does not exist here.
+//
+// What is left is never read either, because OVERRIDE below shadows the only
+// project id that reaches this map. It stays because the map is the fallback
+// path's shape, and emptying it entirely would mean deciding what the fallback
+// should do — which belongs with the two unrendered PROJECT_DATA entries it
+// serves, not here.
 const NEXT_HREF = {
-  "uipath-check-access": "project-check-access.html",
-  "datasync-design-system": "project-design-system.html",
-  "datasync-onboarding": "project-onboarding.html"
+  "uipath-check-access": "/work/check-access"
 };
 
 // Map a next-project href to its Stage Manager card key so the bottom

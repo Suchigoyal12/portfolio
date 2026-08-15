@@ -21,137 +21,8 @@ const SITE = {
 };
 
 
-const PROJECTS = [
-{
-  id: "uipath-check-access",
-  no: "001",
-  title: "Check Access",
-  client: "UiPath",
-  role: "Lead Product Designer",
-  timeline: "'24 — '25",
-  sector: "Enterprise SaaS",
-  summary:
-  "A unified framework for centralising audit governance in enterprise automation platform, via Check Access at UiPath.",
-  tags: ["Design System", "User Research", "Interaction", "Information Architecture", "Onboarding", "Flows"],
-  metric: "LIVE",
-  href: "project-check-access.html",
-  accent: true
-},
-{
-  id: "ai-trust-layer",
-  no: "002",
-  title: "AI Trust Layer",
-  client: "UiPath",
-  role: "Product Designer",
-  timeline: "'24 — '25",
-  sector: "Enterprise SaaS",
-  summary:
-  "Designing trust into agentic workflows — governance, oversight, and observable model behaviour across the automation platform.",
-  tags: ["Interaction", "Information Architecture", "Flows", "Governance"],
-  metric: "LIVE",
-  href: "project-ai-trust-layer.html"
-},
-{
-  id: "uipath-admin-shell",
-  no: "003",
-  title: "Admin Shell",
-  client: "UiPath",
-  role: "Product Designer",
-  timeline: "'25 — '26",
-  sector: "Enterprise SaaS",
-  summary:
-  "Re-architecting the UiPath admin shell — the connective tissue every admin page is built inside, turning a sprawl of disconnected pages into one navigable system.",
-  tags: ["Information Architecture", "Navigation", "Design System", "Multi-Tenant"],
-  metric: "SHIPPED 25.1",
-  href: "admin-shell-public.html"
-},
-{
-  id: "release-comms",
-  no: "004",
-  title: "Release Communication System",
-  client: "UiPath",
-  role: "Product Design Intern",
-  timeline: "'23",
-  sector: "Enterprise SaaS",
-  summary:
-  "A system for surfacing what's new, what's changed, and what's deprecated — built so admins never get caught off guard by a release.",
-  tags: ["Interaction", "Information Architecture", "Onboarding", "Flows"],
-  metric: "CASE STUDY",
-  href: "project-release-notes.html"
-},
-{
-  id: "platform-system-contributions",
-  no: "005",
-  title: "Platform & System Contributions",
-  client: "UiPath",
-  role: "Product Designer",
-  timeline: "'24 — '25",
-  sector: "Enterprise SaaS",
-  summary:
-  "Tokens, components and patterns shipped into the admin design system — quietly making every other surface faster to build.",
-  tags: ["Design System", "Interaction", "Data Density"],
-  metric: "LIVE",
-  href: "#"
-},
-{
-  id: "first-aid-plus",
-  no: "006",
-  title: "First Aid Plus",
-  client: "Self-Initiated",
-  role: "Product Designer",
-  timeline: "'24",
-  sector: "Healthcare / Vision",
-  summary:
-  "Vision project — rethinking first-aid as an ambient companion that meets you in the moment, not after.",
-  tags: ["Case Study", "Interaction", "Information Architecture", "Onboarding", "Flows"],
-  metric: "VISION PROJECT",
-  href: "#"
-},
-{
-  id: "yelp-case-study",
-  no: "007",
-  title: "Yelp Case Study",
-  client: "IIT Guwahati",
-  role: "Student Project",
-  timeline: "'23",
-  sector: "Consumer",
-  summary:
-  "Academic case study — restructuring discovery flows around the way people actually decide where to eat.",
-  tags: ["Case Study", "Information Architecture", "Flows"],
-  metric: "CASE STUDY",
-  href: "#"
-}];
 
 
-const EXPERIMENTS = [
-{
-  id: "linguistic-geometry",
-  no: "EXP_01",
-  title: "Linguistic Geometry",
-  blurb: "Exploration of mapping semantic structures to radial coordinate systems.",
-  href: "experiment-linguistic-geometry.html"
-},
-{
-  id: "data-circles",
-  no: "EXP_02",
-  title: "Weight & Significance",
-  blurb: "A non-literal data language. Circles represent weight; grids represent constraint.",
-  href: "#"
-},
-{
-  id: "atomic-architecture",
-  no: "EXP_03",
-  title: "Atomic Architecture V2.0",
-  blurb: "Re-thinking component composition from the molecule down.",
-  href: "#"
-},
-{
-  id: "system-poetry",
-  no: "EXP_04",
-  title: "System Poetry",
-  blurb: "Documentation written like instruction manuals; manuals written like haiku.",
-  href: "#"
-}];
 
 
 // =============================================================
@@ -469,15 +340,6 @@ function WaveMotif({ color = "var(--ink)", width = 220, height = 56 }) {
 
 }
 
-function Stamp({ size = 32, color = "currentColor" }) {
-  return (
-    <svg width={size} height={size} viewBox="0 0 32 32" aria-hidden="true">
-      <circle cx="16" cy="16" r="14.5" fill="none" stroke={color} strokeWidth="1" />
-      <circle cx="16" cy="16" r="7" fill="none" stroke={color} strokeWidth="1" />
-      <circle cx="16" cy="16" r="2" fill={color} />
-    </svg>);
-
-}
 
 // Abstract circle-on-grid data viz from the design system
 function CirclesOnGrid({ width = 320, height = 200, seed = 1, accent = "var(--accent)" }) {
@@ -708,9 +570,9 @@ function PageShell({ active, navMode = "top", sections, currentSection, status, 
 }
 
 export {
-  SITE, PROJECTS, EXPERIMENTS, THEMES, TYPE_SCALES, DEFAULT_TWEAKS,
+  SITE, DEFAULT_TWEAKS,
   sansFamily, monoFamily, serifFamily,
-  CHROME_TOP, CHROME_LABEL_TOP, chromeHorizon,
-  useTheme, MonoLabel, WaveMotif, Stamp, CirclesOnGrid, ScrollProgress,
+  chromeHorizon,
+  useTheme, MonoLabel, WaveMotif, CirclesOnGrid, ScrollProgress,
   LeftRail, PageShell
 };
