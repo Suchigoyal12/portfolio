@@ -1,5 +1,6 @@
 import React from "react";
 import { CirclesOnGrid, MonoLabel, PageShell, WaveMotif, chromeHorizon, monoFamily, sansFamily, serifFamily } from "./shared.jsx";
+import { PROJECT_ROUTES } from "../routes.js";
 import { AuditPipeline } from "./diagram-audit-pipeline.jsx";
 import { CheckAccessSolutionSection } from "./diagrams-check-access.jsx";
 // =============================================================
@@ -770,14 +771,14 @@ const NEXT_HREF = {
 
 // Map a next-project href to its Stage Manager card key so the bottom
 // link can hand off to the parent stack instead of navigating the iframe.
-const NEXT_CARD_KEY = {
-  "project-check-access.html": "check-access",
-  "project-check-access-long-v2.html": "check-access",
-  "project-ai-trust-layer.html": "ai-trust",
-  "admin-shell-public.html": "admin-shell",
-  "project-admin-shell.html": "admin-shell",
-  "project-release-notes.html": "release-notes"
-};
+//
+// Derived from the route table rather than hand-written. The old version was a
+// list of filenames maintained by hand, and it had drifted: it carried entries
+// for the long Check Access page, which posts its own message and is not a
+// card, and for the unpublished detailed Admin Shell case study, which has no
+// route at all. Four cards, four entries, and it can no longer disagree with
+// the hrefs it is looking up.
+const NEXT_CARD_KEY = Object.fromEntries(PROJECT_ROUTES.map((r) => [r.path, r.key]));
 
 function goToNextCard(e, href) {
   if (window.parent && window.parent !== window) {
@@ -787,7 +788,7 @@ function goToNextCard(e, href) {
 }
 function NextProject({ currentId }) {
   const OVERRIDE = {
-    "uipath-check-access": { no: "002", title: "AI Trust Layer", href: "project-ai-trust-layer.html" }
+    "uipath-check-access": { no: "002", title: "AI Trust Layer", href: "/work/ai-trust-layer" }
   };
   let nextNo, nextTitle, nextHref;
   if (OVERRIDE[currentId]) {

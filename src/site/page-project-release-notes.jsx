@@ -601,7 +601,7 @@ function ReleaseNotesProjectPage() {
         {/* ───────── NEXT PROJECT (shared footer style) ───────── */}
         <section style={{ padding: "56px 64px", borderTop: "1px solid var(--line)" }}>
           <a
-            href="project-check-access.html"
+            href="/work/check-access"
             onClick={(e) => { if (window.parent && window.parent !== window) { e.preventDefault(); window.parent.postMessage({ type: "work:focus", key: "check-access" }, "*"); } }}
             style={{
               textDecoration: "none",

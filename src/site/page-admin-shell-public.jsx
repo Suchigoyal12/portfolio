@@ -497,7 +497,7 @@ function AdminShellPublicPage() {
           {/* ───────── END — NEXT PROJECT ───────── */}
           <section style={{ padding: "56px 64px", borderTop: "1px solid var(--line)" }}>
             <a
-            href="project-release-notes.html"
+            href="/work/release-notes"
             onClick={(e) => { if (window.parent && window.parent !== window) { e.preventDefault(); window.parent.postMessage({ type: "work:focus", key: "release-notes" }, "*"); } }}
             style={{
               textDecoration: "none",
