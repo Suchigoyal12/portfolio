@@ -309,6 +309,41 @@ export default function CheckAccessFull() {
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
+  // The short version deep-links into this page — #v1, #v15, #v2 from its
+  // evolution strip. On the static page the browser did this itself, because
+  // the sections existed at parse time. Here they do not exist until React has
+  // rendered, so the browser's jump finds nothing and the page sits at the
+  // top. Re-run it once, after mount. scrollIntoView honours the section's
+  // scroll-margin-top, which is what lands the heading 96px down — the same
+  // place the live page puts it.
+  //
+  // Two passes, because the browser does two as well: it keeps re-anchoring a
+  // fragment target while the page settles and stops the moment the reader
+  // scrolls. A single pass at mount lands short — 29px on #v15 — as the
+  // webfonts resolve afterwards and the copy above reflows. The second pass
+  // waits for fonts and runs only if the reader has not taken over.
+  useEffect(() => {
+    const id = window.location.hash.slice(1);
+    if (!id) return undefined;
+    const el = document.getElementById(id);
+    if (!el) return undefined;
+
+    let owned = true;
+    const release = () => { owned = false; };
+    window.addEventListener("wheel", release, { passive: true, once: true });
+    window.addEventListener("touchstart", release, { passive: true, once: true });
+    window.addEventListener("keydown", release, { once: true });
+
+    el.scrollIntoView();
+    document.fonts.ready.then(() => { if (owned) el.scrollIntoView(); });
+
+    return () => {
+      window.removeEventListener("wheel", release);
+      window.removeEventListener("touchstart", release);
+      window.removeEventListener("keydown", release);
+    };
+  }, []);
+
   // ← BACK. The original went back in history when there was history and fell
   // through to the short version's URL otherwise. Same rule, except the
   // fallback is a client-side route change rather than a page load.

@@ -516,7 +516,7 @@ function ProjectDetailPage({ projectId }) {
                     <div className="evo-connector" style={{ left: "75%" }}><span className="evo-dot"></span></div>
 
                     {/* Node 1 — MVP */}
-                    <a className="evo-step" href="project-check-access-long-v2.html#v1">
+                    <a className="evo-step" href="/work/check-access/full#v1">
                       <span className="evo-tip">Read in detail ↗</span>
                       <div className="evo-tile">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round">
@@ -530,7 +530,7 @@ function ProjectDetailPage({ projectId }) {
                     </a>
 
                     {/* Node 2 — Private Preview */}
-                    <a className="evo-step" href="project-check-access-long-v2.html#v1">
+                    <a className="evo-step" href="/work/check-access/full#v1">
                       <span className="evo-tip">Read in detail ↗</span>
                       <div className="evo-tile">
                         <img src="uploads/sentiment-icon.png" alt="sentiment" />
@@ -540,7 +540,7 @@ function ProjectDetailPage({ projectId }) {
                     </a>
 
                     {/* Node 3 — Version 1.5 (key) */}
-                    <a className="evo-step evo-step--key" href="project-check-access-long-v2.html#v15">
+                    <a className="evo-step evo-step--key" href="/work/check-access/full#v15">
                       <span className="evo-tip">Read in detail ↗</span>
                       <div className="evo-tile">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round">
@@ -556,7 +556,7 @@ function ProjectDetailPage({ projectId }) {
                     </a>
 
                     {/* Node 4 — The Solution (V2) */}
-                    <a className="evo-step" href="project-check-access-long-v2.html#v2">
+                    <a className="evo-step" href="/work/check-access/full#v2">
                       <span className="evo-tip">Read in detail ↗</span>
                       <div className="evo-tile">
                         <img src="uploads/container.png" alt="verified" />
@@ -696,7 +696,7 @@ function ProjectDetailPage({ projectId }) {
           {projectId === "uipath-check-access" &&
         <section style={{ padding: "48px 64px", borderTop: "1px solid var(--line)", borderBottom: "1px solid var(--line)", background: "var(--surface)" }}>
               <a
-            href="project-check-access-long-v2.html"
+            href="/work/check-access/full"
             style={{ textDecoration: "none", color: "var(--ink)", display: "flex", justifyContent: "space-between", alignItems: "center", gap: 32, maxWidth: "var(--content-w)", margin: "0 auto" }}>
             
                 <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
