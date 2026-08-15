@@ -8,12 +8,12 @@ import { ContactProvider } from "./components/ContactOverlay.jsx";
 import Home from "./routes/Home.jsx";
 import About from "./routes/About.jsx";
 import Work from "./routes/Work.jsx";
-import CheckAccess from "./routes/CheckAccess.jsx";
 import CheckAccessFull from "./routes/CheckAccessFull.jsx";
-import AiTrustLayer from "./routes/AiTrustLayer.jsx";
-import AdminShell from "./routes/AdminShell.jsx";
-import ReleaseNotes from "./routes/ReleaseNotes.jsx";
 import NotFound from "./routes/NotFound.jsx";
+
+// The four case studies are no longer imported here. They are reached through
+// Work, which is the single component behind /work/:slug? — see the route
+// comment below.
 
 // Two layouts, per brief 2.2, and they are not interchangeable:
 //
@@ -38,12 +38,22 @@ export default function App() {
         </Route>
 
         <Route element={<WorkLayout />}>
-          <Route path="/work" element={<Work />} />
-          <Route path="/work/check-access" element={<CheckAccess />} />
+          {/* Two entries, and the shapes matter.
+
+              `/work/:slug?` is ONE route for /work and all four project URLs,
+              rather than five. The stage manager keeps an iframe per project
+              and only ever mounts each one once; if focusing a project meant
+              matching a different Route, React would tear the stage down and
+              rebuild it, reloading all four iframes and losing their scroll
+              positions on every card click. One route means changing the slug
+              is a prop change and the stage never unmounts.
+
+              The long Check Access page is deliberately NOT part of that. It
+              is two segments deep, so `:slug?` cannot match it, and it is not
+              a card — it is reached from inside the short version and never
+              enters the stack. */}
           <Route path="/work/check-access/full" element={<CheckAccessFull />} />
-          <Route path="/work/ai-trust-layer" element={<AiTrustLayer />} />
-          <Route path="/work/admin-shell" element={<AdminShell />} />
-          <Route path="/work/release-notes" element={<ReleaseNotes />} />
+          <Route path="/work/:slug?" element={<Work />} />
         </Route>
 
         {/* Last, and in neither layout — a not-found page gets no site rail,
