@@ -139,3 +139,22 @@ attribute selectors — `main h1`, `aside[style*="100vh"]`,
 `section[style*="1fr 1fr"]` — matching by inline-style substring. They are
 brittle in a way that only shows up when something new happens to match. Worth
 replacing with real class names in the same pass.
+
+**Fullscreen exit — decide F11 behaviour.** `stage.jsx` has two `exitFullscreen`
+call sites, in `exitFsAnywhere()` and in `toggleFs()`. Both are gated on
+`isNativeFs()`, which reads `document.fullscreenElement` — the browser's live
+state — **not** on `nativeFsRef`.
+
+**These were deliberately kept** when the four unreachable `nativeFsRef`
+branches were removed during the stage port. They are not dead code, and that
+is the whole point of the distinction: the four that went were mathematically
+unreachable, these two are not.
+
+*The risk:* if a visitor is in F11 browser-fullscreen, and their browser
+reports that through `document.fullscreenElement` — some do, some do not — our
+code may call `exitFullscreen()` and drop them out of their own fullscreen,
+which we never put them into.
+
+*Deferred until after the stage is ported*, because it cannot be tested without
+real iframes running. Deciding it means deciding what *should* happen to an F11
+visitor, which is a product question, not a cleanup.
