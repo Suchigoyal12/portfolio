@@ -383,15 +383,21 @@ const RESPONSIVE_CSS = `
 //
 // The Archivo <link> the original also injected is gone: it is in the app shell
 // now, so re-requesting it here would only duplicate the request.
-export function useResponsiveCss() {
+// `enabled` exists for one caller: the long Check Access page. It is the only
+// ported case study that was hand-written HTML rather than a React page, so it
+// never loaded this stylesheet, and the overrides above are broad enough to
+// reach it — `main h1` resizes its hero below 1180px. Everything else passes
+// nothing and gets the stylesheet, exactly as before.
+export function useResponsiveCss(enabled = true) {
   React.useEffect(() => {
+    if (!enabled) return undefined;
     if (document.getElementById("__suchi_responsive")) return undefined;
     const el = document.createElement("style");
     el.id = "__suchi_responsive";
     el.textContent = RESPONSIVE_CSS;
     document.head.appendChild(el);
     return () => { el.remove(); };
-  }, []);
+  }, [enabled]);
 }
 
 // =============================================================
@@ -604,6 +610,15 @@ function LeftRail({ active, owner, sections, currentSection, status }) {
         flexDirection: "column",
         gap: RAIL_WORDMARK_GAP,
         flexShrink: 0,
+        // Both carried over from long Check Access's hand-written rail when it
+        // was folded into this component. That page is the only one whose
+        // content scrolls beneath the rail rather than beside it, so without
+        // these the copy shows through. On the other four the background is
+        // the same colour the page already paints and nothing overlaps, so
+        // they are inert there — verified by re-running the pixel diff on all
+        // four after the change.
+        background: "var(--bg)",
+        zIndex: 40,
         overflowY: "auto"
       }}>
       

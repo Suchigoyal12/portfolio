@@ -14,11 +14,16 @@ import "./project.css";
 // still the only reason that page shows its section rail when opened directly.
 // It comes out at the Work step, when framed-detection replaces it — removing it
 // now would just make the page render wrong.
-export function useProjectShell({ forceFullscreen = false, variant } = {}) {
+export function useProjectShell({ forceFullscreen = false, variant, responsive = true } = {}) {
   // Lives here rather than in PageShell because Release Notes has no PageShell
   // — deliberately — and the original injected this from shared.jsx at import,
   // so every case study had it.
-  useResponsiveCss();
+  //
+  // `responsive: false` is for the long Check Access page alone. It was a
+  // hand-written HTML document, not a React page, so it never loaded that
+  // stylesheet — and the stylesheet's `main h1` override would shrink its hero
+  // below 1180px. See the note at the top of CheckAccessFull.css.
+  useResponsiveCss(responsive);
 
   useLayoutEffect(() => {
     const root = document.documentElement;
