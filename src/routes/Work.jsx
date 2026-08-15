@@ -1,6 +1,6 @@
 import React from "react";
 import { useParams } from "react-router-dom";
-import Placeholder from "./_Placeholder.jsx";
+import WorkStage from "../site/work-stage.jsx";
 import NotFound from "./NotFound.jsx";
 import CheckAccess from "./CheckAccess.jsx";
 import AiTrustLayer from "./AiTrustLayer.jsx";
@@ -13,21 +13,20 @@ import ReleaseNotes from "./ReleaseNotes.jsx";
 // matching a different Route per project would rebuild the stage and reload
 // every iframe on each card click.
 //
-// The stage itself is still legacy/site-work/stage.jsx plus cards.jsx, not yet
-// ported. What lands here when it is:
+// The stage is ported and renders at /work. What is still to come:
 //
-//   <Stage focused={slug} /> in the unframed case, always rendered, never
-//   remounted — the slug moves the focused card and nothing else.
+//   Framed-awareness. A slug should render the stage focused on that project
+//   when opened normally, and the bare case study when it is inside the
+//   stage's own iframe. The stage loads /work/<slug> into its frame, that
+//   document detects it is framed, and renders the project alone with no
+//   stage chrome around it. That detection is what breaks the recursion —
+//   without it the iframe would load another stage, which would load another
+//   iframe.
 //
-//   The framed case stays what it is below: a bare case study. The stage
-//   loads /work/<slug> into its iframe, that document detects it is framed,
-//   and renders the project alone with no stage chrome around it. That is
-//   what breaks the recursion — without it the iframe would load another
-//   stage, which would load another iframe.
-//
-// Until the stage exists, a slug renders its case study directly, which is
-// exactly what the five separate routes did before. Framed-awareness is then
-// a condition inside this component, not another change of shape.
+//   Until then a slug renders its case study directly, which is what the five
+//   separate routes did before and what the framed half will keep doing
+//   afterwards. So framed-awareness becomes a condition added here, not
+//   another change of shape.
 const PROJECTS = {
   "check-access": CheckAccess,
   "ai-trust-layer": AiTrustLayer,
@@ -49,5 +48,5 @@ export default function Work() {
     return <Project />;
   }
 
-  return <Placeholder source="legacy/work.html" />;
+  return <WorkStage />;
 }
