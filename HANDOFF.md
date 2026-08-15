@@ -124,7 +124,9 @@ There is no import system. `shared.jsx` ends with a single `Object.assign(window
 
 **Project Admin Shell shows its hero topbar in windowed view as well as fullscreen.** The other pages hide it outside fullscreen. That page's own stylesheet comment states the intent: the topbar stays visible in both states. Leave it.
 
-**Long-v2 has its own hand-written rail** — an `<aside class="rail">` with its own TOC — rather than using `LeftRail`. That page shares nothing with the React system by design.
+**Long-v2 has its own hand-written rail** — an `<aside class="rail">` with its own TOC — rather than using `LeftRail`.
+
+> **Superseded 2026-08-15.** This was recorded as intentional; Suchi has confirmed it was not. The rail was always meant to be the same one, differing only in content. A property-by-property comparison found the two already identical on width, padding, sticky behaviour, border, gaps, TOC type and the meta block — the duplication was hand-typing, not design. Stage 2 ports long-v2 onto the shared `LeftRail` with its own TOC and meta content. The wordmark resolves to **16px**, the shared component's value, so long-v2's 19px is the one visible change; the other four case studies are unaffected. `background: var(--bg)` and `z-index: 40` move onto the shared component, since long-v2 scrolls beneath its sticky rail and needs them.
 
 **The six project pages have no contact affordance.** No button, no link, no `data-contact`; they do not load `contact-modal.js`. Contact lives on Homepage, about and Work.
 

@@ -77,7 +77,7 @@ An overlay (`contact-modal.js`), opening on top of the current view. Not a page.
 
 - **Release Notes** is built differently: no `PageShell`, no section rail, no Project Overview block. Intentional.
 - **Project Admin Shell** shows its hero topbar in both windowed and fullscreen, unlike the other three. Intentional, per its own code comment.
-- **Check Access long-v2** has its own hand-written rail rather than using `LeftRail`. Intentional.
+- ~~**Check Access long-v2** has its own hand-written rail rather than using `LeftRail`. Intentional.~~ **Superseded 2026-08-15** — confirmed not intentional. It becomes the shared `LeftRail` with its own content. Wordmark resolves to 16px (the shared value), which is the single visible change; the other four case studies are untouched. See HANDOFF §4.
 
 ### Not built
 
@@ -174,7 +174,7 @@ Three walkthrough reels on the Check Access long version currently show still po
 ### 1.6 Leave alone
 
 Do not fix these in Stage 1, even though they look wrong:
-
+ 
 - The dead `NAV` array, `TopNav`, `SiteFooter`
 - The four component files loaded but never rendered by Check Access (`page-home`, `page-works`, `page-about-process`, `page-rest`) — roughly 40k of inert JSX
 - Dead `NEXT_HREF` entries pointing at `project-design-system.html` / `project-onboarding.html`

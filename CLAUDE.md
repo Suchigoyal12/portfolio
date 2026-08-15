@@ -41,7 +41,7 @@ These look wrong. They are staying until Stage 2.
 - `USE_AUDIO = false` drives a synthetic timeline. It is not dead code. Same pattern for the video reels. Do not remove the flag or replace it with a real audio element.
 - Release Notes is built differently — no `PageShell`, no section rail, no overview block. Do not normalise it.
 - Admin Shell shows its hero topbar in both windowed and fullscreen, unlike the others.
-- Check Access long-v2 has its own hand-written rail rather than `LeftRail`.
+- ~~Check Access long-v2 has its own hand-written rail rather than `LeftRail`.~~ **No longer true (2026-08-15)** — it becomes the shared `LeftRail` with its own content. Wordmark resolves to 16px; the other four case studies do not change.
 - The six project pages have no Contact affordance. Do not add one.
 - The `fit()` reference width is 1300px. Not a number to tidy.
 - There is no AI Experiments page. Do not create a route, stub, or placeholder.
