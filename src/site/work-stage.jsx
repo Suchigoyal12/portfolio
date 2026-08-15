@@ -266,14 +266,28 @@ function CardWindow({
 // ============================================================
 // MAIN
 // ============================================================
-export default function WorkStage() {
+export default function WorkStage({ focused }) {
   const vp = useViewport();
   const navigate = useNavigate();
   const contact = useContact();
 
-  const [order, setOrder] = React.useState(() => WORK_CARDS.map((c) => c.key));
+  // `focused` is the slug from the URL, and the URL is the record of which
+  // project is on stage — so a reload comes back to the same card. It is not
+  // the source of truth while running: `order` is, because it also carries the
+  // stack arrangement the layout animates against. The two are kept in step
+  // from both directions — a card click writes the URL, and a URL change
+  // (browser back, a pasted link) moves the card.
+  const [order, setOrder] = React.useState(() => {
+    const keys = WORK_CARDS.map((c) => c.key);
+    const card = focused && WORK_CARDS.find((c) => c.slug === focused);
+    return card ? [card.key, ...keys.filter((k) => k !== card.key)] : keys;
+  });
   const [hovered, setHovered] = React.useState(null);
-  const [mounted, setMounted] = React.useState(() => new Set([WORK_CARDS[0].key]));
+  // Seeded from whichever card is focused on arrival, not from card 01. The
+  // original could only ever open on 01; now /work/ai-trust-layer opens
+  // straight onto 02, and seeding this wrong left the focused card with no
+  // iframe in it at all.
+  const [mounted, setMounted] = React.useState(() => new Set([order[0]]));
   const [fs, setFs] = React.useState(false);
   const [stackRevealed, setStackRevealed] = React.useState(false);
   const [swapping, setSwapping] = React.useState(false);
@@ -369,6 +383,14 @@ export default function WorkStage() {
     setHovered(null);
     setSwapping(true);
     swapTimer.current = setTimeout(() => {setSwapping(false);swapTimer.current = null;}, SWAP_MS + 40);
+
+    // Record the focused project in the URL. `replace`, not push: moving a
+    // card is a change of view, not a navigation, and the chrome bar's ‹ ›
+    // already walks the projects. Pushing would make the browser's own back
+    // button step backwards through the cards, so leaving Work would take as
+    // many presses as cards you had looked at.
+    const card = WORK_CARDS.find((c) => c.key === key);
+    if (card) navigate(card.href, { replace: true });
   }
 
   function adjacent(dir) {
@@ -397,6 +419,16 @@ export default function WorkStage() {
     window.addEventListener("message", onMsg);
     return () => window.removeEventListener("message", onMsg);
   }, []);
+
+  // The other direction: the URL changed without a card being clicked —
+  // browser back or forward, or a link pasted into the bar. Move the card to
+  // match. focusProject no-ops when the key is already focused, so the click
+  // path's own navigate() lands here and does nothing, rather than looping.
+  React.useEffect(() => {
+    if (!focused) return;
+    const card = WORK_CARDS.find((c) => c.slug === focused);
+    if (card) focusRef.current(card.key);
+  }, [focused]);
 
   // ── Fullscreen ──
   // isNativeFs reads the browser's live state. Our own fullscreen never sets

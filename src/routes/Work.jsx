@@ -13,20 +13,23 @@ import ReleaseNotes from "./ReleaseNotes.jsx";
 // matching a different Route per project would rebuild the stage and reload
 // every iframe on each card click.
 //
-// The stage is ported and renders at /work. What is still to come:
+// WHAT THIS COMPONENT DECIDES
 //
-//   Framed-awareness. A slug should render the stage focused on that project
-//   when opened normally, and the bare case study when it is inside the
-//   stage's own iframe. The stage loads /work/<slug> into its frame, that
-//   document detects it is framed, and renders the project alone with no
-//   stage chrome around it. That detection is what breaks the recursion —
-//   without it the iframe would load another stage, which would load another
-//   iframe.
+// The same URL renders two different things depending on where it is loaded,
+// and that is the whole mechanism:
 //
-//   Until then a slug renders its case study directly, which is what the five
-//   separate routes did before and what the framed half will keep doing
-//   afterwards. So framed-awareness becomes a condition added here, not
-//   another change of shape.
+//   Opened normally  → the stage, focused on that project.
+//   Inside the frame → the bare case study, no stage around it.
+//
+// The stage loads /work/<slug> into its own iframe. Without the second case
+// that iframe would load another stage, which would open another iframe, for
+// as long as the browser allowed. The framed check is what stops it.
+//
+// It also answers brief 2.4 — "project pages render correct navigation
+// standalone and framed." A direct visit is no longer a bare page with no way
+// back; it is the stage, which has the chrome bar, the other three projects
+// and contact. That is why the temporary is-fullscreen class on Check Access
+// could finally come out: nothing renders that page standalone any more.
 const PROJECTS = {
   "check-access": CheckAccess,
   "ai-trust-layer": AiTrustLayer,
@@ -34,19 +37,42 @@ const PROJECTS = {
   "release-notes": ReleaseNotes
 };
 
+// Evaluated once. Whether a document is framed cannot change over its life,
+// and reading window.top can throw if a parent is ever cross-origin.
+const FRAMED = (() => {
+  try { return window.self !== window.top; } catch (e) { return true; }
+})();
+
+// The stage has no mobile form — below 900 it is a plain list of links, and
+// those links point at /work/<slug>. If a slug rendered the stage there, every
+// link in the list would lead straight back to the list. So on narrow screens
+// a slug renders its case study, which is exactly where the live site's mobile
+// list points today.
+function useIsNarrow() {
+  const [narrow, setNarrow] = React.useState(() => window.matchMedia("(max-width: 899px)").matches);
+  React.useEffect(() => {
+    const mq = window.matchMedia("(max-width: 899px)");
+    const onChange = (e) => setNarrow(e.matches);
+    mq.addEventListener("change", onChange);
+    return () => mq.removeEventListener("change", onChange);
+  }, []);
+  return narrow;
+}
+
 export default function Work() {
   const { slug } = useParams();
+  const narrow = useIsNarrow();
 
   if (slug) {
     const Project = PROJECTS[slug];
-    // `:slug?` matches anything in that position, so /work/banana now arrives
-    // here rather than falling through to the catch-all. It still has to be a
-    // 404 — the difference is that this one renders inside WorkLayout, which
-    // is an empty passthrough today and will be stage chrome later. Worth
-    // revisiting when WorkLayout stops being empty.
+    // `:slug?` matches anything in that position, so /work/banana arrives here
+    // rather than falling through to the catch-all. It still has to be a 404 —
+    // the difference is that this one renders inside WorkLayout, which is an
+    // empty passthrough today and will be stage chrome later. Worth revisiting
+    // when WorkLayout stops being empty.
     if (!Project) return <NotFound />;
-    return <Project />;
+    if (FRAMED || narrow) return <Project />;
   }
 
-  return <WorkStage />;
+  return <WorkStage focused={slug} />;
 }

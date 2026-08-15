@@ -71,6 +71,10 @@ const WORK_CARDS = PROJECT_ROUTES.map((r) => ({
   n: r.n,
   title: r.title,
   href: r.path,
+  // The last segment of the route, which is what /work/:slug? matches on.
+  // `key` is the stage manager's own identifier and travels in the
+  // postMessage contract; the two differ for AI Trust Layer and always have.
+  slug: r.path.split("/").pop(),
   ...CARD_FACES[r.key]
 }));
 
