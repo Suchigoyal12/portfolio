@@ -68,6 +68,30 @@ const GAP_TO_STACK = 18; // gutter between focused frame's right edge + stack ca
 const CHROME_H = 46;
 
 // ============================================================
+// Reload state — a deliberate behaviour change, not parity
+// ============================================================
+// Reloading the stage used to drop you back on card 01, windowed, at the top
+// of the page. Three things now survive it. The focused project lives in the
+// URL, which makes it shareable as well as reloadable. The other two live in
+// sessionStorage, because they are this tab's state rather than an address:
+// nobody wants to send someone a link that opens fullscreen halfway down.
+//
+// sessionStorage, not localStorage, deliberately — it dies with the tab, so a
+// visit next week starts clean rather than resuming a session they have
+// forgotten. Every access is wrapped: it throws outright in some private
+// browsing modes, and failing to remember a scroll position must never be the
+// thing that breaks the page.
+const SS_FS = "work:fs";
+const ssScrollKey = (path) => "work:scroll:" + path;
+
+function ssGet(k) {
+  try { return window.sessionStorage.getItem(k); } catch (e) { return null; }
+}
+function ssSet(k, v) {
+  try { window.sessionStorage.setItem(k, v); } catch (e) {/* private mode — carry on */}
+}
+
+// ============================================================
 // Layout math
 // ============================================================
 function getLayout({ vw, vh, focusedKey, stackOrder, cardKey, fs }) {
@@ -288,14 +312,14 @@ export default function WorkStage({ focused }) {
   // straight onto 02, and seeding this wrong left the focused card with no
   // iframe in it at all.
   const [mounted, setMounted] = React.useState(() => new Set([order[0]]));
-  const [fs, setFs] = React.useState(false);
+  const [fs, setFs] = React.useState(() => ssGet(SS_FS) === "1");
   const [stackRevealed, setStackRevealed] = React.useState(false);
   const [swapping, setSwapping] = React.useState(false);
   const iframeRefs = React.useRef({});
   const hideTimer = React.useRef(null);
   const swapTimer = React.useRef(null);
-  const fsRef = React.useRef(false);
-  React.useEffect(() => {fsRef.current = fs;}, [fs]);
+  const fsRef = React.useRef(fs);
+  React.useEffect(() => {fsRef.current = fs;ssSet(SS_FS, fs ? "1" : "0");}, [fs]);
 
   // The page-level rule the original set on html/body. On its own document it
   // died with the page; here it has to come off on unmount or every route
@@ -351,8 +375,8 @@ export default function WorkStage({ focused }) {
       // Guard on the DOCUMENT, not the iframe element: following an in-iframe
       // link replaces the document, so a per-element flag would leave the new
       // page's exit listeners unwired. A fresh document has no flag → rewired.
-      if (!doc.__fKeyWired) {
-        doc.__fKeyWired = true;
+      if (!doc.__workWired) {
+        doc.__workWired = true;
         doc.addEventListener("keydown", (e) => {
           if (e.metaKey || e.ctrlKey || e.altKey) return;
           if (e.key === "f" || e.key === "F") {
@@ -361,6 +385,53 @@ export default function WorkStage({ focused }) {
             if (fsRef.current) {e.preventDefault();exitFsAnywhere();}
           }
         });
+
+        // Scroll position, remembered per framed page and restored on reload.
+        // Keyed on the framed document's own path rather than the card key,
+        // because following the long-read link replaces the document inside
+        // the same card — keyed on the card, the long page's position would be
+        // restored onto the short one.
+        const win = el.contentWindow;
+        const key = ssScrollKey(doc.location.pathname);
+        let last = 0;
+        doc.addEventListener("scroll", () => {
+          // Throttled: this fires every frame while scrolling, and writing to
+          // sessionStorage that often is wasted work.
+          const now = Date.now();
+          if (now - last < 200) return;
+          last = now;
+          ssSet(key, String(Math.round(win.scrollY)));
+        }, { passive: true });
+
+        const saved = parseInt(ssGet(key) || "0", 10);
+        if (saved > 0) {
+          // Restored more than once, for the same reason the long page's
+          // fragment links need two passes: at load the case study has not
+          // finished laying out, so the document is not yet tall enough to
+          // scroll that far and the browser clamps the position short. Each
+          // later pass corrects it as fonts resolve and images take up their
+          // space.
+          //
+          // The guard is whether the READER has scrolled, not whether the
+          // position has moved — checking the latter is what made the first
+          // version stop at the clamped value and never recover, because its
+          // own restore looked exactly like the reader having scrolled.
+          let owned = true;
+          const release = () => { owned = false; };
+          doc.addEventListener("wheel", release, { passive: true, once: true });
+          doc.addEventListener("touchstart", release, { passive: true, once: true });
+          doc.addEventListener("keydown", release, { once: true });
+
+          const restore = () => {
+            if (!owned) return;
+            if (Math.abs(win.scrollY - saved) < 2) return; // already there
+            win.scrollTo(0, saved);
+          };
+          restore();
+          if (doc.fonts) doc.fonts.ready.then(restore);
+          win.setTimeout(restore, 300);
+          win.setTimeout(restore, 1000);
+        }
       }
     } catch (e) {/* cross-origin — ignore */}
   }
