@@ -83,6 +83,7 @@ const CHROME_H = 46;
 // thing that breaks the page.
 const SS_FS = "work:fs";
 const ssScrollKey = (path) => "work:scroll:" + path;
+const ssFrameKey = (cardKey) => "work:frame:" + cardKey;
 
 function ssGet(k) {
   try { return window.sessionStorage.getItem(k); } catch (e) { return null; }
@@ -211,7 +212,7 @@ function ChromeBar({ c, onClose, onPrev, onNext, onFullscreen, radius = 0 }) {
 // focused (once mounted); CardFace teaser overlay otherwise.
 // ============================================================
 function CardWindow({
-  c, layout, isFocused, isInStack, isHovered, isMounted, paused, fs, tx = 0,
+  c, src, layout, isFocused, isInStack, isHovered, isMounted, paused, fs, tx = 0,
   iframeRef, onClick, onHover, onUnhover, onIframeLoad, chromeProps
 }) {
   const { left, top, width, height, rotateY, scale = 1, zIndex, radius } = layout;
@@ -252,7 +253,7 @@ function CardWindow({
         {isMounted ?
         <iframe
           ref={iframeRef}
-          src={c.href}
+          src={src}
           title={c.title}
           onLoad={isFocused && onIframeLoad ? (e) => onIframeLoad(e.target) : undefined}
           style={{
@@ -312,6 +313,29 @@ export default function WorkStage({ focused }) {
   // straight onto 02, and seeding this wrong left the focused card with no
   // iframe in it at all.
   const [mounted, setMounted] = React.useState(() => new Set([order[0]]));
+
+  // Each card's iframe source, resolved once. Normally the project's own
+  // route; after a reload, whatever page that card was actually showing.
+  //
+  // Restricted to the card's own subtree, so a stale or hand-edited value can
+  // only ever point somewhere that card could have reached on its own. The
+  // test is the route itself or a path SEGMENT below it — an ordinary
+  // startsWith is not enough, and letting one through is exactly what the
+  // first version did: "/work/release-notes-evil" starts with
+  // "/work/release-notes" and was accepted straight into an iframe src.
+  //
+  // Resolved once and held in state rather than read during render, because
+  // changing an iframe's src is a navigation: recomputing would reload the
+  // card.
+  const [frameSrc] = React.useState(() => {
+    const out = {};
+    WORK_CARDS.forEach((c) => {
+      const saved = ssGet(ssFrameKey(c.key));
+      const ok = saved === c.href || saved && saved.startsWith(c.href + "/");
+      out[c.key] = ok ? saved : c.href;
+    });
+    return out;
+  });
   const [fs, setFs] = React.useState(() => ssGet(SS_FS) === "1");
   const [stackRevealed, setStackRevealed] = React.useState(false);
   const [swapping, setSwapping] = React.useState(false);
@@ -366,7 +390,7 @@ export default function WorkStage({ focused }) {
   // Because focus can live INSIDE the iframe, the parent window never sees
   // its keydowns — so Escape (exit) is wired into the iframe document too,
   // mirroring the parent-level one.
-  function syncIframeFs(el, active) {
+  function syncIframeFs(el, active, cardKey) {
     if (!el) return;
     try {
       const doc = el.contentDocument;
@@ -377,6 +401,14 @@ export default function WorkStage({ focused }) {
       // page's exit listeners unwired. A fresh document has no flag → rewired.
       if (!doc.__workWired) {
         doc.__workWired = true;
+
+        // Which page this card is showing, so a reload comes back to it. The
+        // card can hold more than its own project: the short Check Access page
+        // links to the long read, and following it replaces the document
+        // inside the same card. Without this, reloading there quietly returned
+        // you to the short version.
+        if (cardKey) ssSet(ssFrameKey(cardKey), doc.location.pathname);
+
         doc.addEventListener("keydown", (e) => {
           if (e.metaKey || e.ctrlKey || e.altKey) return;
           if (e.key === "f" || e.key === "F") {
@@ -527,7 +559,7 @@ export default function WorkStage({ focused }) {
   // Keep the focused iframe's body class in sync with the fs state
   // (covers iframe swaps and loads too).
   React.useEffect(() => {
-    syncIframeFs(iframeRefs.current[order[0]], fs);
+    syncIframeFs(iframeRefs.current[order[0]], fs, order[0]);
   }, [fs, order]);
 
   // ── Keyboard ──
@@ -583,6 +615,7 @@ export default function WorkStage({ focused }) {
             <CardWindow
               key={c.key}
               c={c}
+              src={frameSrc[c.key]}
               layout={layout}
               fs={fs}
               tx={tx}
@@ -592,7 +625,7 @@ export default function WorkStage({ focused }) {
               isMounted={mounted.has(c.key)}
               paused={false}
               iframeRef={(el) => {iframeRefs.current[c.key] = el;}}
-              onIframeLoad={(el) => syncIframeFs(el, fsRef.current)}
+              onIframeLoad={(el) => syncIframeFs(el, fsRef.current, c.key)}
               onClick={() => focusProject(c.key)}
               onHover={() => {setHovered(c.key);if (fs) revealStack();}}
               onUnhover={() => {setHovered(null);if (fs) scheduleHideStack();}}
