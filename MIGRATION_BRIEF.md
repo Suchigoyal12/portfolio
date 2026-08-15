@@ -63,7 +63,7 @@ These are different things and must not be merged.
 
 **The focused window is an `<iframe>` loading the real project page.** The stage reaches into the iframed document and toggles `is-fullscreen` on the child `<body>` — same-origin cross-document DOM access. A `postMessage` contract handles next-project navigation: the child posts `{type:"work:focus", key}`, the stage listens.
 
-Fullscreen uses browser-native `requestFullscreen()`. **It must be called after the card switch completes**, so it targets the newly active element. This was a bug once. Preserve the fix.
+~~Fullscreen uses browser-native `requestFullscreen()`. **It must be called after the card switch completes**, so it targets the newly active element. This was a bug once. Preserve the fix.~~ **Superseded 2026-08-13 by commit aaf8287** — fullscreen is in-page. The green dot expands the stage window within the page and never calls `requestFullscreen()`, which took the whole browser window and hid its chrome. Nothing needs sequencing against the card switch any more, because there is no request to sequence. See HANDOFF §1.
 
 Stack order: Check Access (01) → AI Trust Layer (02) → Admin Shell public (03) → Release Notes (04).
 
@@ -189,7 +189,7 @@ Serve over a local web server — not by opening files directly. `file://` behav
 
 - Every link on every page
 - All four projects load in the stage manager
-- Fullscreen enter and exit, including the post-switch sequencing
+- Fullscreen enter and exit ~~including the post-switch sequencing~~ (no sequencing since aaf8287 — fullscreen is in-page)
 - Next-project links move the stack rather than navigating the iframe
 - Contact overlay from Homepage, About and Work
 - Resize 1440 → 900px on Homepage and About; confirm scaling
@@ -216,7 +216,7 @@ Serve over a local web server — not by opening files directly. `file://` behav
 
 The stage manager doesn't merely embed project pages — it reaches into them, toggling `is-fullscreen` on the child body and wiring key handlers across documents. Converting projects to plain components means rebuilding all of that and scoping every project's CSS so it can't leak.
 
-**Point the iframe at React routes instead:** `<iframe src="/work/check-access">` loads the app fresh at that route inside the frame. CSS isolation preserved, `requestFullscreen()` still targets a real iframe element, the `postMessage` contract survives intact.
+**Point the iframe at React routes instead:** `<iframe src="/work/check-access">` loads the app fresh at that route inside the frame. CSS isolation preserved, the `postMessage` contract survives intact. ~~`requestFullscreen()` still targets a real iframe element~~ — no longer relevant: fullscreen is in-page since aaf8287 and calls no fullscreen API at all.
 
 Revisit only if a future animation genuinely requires shared elements between the stack and the focused project.
 
@@ -308,7 +308,7 @@ Screenshot-compare each against the deployed Stage 1 site before starting the ne
 - [ ] Temp `is-fullscreen` class removed
 - [ ] Screenshot parity at 1440 / 1300 / 1150 / 900px against Stage 1
 - [ ] Rail scales on Homepage and About; Work section unaffected
-- [ ] Stage manager: all four projects, fullscreen enter/exit, post-switch sequencing, `postMessage` next-project
+- [ ] Stage manager: all four projects, fullscreen enter/exit, `postMessage` next-project ~~post-switch sequencing~~ (gone with native fullscreen, aaf8287)
 - [ ] Contact overlay opens over every route
 - [ ] Both About branches work; `USE_AUDIO = false` timeline behaves as before
 - [ ] Fonts render identically — Archivo, Cormorant Garamond, DM Sans, JetBrains Mono, correct weights

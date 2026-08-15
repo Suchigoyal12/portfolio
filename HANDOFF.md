@@ -42,7 +42,9 @@ Three coupling mechanisms matter, and all three are same-origin DOM access acros
 
 **The `postMessage` next-project contract.** A focused project page posts `{ type: "work:focus", key }` to its parent when a next-project link is clicked (`page-project.jsx` around line 780, with equivalents in the other project components). `stage.jsx` listens around line 361 and moves the stack instead of navigating the iframe. Both halves must survive any refactor together — break one and next-project links start navigating inside the card.
 
-**Native fullscreen ordering.** `requestFullscreen()` is called on `document.documentElement` (`stage.jsx` ~392) and must fire *after* the card switch completes, not alongside it. Firing during the transition drops the request or leaves the stack mid-animation.
+**Fullscreen is in-page.** ~~`requestFullscreen()` is called on `document.documentElement` (`stage.jsx` ~392) and must fire *after* the card switch completes.~~ **Superseded 2026-08-13 by commit aaf8287.** Native fullscreen took the whole browser window and hid the browser's own chrome, which is not what the green dot means. The stage window now expands within the page instead: `toggleFs()` sets state and never calls `requestFullscreen()`. There is no ordering constraint left, because there is no request to sequence against the card switch.
+
+The native-reconciliation layer that went with it — a `fullscreenchange` listener, a `visibilitychange` backstop and two click backstops, each gated on a `nativeFsRef` flag — was left in place at the time and became unreachable, because the only line that ever set that flag true was the deleted request. It is not carried into the Stage 2 port. Two `exitFullscreen()` calls are, since they are gated on the browser's live state rather than that flag and an F11 visitor can still reach them; see POST_MIGRATION_ROADMAP.md.
 
 ### Two navigation systems
 
