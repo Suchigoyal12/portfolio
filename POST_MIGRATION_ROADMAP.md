@@ -103,3 +103,39 @@ The hardest part of this plan is psychological, not technical: applying before t
 ## One question that changes Phase 3
 
 Whether the motion work is worth its risk depends on how much you're leaning on "design technologist" in your applications. If the roles you're targeting care that you can build, the animations are portfolio content — proof, not polish, and worth doing sooner. If you're targeting pure product-design roles, they're lower-value and can wait indefinitely. Worth deciding as you see what you're applying to.
+
+---
+
+## Logged during Stage 2 — for the replacement plan
+
+*Appended, not merged. Nothing above this line was read, revised or acted on;
+this file is still marked out-of-date and awaiting the replacement plan. These
+are findings from the migration that need somewhere durable to live so they
+survive into that discussion.*
+
+**Unify the hero type scale across all case studies.** The four React case
+studies load `RESPONSIVE_CSS` from `site/shared.jsx`, which sets
+`main h1 { font-size: 80px !important }` below 1180px and 56px below 900. The
+long Check Access page was hand-written HTML, never loaded it, and sizes its
+hero with `clamp(56px, 8vw, 108px)` instead. Measured on the deployed Stage 1
+site, at the same viewport:
+
+| Viewport | Short Check Access | Long Check Access |
+|---|---|---|
+| 1440 | 108px | 108px |
+| 1300 | 104px | 104px |
+| 1150 | **80px** | **92px** |
+| 900 | **56px** | **72px** |
+
+**The inconsistency predates the port and was carried across deliberately** —
+the Stage 2 rule is that anything that looks different is a regression, so the
+long page keeps its own scale via `useProjectShell({ responsive: false })`.
+Deciding which of the two scales is right is a design decision and belongs
+here, not in the migration. Whichever wins, the fix is one of: fold the long
+page into the shared stylesheet, or lift the `clamp()` into it for everyone.
+
+**Related, and probably the more urgent half:** those same overrides are broad
+attribute selectors — `main h1`, `aside[style*="100vh"]`,
+`section[style*="1fr 1fr"]` — matching by inline-style substring. They are
+brittle in a way that only shows up when something new happens to match. Worth
+replacing with real class names in the same pass.
