@@ -383,7 +383,7 @@ const RESPONSIVE_CSS = `
 //
 // The Archivo <link> the original also injected is gone: it is in the app shell
 // now, so re-requesting it here would only duplicate the request.
-function useResponsiveCss() {
+export function useResponsiveCss() {
   React.useEffect(() => {
     if (document.getElementById("__suchi_responsive")) return undefined;
     const el = document.createElement("style");
@@ -669,7 +669,6 @@ function PageShell({ active, navMode = "top", sections, currentSection, status, 
   // panel went with it — it referenced components that no longer exist.
   const tweaks = DEFAULT_TWEAKS;
   useTheme(tweaks);
-  useResponsiveCss();
   const owner = tweaks.ownerName || SITE.owner;
 
   return (

@@ -1,0 +1,5 @@
+/* admin-shell-public.html's shell differs from the other case studies in one
+   line: the fallbacks inside var(). They only show in the frame before
+   useTheme sets the real tokens, but that frame is visible. */
+html.project-route.admin-shell,
+html.project-route.admin-shell body { background: var(--bg, #E8E4DC); color: var(--ink, #1C1C1A); }
