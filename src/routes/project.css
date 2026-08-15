@@ -1,0 +1,33 @@
+/* The page-level CSS every React case study shell carried inline, ported once.
+ * Identical in project-check-access.html, project-ai-trust-layer.html,
+ * admin-shell-public.html and project-release-notes.html.
+ *
+ * The `html, body` rule is scoped behind .project-route, which ProjectShell
+ * puts on <html> while a case study is mounted — it sets a background and a
+ * font on elements above any wrapper, and left global it would reach every
+ * other route.
+ *
+ * The three is-fullscreen rules are NOT scoped, deliberately. This is the
+ * contract with the stage manager: the parent reaches into the framed
+ * document and toggles `is-fullscreen` on its <body>, and these rules are what
+ * listen for it. Key them off anything other than `body` and the stage's
+ * message lands where nothing is listening — the section rail silently stops
+ * appearing. The class names involved exist only on case studies, so global is
+ * safe here.
+ */
+
+html.project-route,
+html.project-route body {
+  margin: 0;
+  padding: 0;
+  background: var(--bg, #EFECE4);
+  color: var(--ink, #0E0E0C);
+  font-family: 'DM Sans', sans-serif;
+}
+
+html.project-route a { color: inherit; }
+html.project-route ::selection { background: var(--accent, #B5522E); color: #fff; }
+
+body:not(.is-fullscreen) .left-nav { display: none !important; }
+body.is-fullscreen .project-overview { display: none; }
+body:not(.is-fullscreen) .hero-topbar { display: none !important; }
