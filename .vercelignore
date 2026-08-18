@@ -38,3 +38,10 @@ masters/
 # ── Internal documentation ─────────────────────────────────────────────
 # HANDOFF, MIGRATION_BRIEF, PROJECT_CONTEXT, DESIGN_SYSTEM, CLAUDE.
 *.md
+
+# ── Parity goldens ─────────────────────────────────────────────────────
+# Screenshots of the frozen Stage 1 deployment, committed as insurance in
+# case that deployment is ever pruned. Verification input, never site
+# content. tools/ has no route and nothing imports it, but these are the
+# only large binaries in it and there is no reason to upload them.
+tools/golden/
