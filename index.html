@@ -14,14 +14,25 @@
        static pages each asked for separately. Widest subset wins on every
        family, so no page loses a weight it was using:
          Archivo 600                     — wordmark only
-         Cormorant Garamond 400/500/600  — roman and italic
+         Cormorant Garamond 400/500/600 roman, 400/500/600/700 italic
          DM Sans 400–800
          JetBrains Mono 400–800
        shared.jsx also injects the Archivo link at runtime; that becomes
-       redundant once it is here and can go when shared.jsx is ported. -->
+       redundant once it is here and can go when shared.jsx is ported.
+
+       Italic 700 is the one weight NOT inherited from the static pages, and
+       it is deliberate. Two <strong> spans in the Check Access hero lede ask
+       for italic 700 (page-project.jsx:293). The static pages requested
+       italic 400 only, so both builds were synthesising a fake bold; the
+       family has a real 700 italic — its variable axis is 300–700 in both
+       styles, and the API rejects 1,800 — so this asks for the real face.
+       It renders those two words correctly and moves parity AWAY from the
+       reference by design, because the reference renders them wrongly.
+       Logged as an approved divergence in POST_MIGRATION_ROADMAP_V2 §Gate 0.
+       Do not "restore" it to match the reference. -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@600&family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500;1,600&family=DM+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@600&family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500;1,600;1,700&family=DM+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 </head>
 <body>
   <div id="root"></div>
