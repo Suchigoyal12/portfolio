@@ -22,8 +22,24 @@ The AITL 0.831% is a capture fault: 14 `loading="lazy"` images never triggered i
 - Re-establish per-case-study comparison now that slugs render the stage — compare the framed document, not the stage wrapper.
 - **`/about` has never actually been compared.** Its `mode` starts `null`, so a fresh load renders the rail and two unselected radios and nothing else — 61 characters of text, 96% of the capture uniform. The recorded "0 differing pixels at all four widths" matched two near-empty pages. Parity here needs a capture that clicks a branch first, with **THE DESIGNER and THE PERSON as two separate comparison targets**. Neither branch's content has been pixel-compared on any width, which makes About the least-verified page in the migration rather than the best-verified one.
 
-**0.3 — Fix the italic-700 font axis.**
-The app shell requests Cormorant Garamond italic 400/500/600; the page renders an italic-700 run, so the browser synthesises it. 110.28px vs 111.45px, which crosses a line-break boundary at 900px and shifts everything below by 29px — the entire `/work` 2.268%. This is a live rendering bug independent of parity. One line in the font request. Re-run `/work` after.
+**0.3 — Fix the italic-700 font axis. DONE — and it is an approved divergence, not a parity fix.**
+
+The finding was not what the item assumed. Only **two elements on the whole site** ask for italic 700: the two `<strong>` spans in the Check Access hero lede at 24px, authored with an inline `fontWeight: 700` (`page-project.jsx:293`). There is no large-type case and no caption case.
+
+Cormorant Garamond **does** have a real 700 italic — the variable axis is 300–700 in both styles, and the API rejects `1,800` outright — so `1,700` was added to the request and those two words now render a designed weight instead of a synthetic bold. Verified: a `700:loaded` italic face, rendered width 112.06px.
+
+**This moves parity away from the reference, deliberately.** Measured on framed Check Access at 1440:
+
+| | `strong` width | vs reference |
+|---|---|---|
+| Reference (Stage 1, italic 400 only) | 110.28px | — |
+| Before — synthesised from 600 | 111.45px | 1,104 px · 0.016% |
+| **After — true italic 700** | **112.06px** | **1,385 px · 0.019%** |
+| *Rejected:* match the reference exactly (italic 400 only) | 110.28px | 247 px · 0.003% |
+
+Matching the reference exactly would have driven parity to near zero — it proves the italic axis is essentially the entire residual — but only by degrading **13 elements** across the homepage, both About branches, Release Notes and Check Access from real italic weights to synthesised ones. The reference renders those two words wrongly; matching a wrong rendering is not a win. **Parity is the goal for the gate, not for the site.**
+
+So `/work`'s 2.268% at 900 does **not** go away, and should not be chased. It is the same italic axis crossing a line-break boundary, and it is now a known, approved difference between a correct build and an incorrect reference. Do not "restore" the font request to match Stage 1.
 
 **0.4 — Promote, and delete `legacy/` in the same pass.**
 Deletion is safe: 4.9MB, 38 files, imported by nothing, already `.vercelignore`d, absent from `dist/`, and recoverable from commit `a997fbb` indefinitely. Keep it until this moment only because it's a convenient local copy of the comparison target; the day that stops being true is this day.
