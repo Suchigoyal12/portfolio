@@ -28,6 +28,12 @@ The app shell requests Cormorant Garamond italic 400/500/600; the page renders a
 **0.4 — Promote, and delete `legacy/` in the same pass.**
 Deletion is safe: 4.9MB, 38 files, imported by nothing, already `.vercelignore`d, absent from `dist/`, and recoverable from commit `a997fbb` indefinitely. Keep it until this moment only because it's a convenient local copy of the comparison target; the day that stops being true is this day.
 
+**Known unverified surfaces.** Three things the harness cannot see, recorded so a green table is not mistaken for full coverage. None is a defect; each is a deliberate trade for deterministic capture.
+
+- **The `is-fullscreen` rendering state has never been compared.** `--framed` strips the class from both sides, mirroring what the stage does to its child on load. So every case study is verified in its windowed state only — the section-rail layout that appears in fullscreen is unmeasured on all five pages.
+- **Video playback has never been compared.** The three walkthrough reels are paused and rewound to frame zero before capture, because otherwise two captures catch two different frames — that was 25,351 differing pixels on the long read, one band per reel. Frame zero matches; nothing after it is checked.
+- **THE PERSON in its playing state is unverified.** At rest the branch is 89 characters and two images, and that resting state now compares clean. The lyrics panel, autoscroll and active-paragraph highlight only exist once Play is pressed, and that timeline is not deterministic to screenshot. It stays unverified until the real voiceover exists and item 10 addresses it properly.
+
 ---
 
 ## Above the line — before a single application goes out
