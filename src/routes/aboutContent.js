@@ -24,20 +24,36 @@ export const PH_GAP = 12;          // px between slots
 export const PH_PX_PER_SEC = 22;   // ambient speed constant — tune this, not duration
 
 /* ---------- PERSON branch — voiceover-driven, Figma "about- person/*" ----------
-   No audio exists yet. Every timed behaviour reads timeline.getTime() only. */
+   Real cues against public/assets/audio/about-voiceover.m4a (127.64s).
+   Every timed behaviour still reads timeline.getTime() only. */
 
-// Placeholder timings, weighted by paragraph length. Data-only — real cues replace these values.
+// Derived 2026-08-20 from the recording itself, not tapped by hand.
+//
+// Silence detection alone could not do this: the take has 20 pauses over
+// 0.35s against 9 paragraph boundaries, because a natural reader pauses
+// mid-paragraph too. Picking the right 9 from 20 is not something a gap
+// detector can decide.
+//
+// What produced these: estimate each paragraph's start proportionally from
+// its character count across the measured speech span, then snap that
+// estimate to the nearest detected silence. All ten landed on a real gap
+// within 1.4s and in monotonic order, with the drift consistently in one
+// direction — mis-snapped cues scatter instead.
+//
+// To re-derive after a re-record, run the same two steps:
+//   ffmpeg -i <file> -af silencedetect=noise=-34dB:d=0.35 -f null -
+// then snap proportional estimates to the resulting silence_end values.
 export const CUES = [
-  { t: 0,   para: 0 },
-  { t: 2,   para: 1 },
-  { t: 15,  para: 2 },
-  { t: 24,  para: 3 },
-  { t: 36,  para: 4 },
-  { t: 49,  para: 5 },
-  { t: 58,  para: 6 },
-  { t: 74,  para: 7 },
-  { t: 89,  para: 8 },
-  { t: 109, para: 9 },
+  { t: 1.2,   para: 0 },
+  { t: 3.2,   para: 1 },
+  { t: 15.9,  para: 2 },
+  { t: 27.7,  para: 3 },
+  { t: 37.3,  para: 4 },
+  { t: 52.8,  para: 5 },
+  { t: 60.5,  para: 6 },
+  { t: 76.6,  para: 7 },
+  { t: 92.2,  para: 8 },
+  { t: 110.7, para: 9 },
 ];
 
 export const LYRICS = [

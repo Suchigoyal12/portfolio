@@ -324,13 +324,12 @@ export default function Home() {
             <button
               type="button"
               className="tooling-toggle"
-              style={{ fontSize: 11 }}
               aria-expanded={toolingExpanded}
               aria-label={toolingExpanded ? "Hide build note" : "Show build note"}
               onClick={() => setToolingExpanded((v) => !v)}>
               {toolingExpanded ? "−" : "+"}
             </button>
-            {toolingExpanded && <span className="tooling-note" style={{ fontSize: 11 }}>used to build this site.</span>}
+            {toolingExpanded && <span className="tooling-note">used to build this site.</span>}
           </div>
         </div>
 

@@ -230,13 +230,27 @@ Position comes from measuring the real links, never from duplicating geometry; n
 
 **A pre-existing regression was found and fixed here.** On a cold load the active rail link animated **ink → accent over ~150ms** — an entrance animation, which this site does not have by policy. Cause: `transition: color 0.15s ease` (`Home.css:50`, `About.css:31`) was ported verbatim from Stage 1, where it never fired because the served HTML already had the rail correct; under React the link paints as `--ink` first, then `html.rail-route` lands and it animates. Measured on the production build at rgb(74,39,26) at 160ms. **Confirmed present on HEAD without item 9, and confirmed absent from the Stage 1 reference (accent at 40ms flat)** — so it was a port defect, not this work. Fixed by suppressing colour transition on rail links until the first navigation; scoped to rail links only.
 
-**10 — About person branch. MOVED ABOVE THE LINE (2026-08-20).**
+**10 — About person branch. DONE (2026-08-21).**
 
-Once the voiceover exists: swap behind `USE_AUDIO`, replace placeholder cue timings, verify lyrics-panel scroll sync, confirm `personTeardown()` restart-from-zero, check slow-connection and pause/resume.
+The recording exists (`public/assets/audio/about-voiceover.m4a`, AAC mono 48kHz, 127.64s, 1.0MB — renamed from a filename containing spaces). `USE_AUDIO` is now `true` and the real driver is in.
 
-**Still gated on the recording, and that gate is real.** `usePersonTimeline.js` carries `USE_AUDIO = false` driving a synthetic clock, with placeholder cue timings against a 125s guess. None of the build work can be finished — or honestly verified — until the real audio exists, because the cue timings *are* the work. Moving it above the line does not change what unblocks it.
+**The flag pattern earned itself.** Swapping the synthetic clock for real audio changed `usePersonTimeline.js` only. Nothing in `About.jsx` moved — the branch had been built and shipped for months against a fake clock exposing the same interface.
 
-Note this is the surface Gate 0 flagged as least verified: THE PERSON's playing state has never been pixel-compared, because the lyrics panel, autoscroll and active-paragraph highlight only exist after Play and are not deterministic to screenshot. Item 10 is where that gets addressed properly.
+**The synthetic timeline stays, as the fallback.** Verified by blocking the file: the branch keeps working, the highlight keeps advancing, Play still reads Pause. A dead network degrades to the clock that worked before the audio existed, not to a button that does nothing.
+
+**No cue-tapper was needed, and building one would have been the wrong instinct.** Silence detection alone could not do it either — the take has 20 pauses over 0.35s against 9 paragraph boundaries, because a natural reader pauses mid-paragraph. What worked: estimate each paragraph's start proportionally by character count across the measured speech span, then snap to the nearest detected silence. All ten landed on a real gap within 1.4s, monotonic, drift consistently in one direction. The re-derivation recipe is in `aboutContent.js` for whenever the take is replaced.
+
+**Gate 0's least-verified surface is now verified.** It was flagged as unverifiable because the playing state only exists after Play and a live timeline cannot be screenshotted. A real element can be seeked and frozen, which turns it into ordinary still frames: **seek to each of the ten cues, freeze, read the highlight — all ten land on the correct paragraph.** Also verified: duration reads 127.64 from metadata rather than the hardcoded constant; pause stops the element; switching to THE DESIGNER stops and rewinds it; navigating away from `/about` stops it; `prefers-reduced-motion` still renders static readable text with no transport at all.
+
+*Three bugs found and fixed while wiring this, all mine, none pre-existing:*
+
+- **`crossOrigin` set after `src`** reset the element's resource selection. With `preload="none"` nothing then started the fetch — `networkState 0`, silence, no error. Removed; the file is same-origin and never needed it.
+- **`preload="none"` needs an explicit `load()`.** `play()` alone did not reliably start the fetch.
+- **The unmount teardown was destroying the live element.** StrictMode runs effect cleanup and then re-runs effects *without re-rendering*, so `removeAttribute("src")` stripped the source on every dev mount while the ref stayed populated and the render body never rebuilt it. Teardown now pauses and rewinds only; a real unmount drops the last reference and the buffer goes with it.
+
+*Also fixed here, unrelated to audio:* autoscroll fired while paused. Scrolling the lyrics panel at rest snapped back to the highlight three seconds later. Guarded twice — the early return covers scrolling while already paused, the check inside the timeout covers scrolling during playback then pausing inside the 3s window.
+
+*Carried, not forgotten:* the panel's nested scroll on touch belongs to item 19. And the transcript still only appears after Play — raised as a recruiter-facing concern (most visitors never press Play, so the writing mostly does not ship), **considered and declined for now**; revisit when the page gets its pass below the line.
 
 **Explicitly not above the line:** the Work-overlaid-on-blurred-Homepage concept. Most expensive, most breakable, lowest marginal signal.
 

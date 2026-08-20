@@ -294,7 +294,19 @@
   border: 0;
   background: none;
   font-family: 'JetBrains Mono', monospace;
-  font-size: 9px;
+  /* 10px — the page's dominant small-text step, shared with the rail, every
+     "/ SECTION" label, and the dates and roles in the right column.
+     Two rejected alternatives, for the record:
+       9px  — the pills' size, and the smallest thing on the page. This is a
+              sentence, not a chip; at 9px it read as fine print.
+       12px — the pronunciation tag's size. Tried and reverted: it made the
+              note LARGER than the "/ TOOLING" heading it sits beneath, so a
+              footnote outranked its own section title.
+     10px keeps the note above the pills it describes and at or below every
+     heading, which is the hierarchy the page already uses. It is also an
+     existing step on the scale — 9/10/12/14/24/32/38/64 — where 11px would
+     have invented a new one. */
+  font-size: 10px;
   letter-spacing: 0.08em;
   color: var(--muted);
   cursor: pointer;
@@ -314,7 +326,7 @@
    for the line to be genuinely absent on collapse, not faded out first. */
 .route-home .tooling-note {
   font-family: 'JetBrains Mono', monospace;
-  font-size: 9px;
+  font-size: 10px;
   letter-spacing: 0.08em;
   text-transform: lowercase;
   color: var(--muted);
@@ -323,6 +335,15 @@
 @keyframes tooling-note-in {
   from { opacity: 0; transform: translateX(-6px); }
   to   { opacity: 1; transform: translateX(0); }
+}
+
+/* The mobile composition runs its own scale — pills and the "/ tooling"
+   heading are both 11px there, against 9px and 10px on desktop. The note
+   takes the same one-step bump, so the relationship to its heading holds on
+   both compositions rather than only on the one it was designed against. */
+@media (max-width: 899px) {
+  .route-home .tooling-toggle,
+  .route-home .tooling-note { font-size: 11px; }
 }
 
 /* Tooling group-hover: highlight hovered pill's group, dim the rest, swap heading */
