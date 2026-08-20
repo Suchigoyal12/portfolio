@@ -9,6 +9,7 @@ import Home from "./routes/Home.jsx";
 import About from "./routes/About.jsx";
 import Work from "./routes/Work.jsx";
 import NotFound from "./routes/NotFound.jsx";
+import RailTravel from "./site/RailTravel.jsx";
 
 // The four case studies are no longer imported here. They are reached through
 // Work, which is the single component behind /work/:slug? — see the route
@@ -30,6 +31,10 @@ import NotFound from "./routes/NotFound.jsx";
 export default function App() {
   return (
     <ContactProvider>
+      {/* Above <Routes> on purpose — the rail travel indicator has to outlive
+          every route change, including the one to /work where no rail exists.
+          See the note at the top of RailTravel.jsx. */}
+      <RailTravel />
       <Routes>
         <Route element={<RailLayout />}>
           <Route path="/" element={<Home />} />

@@ -216,8 +216,27 @@ They come from a generated map, `src/site/image-dims.js`, built by `tools/gen-im
 - **The dot in `soo·chee` is not a character** — it is `.phon-dot`, a 2px CSS circle. A typed `·` will not match it.
 - **Spacing is the hard part, not the plumbing.** `.phon` has `gap: 3px`, which had no visual effect before (its only other child, the tooltip, is absolutely positioned). Appended text at that gap read as a typo; 16/24/32px were trialled and none was right.
 
-**9 — Tab travel, plus `prefers-reduced-motion`.**
-The left-nav travel indicator between Homepage and About, 270–340ms, ease-out-expo. The reason the React migration happened. One signature motion moment rather than three, because it carries the positioning at a fraction of the risk. `prefers-reduced-motion` ships with it — non-negotiable, and itself a craft signal.
+**9 — Tab travel, plus `prefers-reduced-motion`. DONE (2026-08-20).**
+
+Settled on a live bench rather than in the abstract: **280ms, out-quart, marker + colour, reserved gutter, travel-then-fade on leaving to /work.** (The roadmap guessed ease-out-expo; out-quart won on comparison. 280ms sits inside the specified 270–340 band.)
+
+**One element, above `<Routes>`.** `RailTravel.jsx` renders inside `ContactProvider` and outside the router — the only slot that survives *every* route change, including the one to `/work` where the rail does not exist. That placement is what makes travel-then-fade work with **zero navigation delay**: the click routes immediately and the marker keeps animating over whatever rendered next, because it was never unmounted. The authored `>` was a `::before`, which by definition cannot outlive its parent — that is why it could never have travelled.
+
+Position comes from measuring the real links, never from duplicating geometry; nothing hardcodes 24px, 54.511% or the 10px gap. Viewport rects are cached per href while a rail is on screen, which is how the marker still knows where "the work" was after the rail containing it has gone.
+
+**Verified:** travel 491 → 534 @90ms → 540 settled (decelerating, lands exactly on the active link). Exit travels to 515 then fades to opacity 0. Returning from `/work` repositions instantly then fades in — no slide from a stale position, which would claim a journey that never happened. `prefers-reduced-motion` jumps straight to 540 with no animation. Below 900px the component renders nothing and the authored `::before` marker stays in charge.
+
+**Parity moved, deliberately: 0.039–0.047% on both Homepage and About.** That is the reserved gutter. The site indented only the *active* item, so three labels jumped 14px sideways on every navigation; with a marker that moves, the labels have to hold still or the motion reads as a glitch. Reserving the gutter on every item is a visible change from Stage 1 and an approved divergence, like the italic-700 one.
+
+**A pre-existing regression was found and fixed here.** On a cold load the active rail link animated **ink → accent over ~150ms** — an entrance animation, which this site does not have by policy. Cause: `transition: color 0.15s ease` (`Home.css:50`, `About.css:31`) was ported verbatim from Stage 1, where it never fired because the served HTML already had the rail correct; under React the link paints as `--ink` first, then `html.rail-route` lands and it animates. Measured on the production build at rgb(74,39,26) at 160ms. **Confirmed present on HEAD without item 9, and confirmed absent from the Stage 1 reference (accent at 40ms flat)** — so it was a port defect, not this work. Fixed by suppressing colour transition on rail links until the first navigation; scoped to rail links only.
+
+**10 — About person branch. MOVED ABOVE THE LINE (2026-08-20).**
+
+Once the voiceover exists: swap behind `USE_AUDIO`, replace placeholder cue timings, verify lyrics-panel scroll sync, confirm `personTeardown()` restart-from-zero, check slow-connection and pause/resume.
+
+**Still gated on the recording, and that gate is real.** `usePersonTimeline.js` carries `USE_AUDIO = false` driving a synthetic clock, with placeholder cue timings against a 125s guess. None of the build work can be finished — or honestly verified — until the real audio exists, because the cue timings *are* the work. Moving it above the line does not change what unblocks it.
+
+Note this is the surface Gate 0 flagged as least verified: THE PERSON's playing state has never been pixel-compared, because the lyrics panel, autoscroll and active-paragraph highlight only exist after Play and are not deterministic to screenshot. Item 10 is where that gets addressed properly.
 
 **Explicitly not above the line:** the Work-overlaid-on-blurred-Homepage concept. Most expensive, most breakable, lowest marginal signal.
 
@@ -230,8 +249,6 @@ The site works, the case studies are strong, attribution is honest. Everything b
 ---
 
 ## Below the line
-
-**10 — About person branch.** Gated on the final voiceover recording, which is your work not the build's. Once it exists: swap behind `USE_AUDIO`, replace placeholder cue timings, verify lyrics-panel scroll sync, confirm `personTeardown()` restart-from-zero, check slow-connection and pause/resume.
 
 **11 — Soft-404.** `vercel.json` rewrites every unmatched path to `index.html` with status 200, so React Router renders the 404 page correctly for humans while crawlers see a soft-404. Cosmetically fine, technically wrong. Fix when convenient.
 
