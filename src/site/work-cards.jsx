@@ -1,5 +1,6 @@
 import React from "react";
 import { PROJECT_ROUTES } from "../routes.js";
+import { dims } from "./image-dims.js";
 
 // =============================================================
 // WORK — Card data + stack-card rendering
@@ -152,7 +153,7 @@ function CardFace({ c, boxW = CARD_W, revealStatus = false }) {
       </div>
 
       {/* doodle — positioned in the card's own coordinate space */}
-      <img src={c.doodle.src} alt="" style={{
+      <img src={c.doodle.src} {...dims(c.doodle.src)} alt="" style={{
         position: "absolute", zIndex: 3, pointerEvents: "none",
         left: c.doodle.x, top: c.doodle.y, width: c.doodle.w, height: c.doodle.h
       }} />

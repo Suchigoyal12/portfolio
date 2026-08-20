@@ -31,3 +31,64 @@ html.project-route ::selection { background: var(--accent, #B5522E); color: #fff
 body:not(.is-fullscreen) .left-nav { display: none !important; }
 body.is-fullscreen .project-overview { display: none; }
 body:not(.is-fullscreen) .hero-topbar { display: none !important; }
+
+/* ---------- Narrow-screen overflow, roadmap item 2 ----------
+ * Below 900px a slug renders its case study directly rather than the stage
+ * (Work.jsx), so these are the only rules standing between a phone and a
+ * sideways-scrolling page.
+ *
+ * Scoped to 699px and below on purpose. 700 is where the three-up grids stop
+ * resolving to equal tracks; every width the parity harness measures —
+ * 900/1150/1300/1440, framed — sits above it and is untouched by design, not
+ * by luck.
+ *
+   SCOPED :not(.is-framed). The stage loads each case study into an iframe
+   roughly viewport-244 wide, so a 900px window hands this document a 656px
+   frame — under the breakpoint — and the mobile layout would appear at a
+   desktop window size. Measured before this scope existed: the framed page
+   ran 5243px tall against Stage 1's 5166px, and /work at 900 moved from
+   2.268% to 2.298%. The parity harness cannot catch it, because --framed
+   shadows window.self instead of using a real iframe and therefore renders
+   at the full viewport width. Inside the stage this document must match
+   Stage 1 at every width; below 900 it renders unframed and these apply.
+ */
+/* Base value moved off the inline style so the breakpoint below can override it
+   without !important. Computed-identical to the inline `1fr 1fr 1fr` it replaces. */
+html.project-route .artifact-grid { grid-template-columns: 1fr 1fr 1fr; }
+
+@media (max-width: 699px) {
+  /* Three-up artifact strip. Measured at 390 it pushed the page 159px wide:
+     `1fr` keeps an automatic min-content floor, so the tracks refuse to drop
+     below the longest word no matter how little room the column has. */
+  html.project-route:not(.is-framed) .artifact-grid { grid-template-columns: minmax(0, 1fr); }
+
+  /* The label/content split — a 180px fixed column plus a 32px gap, which at
+     390 leaves 146px for content and pushes a 48px h2 straight off the edge.
+
+     shared.jsx already tries to collapse this at 900px:
+       section[style*="180px 1fr"], section[style*="180px minmax"]
+     but the grid is a DIV inside the section, not the section, so that
+     selector has never matched on any case study at any width. It is left
+     alone deliberately — it sits in the 900px block, Stage 1 carries the same
+     broken selector, and repairing it there would change the framed rendering
+     at a width the parity harness measures. Written down, not fixed.
+
+     !important because the track list is inline in four files; that is also
+     the idiom shared.jsx uses throughout for exactly this reason. */
+  html.project-route:not(.is-framed) main div[style*="180px minmax"],
+  html.project-route:not(.is-framed) main div[style*="180px 1fr"] {
+    grid-template-columns: minmax(0, 1fr) !important;
+    gap: 20px !important;
+  }
+
+  /* Section headings are the one type size the shared stylesheet never covers —
+     it overrides `main h1` at 1180 and 560 and stops there. */
+  html.project-route:not(.is-framed) main h2 { font-size: 32px !important; }
+
+  /* Hover tooltip on the evolution strip — absolutely positioned, nowrap, and
+     centred on its step, so the last one hangs past the right edge and drags
+     the document with it. It is opacity:0 and pointer-events:none until a
+     hover that a touch device never produces, so below this width it is an
+     invisible element whose only effect is horizontal scroll. */
+  html.project-route:not(.is-framed) .evo-tip { display: none; }
+}

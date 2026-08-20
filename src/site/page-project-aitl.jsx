@@ -1,5 +1,6 @@
 import React from "react";
 import { MonoLabel, PageShell, WaveMotif, chromeHorizon, monoFamily, sansFamily, serifFamily } from "./shared.jsx";
+import { dims } from "./image-dims.js";
 // =============================================================
 // PROJECT DETAIL — AI TRUST LAYER (AITL)
 // Reuses the Check Access V5 layout (sticky left rail + magazine
@@ -57,6 +58,7 @@ function AITLCard({ item, width, height, onOpen }) {
           
           <img
             src={item.src}
+            {...dims(item.src)}
             alt={item.note}
             loading="lazy"
             style={{
@@ -159,6 +161,7 @@ function AITLLightbox({ items, index, setIndex, onClose }) {
       </div>
       <img
         src={it.src}
+        {...dims(it.src)}
         alt={it.note}
         onClick={(e) => e.stopPropagation()}
         style={{

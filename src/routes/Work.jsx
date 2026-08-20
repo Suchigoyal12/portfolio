@@ -6,6 +6,9 @@ import CheckAccess from "./CheckAccess.jsx";
 import AiTrustLayer from "./AiTrustLayer.jsx";
 import AdminShell from "./AdminShell.jsx";
 import ReleaseNotes from "./ReleaseNotes.jsx";
+import CheckAccessFull from "./CheckAccessFull.jsx";
+import { useIsNarrow } from "../hooks/useIsNarrow.js";
+import { FRAMED } from "../site/shared.jsx";
 
 // The single component behind every /work URL — /work itself and all four
 // project slugs. See the route comment in App.jsx for why it is one route
@@ -37,42 +40,47 @@ const PROJECTS = {
   "release-notes": ReleaseNotes
 };
 
-// Evaluated once. Whether a document is framed cannot change over its life,
-// and reading window.top can throw if a parent is ever cross-origin.
-const FRAMED = (() => {
-  try { return window.self !== window.top; } catch (e) { return true; }
-})();
-
 // The stage has no mobile form — below 900 it is a plain list of links, and
 // those links point at /work/<slug>. If a slug rendered the stage there, every
 // link in the list would lead straight back to the list. So on narrow screens
 // a slug renders its case study, which is exactly where the live site's mobile
 // list points today.
-function useIsNarrow() {
-  const [narrow, setNarrow] = React.useState(() => window.matchMedia("(max-width: 899px)").matches);
-  React.useEffect(() => {
-    const mq = window.matchMedia("(max-width: 899px)");
-    const onChange = (e) => setNarrow(e.matches);
-    mq.addEventListener("change", onChange);
-    return () => mq.removeEventListener("change", onChange);
-  }, []);
-  return narrow;
-}
+//
+// The hook itself was declared here until About needed the same boundary. It
+// moved to hooks/useIsNarrow.js unchanged rather than being copied.
+
+// The only legal second segment, and which card owns it. A direct link to the
+// long read focuses the Check Access card with the long read in its frame,
+// rather than rendering a bare document outside the stage (roadmap item 3).
+const SUBPAGES = {
+  "check-access": { full: CheckAccessFull }
+};
 
 export default function Work() {
-  const { slug } = useParams();
+  const { slug, sub } = useParams();
   const narrow = useIsNarrow();
 
   if (slug) {
-    const Project = PROJECTS[slug];
-    // `:slug?` matches anything in that position, so /work/banana arrives here
-    // rather than falling through to the catch-all. It still has to be a 404 —
-    // the difference is that this one renders inside WorkLayout, which is an
-    // empty passthrough today and will be stage chrome later. Worth revisiting
-    // when WorkLayout stops being empty.
+    const subPage = sub ? (SUBPAGES[slug] || {})[sub] : null;
+    // `:slug?/:sub?` matches anything in those positions, so /work/banana and
+    // /work/check-access/banana both arrive here rather than falling through
+    // to the catch-all. Both still have to be a 404 — the difference is that
+    // these render inside WorkLayout, which is an empty passthrough today and
+    // will be stage chrome later. Worth revisiting when WorkLayout stops being
+    // empty.
+    if (sub && !subPage) return <NotFound />;
+    const Project = subPage || PROJECTS[slug];
     if (!Project) return <NotFound />;
+    // Inside the stage's iframe, or on a phone where there is no stage, this
+    // URL is the document itself.
     if (FRAMED || narrow) return <Project />;
   }
 
-  return <WorkStage focused={slug} />;
+  // Top level. A sub-page URL seeds the card's frame so the stage opens
+  // showing it, and opens fullscreen — the section rail is gated on
+  // `is-fullscreen`, and landing a shared long-read link in stage view would
+  // hide the table of contents the deep read exists to be navigated by.
+  const seedFrame = sub ? { slug, path: `/work/${slug}/${sub}` } : null;
+
+  return <WorkStage focused={slug} seedFrame={seedFrame} seedFs={!!seedFrame} />;
 }

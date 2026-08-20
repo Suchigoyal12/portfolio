@@ -1,5 +1,6 @@
 import React from "react";
 import { DEFAULT_TWEAKS, MonoLabel, SITE, ScrollProgress, WaveMotif, chromeHorizon, monoFamily, sansFamily, serifFamily, useTheme } from "./shared.jsx";
+import { dims } from "./image-dims.js";
 // =============================================================
 // PROJECT DETAIL — RELEASE COMMUNICATION SYSTEM ("Release Notes")
 // Scrollytelling: the left narrative PINS (sticky) while the
@@ -241,7 +242,7 @@ function Frame({ src, alt, refEl, children }) {
         background: "#fff"
       }}>
       
-      <img src={src} alt={alt} loading="lazy" style={{ display: "block", width: "100%", height: "auto" }} />
+      <img src={src} {...dims(src)} alt={alt} loading="lazy" style={{ display: "block", width: "100%", height: "auto" }} />
       {children}
     </div>);
 

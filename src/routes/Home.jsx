@@ -1,8 +1,9 @@
-import React, { useCallback, useEffect, useRef } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import SiteRail from "../layouts/SiteRail.jsx";
 import { useFit } from "../hooks/useFit.js";
 import { usePanelFluid } from "../hooks/usePanelFluid.js";
 import "./Home.css";
+import { dims } from "../site/image-dims.js";
 
 // Ported from legacy/index.html. Markup is the original's, structure for
 // structure, including the separate mobile stack below 900px and its inline
@@ -35,6 +36,16 @@ const BACKGROUND_COPY =
   "The (un)glamorous work holds everything up. UiPath's admin layer- the control plane behind every business automation, 10,000+ customer enterprises. Joined as the most junior designer on it. Led it within the year. Systems, governance, the edge cases that decide whether software earns trust. Depth over breadth.";
 
 export default function Home() {
+  // Roadmap item 8 — the tooling "+" toggle. Click state, not hover: it has
+  // to persist after the pointer leaves, which the sitewide hover-group
+  // mechanism (Home.css ~265) can't do. The two coexist deliberately — this
+  // adds an accent highlight to a fixed cross-group set of pills; the
+  // existing hover mechanism still dims non-matching *groups* on hover of
+  // any pill, independent of this state. Desktop only for now: mobile's
+  // pill list is missing 4 of the 8 target pills (Jitter, HTML, CSS, JS) —
+  // a pre-existing gap, not something to paper over here.
+  const [toolingExpanded, setToolingExpanded] = useState(false);
+
   const canvasRef  = useRef(null);
   const stageRef   = useRef(null);
   const panelRef   = useRef(null);
@@ -120,7 +131,7 @@ export default function Home() {
         <div className="stage" ref={stageRef}>
 
           {/* Zone 1: Left rail */}
-          <div className="photo"><img src="/uploads/homepage-photo.png" alt="Profile photo" /></div>
+          <div className="photo"><img src="/uploads/homepage-photo.png" {...dims("/uploads/homepage-photo.png")} alt="Profile photo" /></div>
 
           <SiteRail />
 
@@ -133,7 +144,7 @@ export default function Home() {
                 aria-label="Play pronunciation of soo-chee"
                 style={{ alignItems: "center" }}
                 onClick={() => playPronunciation(tipDesktopRef)}>
-                <span className="speaker-icon"><img src="/uploads/speaker-icon.png" alt="" style={{ width: 15, height: 15 }} /></span>
+                <span className="speaker-icon"><img src="/uploads/speaker-icon.png" {...dims("/uploads/speaker-icon.png")} alt="" style={{ width: 15, height: 15 }} /></span>
                 <span className="phon-syllables">
                   <span className="phon-text">soo</span>
                   <span className="phon-dot"></span>
@@ -153,7 +164,7 @@ export default function Home() {
           </div>
 
           {/* Zone 3: Tooling */}
-          <div className="tooling" ref={toolingRef}>
+          <div className={"tooling" + (toolingExpanded ? " tooling-expanded" : "")} ref={toolingRef}>
             <div className="mono-label tool-heading">
               <span className="th-sizer">/ ai experiments</span>
               <span className="th-label th-default">/ tooling</span>
@@ -164,25 +175,25 @@ export default function Home() {
             <div className="pill-grid" style={{ gap: 10 }}>
               <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
                 <div className="pill-row">
-                  <span className="pill" data-tool-group="design" style={{ fontSize: 9 }}>Figma</span>
+                  <span className="pill" data-tool-group="design" data-highlight="build-note" style={{ fontSize: 9 }}>Figma</span>
                   <span className="pill" data-tool-group="design" style={{ fontSize: 9 }}>Adobe suite</span>
                 </div>
                 <div className="pill-row">
                   <span className="pill" data-tool-group="design" style={{ fontSize: 9 }}>GOOGLE STITCH</span>
-                  <span className="pill" data-tool-group="design" style={{ fontSize: 9 }}>JITTER</span>
+                  <span className="pill" data-tool-group="design" data-highlight="build-note" style={{ fontSize: 9 }}>JITTER</span>
                 </div>
               </div>
               <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
                 <div className="pill-row">
-                  <span className="pill" data-tool-group="build" style={{ fontSize: 9 }}>Claude</span>
+                  <span className="pill" data-tool-group="build" data-highlight="build-note" style={{ fontSize: 9 }}>Claude</span>
                   <span className="pill" data-tool-group="build" style={{ fontSize: 9 }}>cursor</span>
-                  <span className="pill" data-tool-group="build" style={{ fontSize: 9 }}>GITHUB</span>
+                  <span className="pill" data-tool-group="build" data-highlight="build-note" style={{ fontSize: 9 }}>GITHUB</span>
                 </div>
                 <div className="pill-row">
-                  <span className="pill" data-tool-group="build" style={{ fontSize: 9 }}>HTML</span>
-                  <span className="pill" data-tool-group="build" style={{ fontSize: 9 }}>CSS</span>
-                  <span className="pill" data-tool-group="build" style={{ fontSize: 9 }}>JS</span>
-                  <span className="pill" data-tool-group="build" style={{ fontSize: 9 }}>REACT</span>
+                  <span className="pill" data-tool-group="build" data-highlight="build-note" style={{ fontSize: 9 }}>HTML</span>
+                  <span className="pill" data-tool-group="build" data-highlight="build-note" style={{ fontSize: 9 }}>CSS</span>
+                  <span className="pill" data-tool-group="build" data-highlight="build-note" style={{ fontSize: 9 }}>JS</span>
+                  <span className="pill" data-tool-group="build" data-highlight="build-note" style={{ fontSize: 9 }}>REACT</span>
                 </div>
               </div>
               <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
@@ -191,6 +202,19 @@ export default function Home() {
                   <span className="pill" data-tool-group="ai" style={{ fontSize: 9 }}>Antigravity</span>
                 </div>
               </div>
+            </div>
+            <div className="tooling-trigger-row">
+              <button
+                type="button"
+                className="tooling-toggle"
+                aria-expanded={toolingExpanded}
+                aria-label={toolingExpanded ? "Hide build note" : "Show build note"}
+                onClick={() => setToolingExpanded((v) => !v)}>
+                {toolingExpanded ? "−" : "+"}
+              </button>
+              {/* Conditionally rendered, not hidden: absent from the DOM and from
+                  screen readers entirely while collapsed, per spec point 3. */}
+              {toolingExpanded && <span className="tooling-note">used to build this site.</span>}
             </div>
           </div>
 
@@ -206,7 +230,7 @@ export default function Home() {
                 aria-label="Visit UiPath (opens in new tab)"
                 onMouseEnter={handleEnter}
                 onMouseLeave={handleLeave}>
-                <img className="uipath-logo" src="/uploads/uipath-logo-light.png" alt="UiPath" />
+                <img className="uipath-logo" src="/uploads/uipath-logo-light.png" {...dims("/uploads/uipath-logo-light.png")} alt="UiPath" />
               </a>
               <div className="role-row">
                 <span className="date">‘24-’25</span>
@@ -219,7 +243,7 @@ export default function Home() {
             </div>
             <div className="edu-block">
               <div className="mono-label">/ education</div>
-              <img className="iitg-logo" src="/uploads/iitg-logo.png" alt="IIT Guwahati" />
+              <img className="iitg-logo" src="/uploads/iitg-logo.png" {...dims("/uploads/iitg-logo.png")} alt="IIT Guwahati" />
               <div className="role-row">
                 <span className="date">‘20-’24</span>
                 <span className="role">b.des. <span className="sep"></span> iit Guwahati</span>
@@ -238,7 +262,7 @@ export default function Home() {
 
       {/* Mobile fallback (<900px) — mirrors work.html's stacked MobileList pattern */}
       <div className="mobile-stack">
-        <div className="photo" style={{ position: "static", width: 127, height: 175, marginBottom: 24 }}><img src="/uploads/homepage-photo.png" alt="Profile photo" /></div>
+        <div className="photo" style={{ position: "static", width: 127, height: 175, marginBottom: 24 }}><img src="/uploads/homepage-photo.png" {...dims("/uploads/homepage-photo.png")} alt="Profile photo" /></div>
 
         <div className="wordmark" style={{ position: "static", marginBottom: 28 }}>
           <div className="mark" style={{ fontSize: 48 }}>SuCHI</div>
@@ -248,7 +272,7 @@ export default function Home() {
               className="phon-control"
               aria-label="Play pronunciation of soo-chee"
               onClick={() => playPronunciation(tipMobileRef)}>
-              <span className="speaker-icon" style={{ width: 14, height: 14 }}><img src="/uploads/speaker-icon.png" alt="" /></span>
+              <span className="speaker-icon" style={{ width: 14, height: 14 }}><img src="/uploads/speaker-icon.png" {...dims("/uploads/speaker-icon.png")} alt="" /></span>
               <span className="phon-syllables">
                 <span className="phon-text" style={{ fontSize: 12 }}>soo</span>
                 <span className="phon-dot"></span>
@@ -267,7 +291,13 @@ export default function Home() {
           <p className="pull-quote" style={{ fontSize: 22, maxWidth: "none", marginTop: 32 }}>growing at the intersection of design &amp; technology</p>
         </div>
 
-        <div className="tooling" style={{ position: "static", width: "100%", marginTop: 40 }}>
+        {/* Tool list, order and highlight set are now identical to the desktop
+            composition above — they had diverged (mobile carried Framer and v0,
+            and was missing Jitter, HTML, CSS, JS and AI Studio), which made the
+            build-note highlight impossible to render here. Only the presentation
+            differs, deliberately: one wrapping row instead of three columns, and
+            11px pills instead of 9px. If a tool changes, change it in BOTH. */}
+        <div className={"tooling" + (toolingExpanded ? " tooling-expanded" : "")} style={{ position: "static", width: "100%", marginTop: 40 }}>
           <div className="mono-label tool-heading" style={{ fontSize: 11 }}>
             <span className="th-sizer">/ ai experiments</span>
             <span className="th-label th-default">/ tooling</span>
@@ -276,16 +306,31 @@ export default function Home() {
             <span className="th-label th-group th-ai">/ ai experiments</span>
           </div>
           <div className="pill-grid" style={{ marginTop: 8, flexWrap: "wrap", flexDirection: "row" }}>
-            <span className="pill" data-tool-group="design" style={{ fontSize: 11, padding: "8px 14px" }}>Figma</span>
+            <span className="pill" data-tool-group="design" data-highlight="build-note" style={{ fontSize: 11, padding: "8px 14px" }}>Figma</span>
             <span className="pill" data-tool-group="design" style={{ fontSize: 11, padding: "8px 14px" }}>Adobe suite</span>
-            <span className="pill" data-tool-group="design" style={{ fontSize: 11, padding: "8px 14px" }}>Framer</span>
-            <span className="pill" data-tool-group="build" style={{ fontSize: 11, padding: "8px 14px" }}>Claude</span>
+            <span className="pill" data-tool-group="design" style={{ fontSize: 11, padding: "8px 14px" }}>GOOGLE STITCH</span>
+            <span className="pill" data-tool-group="design" data-highlight="build-note" style={{ fontSize: 11, padding: "8px 14px" }}>JITTER</span>
+            <span className="pill" data-tool-group="build" data-highlight="build-note" style={{ fontSize: 11, padding: "8px 14px" }}>Claude</span>
             <span className="pill" data-tool-group="build" style={{ fontSize: 11, padding: "8px 14px" }}>cursor</span>
-            <span className="pill" data-tool-group="ai" style={{ fontSize: 11, padding: "8px 14px" }}>v0</span>
-            <span className="pill" data-tool-group="build" style={{ fontSize: 11, padding: "8px 14px" }}>react</span>
-            <span className="pill" data-tool-group="build" style={{ fontSize: 11, padding: "8px 14px" }}>github</span>
-            <span className="pill" data-tool-group="design" style={{ fontSize: 11, padding: "8px 14px" }}>Google stitch</span>
+            <span className="pill" data-tool-group="build" data-highlight="build-note" style={{ fontSize: 11, padding: "8px 14px" }}>GITHUB</span>
+            <span className="pill" data-tool-group="build" data-highlight="build-note" style={{ fontSize: 11, padding: "8px 14px" }}>HTML</span>
+            <span className="pill" data-tool-group="build" data-highlight="build-note" style={{ fontSize: 11, padding: "8px 14px" }}>CSS</span>
+            <span className="pill" data-tool-group="build" data-highlight="build-note" style={{ fontSize: 11, padding: "8px 14px" }}>JS</span>
+            <span className="pill" data-tool-group="build" data-highlight="build-note" style={{ fontSize: 11, padding: "8px 14px" }}>REACT</span>
+            <span className="pill" data-tool-group="ai" style={{ fontSize: 11, padding: "8px 14px" }}>AI STUDIO</span>
             <span className="pill" data-tool-group="ai" style={{ fontSize: 11, padding: "8px 14px" }}>Antigravity</span>
+          </div>
+          <div className="tooling-trigger-row">
+            <button
+              type="button"
+              className="tooling-toggle"
+              style={{ fontSize: 11 }}
+              aria-expanded={toolingExpanded}
+              aria-label={toolingExpanded ? "Hide build note" : "Show build note"}
+              onClick={() => setToolingExpanded((v) => !v)}>
+              {toolingExpanded ? "−" : "+"}
+            </button>
+            {toolingExpanded && <span className="tooling-note" style={{ fontSize: 11 }}>used to build this site.</span>}
           </div>
         </div>
 
@@ -301,7 +346,7 @@ export default function Home() {
               style={{ marginTop: 8 }}
               onMouseEnter={handleEnter}
               onMouseLeave={handleLeave}>
-              <img className="uipath-logo" src="/uploads/uipath-logo-light.png" alt="UiPath" style={{ height: 16 }} />
+              <img className="uipath-logo" src="/uploads/uipath-logo-light.png" {...dims("/uploads/uipath-logo-light.png")} alt="UiPath" style={{ height: 16 }} />
             </a>
             <div className="role-row" style={{ fontSize: 13 }}>
               <span className="date" style={{ fontSize: 13, width: 64 }}>‘24-’25</span>
@@ -314,7 +359,7 @@ export default function Home() {
           </div>
           <div className="edu-block">
             <div className="mono-label" style={{ fontSize: 11 }}>/ education</div>
-            <img className="iitg-logo" src="/uploads/iitg-logo.png" alt="IIT Guwahati" style={{ width: 36, height: 36, marginTop: 8 }} />
+            <img className="iitg-logo" src="/uploads/iitg-logo.png" {...dims("/uploads/iitg-logo.png")} alt="IIT Guwahati" style={{ width: 36, height: 36, marginTop: 8 }} />
             <div className="role-row">
               <span className="date" style={{ fontSize: 13, width: 64 }}>‘20-’24</span>
               <span className="role" style={{ fontSize: 13 }}>b.des. <span className="sep"></span> iit Guwahati</span>

@@ -55,6 +55,15 @@
 .route-about .mode-toggle[aria-checked="true"] { cursor:default; }
 .route-about .mode-toggle[aria-checked="true"] .radio::before { border-color:var(--accent); }
 .route-about .mode-toggle[aria-checked="true"] .radio::after { opacity:1; }
+/* Mobile copy — in flow, not at the frame’s absolute coordinates, and sized to
+   match the mobile rail’s own 12px. The base rule’s 36px bottom padding is the
+   desktop gap to .mode-content; below 900 the row owns that spacing instead,
+   and the padding becomes tap-target height. */
+@media (max-width: 899px) {
+  .route-about .mobile-stack .mode-toggles { display:flex; gap:28px; margin-bottom:32px; }
+  .route-about .mobile-stack .mode-toggle { position:static; padding:8px 0; }
+  .route-about .mobile-stack .mode-toggle .label { font-size:12px; }
+}
 
 /* ---------- Content area ---------- */
 .route-about .mode-content { position:absolute; left:221px; top:188px; max-width:680px; }

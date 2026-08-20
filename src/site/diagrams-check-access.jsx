@@ -314,13 +314,43 @@ function CheckAccessSolutionSection({ pillars }) {
             background: color-mix(in oklch, var(--accent) 8%, var(--surface));
             box-shadow: inset 2px 0 0 var(--accent);
           }
+
+          /* The track list and the divider live here rather than inline so the
+             breakpoint below can override them without !important. Both are
+             computed-identical to the inline values they replace: three equal
+             tracks, and a right border on every card but the last. */
+          .pillar-grid { grid-template-columns: 1fr 1fr 1fr; }
+          .pillar-card { height: 160px; }
+          .pillar-card:not(:last-child) { border-right: 1px solid var(--ink); }
+
+          /* Three 300px-min cards cannot sit side by side on a phone. Measured
+             at 390: the tracks resolve to 160/106/139 inside a 146px column and
+             push the page 245px wide. 1fr keeps an automatic min-content floor,
+             so the fix is minmax(0,1fr) plus min-width:0 — a plain 1fr still
+             refuses to shrink past the longest word.
+
+             700px, because that is where the tracks stop being equal. Every
+             width the parity harness measures (900/1150/1300/1440, framed) is
+             above it and is untouched. */
+          /* :not(.is-framed) — the stage's iframe is roughly viewport-244, so a
+             900px window hands this page a 656px frame and this block would
+             fire at a desktop window size. Inside the stage the layout must
+             stay Stage 1's. */
+          @media (max-width: 699px) {
+            html:not(.is-framed) .pillar-grid { grid-template-columns: minmax(0, 1fr); }
+            html:not(.is-framed) .pillar-card { min-width: 0; height: auto; min-height: 160px; }
+            html:not(.is-framed) .pillar-card:not(:last-child) {
+              border-right: none;
+              border-bottom: 1px solid var(--ink);
+            }
+          }
         `}</style>
 
         <div
+          className="pillar-grid"
           style={{
             marginTop: 14,
             display: "grid",
-            gridTemplateColumns: "1fr 1fr 1fr",
             gap: 0,
             border: "1px solid var(--ink)"
           }}>
@@ -338,8 +368,6 @@ function CheckAccessSolutionSection({ pillars }) {
                   paddingLeft: 22,
                   paddingRight: 22,
                   paddingBottom: 0,
-                  borderRight: i < pillars.length - 1 ? "1px solid var(--ink)" : "none",
-                  height: 160,
                   display: "flex",
                   flexDirection: "column",
                   alignItems: "flex-start",

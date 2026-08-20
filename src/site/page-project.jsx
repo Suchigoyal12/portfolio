@@ -3,6 +3,7 @@ import { CirclesOnGrid, MonoLabel, PageShell, WaveMotif, chromeHorizon, monoFami
 import { PROJECT_ROUTES } from "../routes.js";
 import { AuditPipeline } from "./diagram-audit-pipeline.jsx";
 import { CheckAccessSolutionSection } from "./diagrams-check-access.jsx";
+import { dims } from "./image-dims.js";
 // =============================================================
 // PROJECT DETAIL — V5 layout (sticky left rail + magazine flow)
 // Standard case study: Problem, Approach, Solution, Outcomes, Reflection
@@ -534,7 +535,7 @@ function ProjectDetailPage({ projectId }) {
                     <a className="evo-step" href="/work/check-access/full#v1">
                       <span className="evo-tip">Read in detail ↗</span>
                       <div className="evo-tile">
-                        <img src="/uploads/sentiment-icon.png" alt="sentiment" />
+                        <img src="/uploads/sentiment-icon.png" {...dims("/uploads/sentiment-icon.png")} alt="sentiment" loading="lazy" />
                       </div>
                       <div className="evo-label">Private Preview</div>
                       <div className="evo-desc">Enterprise admin insight.</div>
@@ -560,7 +561,7 @@ function ProjectDetailPage({ projectId }) {
                     <a className="evo-step" href="/work/check-access/full#v2">
                       <span className="evo-tip">Read in detail ↗</span>
                       <div className="evo-tile">
-                        <img src="/uploads/container.png" alt="verified" />
+                        <img src="/uploads/container.png" {...dims("/uploads/container.png")} alt="verified" loading="lazy" />
                       </div>
                       <div className="evo-label">The Solution</div>
                       <div className="evo-desc">Centralized, explicit, and traceable.</div>
@@ -594,7 +595,7 @@ function ProjectDetailPage({ projectId }) {
           </React.Fragment>
           }>
 
-            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 16, marginTop: 24 }}>
+            <div className="artifact-grid" style={{ display: "grid", gap: 16, marginTop: 24 }}>
               {data.solution.artifacts.map((a) =>
             <div key={a.label} style={{ borderTop: "1px solid var(--ink)", paddingTop: 14 }}>
                   <MonoLabel>{a.label}</MonoLabel>

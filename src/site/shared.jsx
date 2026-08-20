@@ -15,8 +15,11 @@ const SITE = {
   email: "suchigoyal12@gmail.com",
   phone: "+91-9216700021",
   location: "Bangalore / India",
-  resume: "read.cv/suchi",
-  linkedin: "www.suchi.com",
+  // `resume` and `linkedin` removed 2026-08-19 (roadmap item 4). Both had zero
+  // usages and zero occurrences in the build, and both were stale: resume said
+  // read.cv/suchi while the live link is the contact overlay's
+  // /suchi-resume.pdf, and linkedin held the site URL rather than a LinkedIn
+  // one. Nothing rendered either, so removing them changes no pixel.
   footerCredit: "BUILT AT THE INTERSECTION OF DESIGN & ENGINEERING"
 };
 
@@ -259,6 +262,22 @@ const RESPONSIVE_CSS = `
 // never loaded this stylesheet, and the overrides above are broad enough to
 // reach it — `main h1` resizes its hero below 1180px. Everything else passes
 // nothing and gets the stylesheet, exactly as before.
+// Whether this document is inside the stage's iframe.
+//
+// Evaluated once, at module load: it cannot change over a document's life, and
+// reading window.top can throw if a parent is ever cross-origin — hence the
+// try/catch, which fails closed to "framed" because that is the safer default
+// for anything that keys layout off it.
+//
+// Two callers with two different jobs. Work.jsx decides stage-vs-case-study on
+// it. ProjectShell writes it onto <html> as `is-framed` so CSS can ask the same
+// question, which the narrow-screen blocks need: the stage's iframe is roughly
+// viewport - 244, so a 900px window hands the case study a 656px frame and the
+// mobile breakpoints would otherwise fire at a desktop window size.
+export const FRAMED = (() => {
+  try { return window.self !== window.top; } catch (e) { return true; }
+})();
+
 export function useResponsiveCss(enabled = true) {
   React.useEffect(() => {
     if (!enabled) return undefined;

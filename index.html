@@ -5,6 +5,41 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Suchi. Portfolio '26</title>
 
+  <!-- Link preview and search result. Static and site-wide: one card for every
+       route, because per-route tags need prerendering (roadmap item 12) and a
+       single honest card beats a bare URL today.
+
+       ⚠ THE THREE ABSOLUTE URLS BELOW ARE THE VERCEL ALIAS. Change all three
+       the day a custom domain lands (roadmap item 6) - canonical especially,
+       since pointing it at the wrong host tells Google the wrong page is the
+       real one. og:image must stay absolute: several scrapers will not
+       resolve a relative one.
+
+       No em dash in the description, deliberately.
+
+       og-image.png is a 1200x630 render of the homepage itself, not a designed
+       card - an interim stand-in until Suchi supplies a card design (roadmap
+       item 20). Regenerate it by screenshotting / at 1440x756 (the 1.91:1
+       share ratio at a real desktop width, so the composition is not cropped)
+       at deviceScaleFactor 2, then downsampling to 1200 wide. -->
+  <meta name="description" content="Suchi - design technologist. Enterprise platform design at UiPath: permissions, AI governance, admin systems. Portfolio '26.">
+  <link rel="canonical" href="https://portfolio-suchi2.vercel.app/">
+
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="Suchi. Portfolio '26">
+  <meta property="og:title" content="Suchi. Portfolio '26">
+  <meta property="og:description" content="Suchi - design technologist. Enterprise platform design at UiPath: permissions, AI governance, admin systems. Portfolio '26.">
+  <meta property="og:url" content="https://portfolio-suchi2.vercel.app/">
+  <meta property="og:image" content="https://portfolio-suchi2.vercel.app/og-image.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:image:alt" content="The Suchi. Portfolio '26 homepage - design technologist, beyond product design.">
+
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Suchi. Portfolio '26">
+  <meta name="twitter:description" content="Suchi - design technologist. Enterprise platform design at UiPath: permissions, AI governance, admin systems. Portfolio '26.">
+  <meta name="twitter:image" content="https://portfolio-suchi2.vercel.app/og-image.png">
+
   <link rel="icon" type="image/svg+xml" href="/favicon.svg">
   <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
   <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">

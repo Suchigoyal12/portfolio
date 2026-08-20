@@ -2,8 +2,10 @@ import React, { useCallback, useEffect, useRef, useState } from "react";
 import SiteRail from "../layouts/SiteRail.jsx";
 import { useFit } from "../hooks/useFit.js";
 import { usePersonTimeline } from "../hooks/usePersonTimeline.js";
+import { useIsNarrow } from "../hooks/useIsNarrow.js";
 import { LYRICS, PHOTOS, PH_GAP, PH_PX_PER_SEC } from "./aboutContent.js";
 import "./About.css";
+import { dims } from "../site/image-dims.js";
 
 // Ported from legacy/about.html. Both branches preserved (brief 2.6).
 //
@@ -11,13 +13,19 @@ import "./About.css";
 // .mode-content's innerHTML on every toggle. That becomes React state — but the
 // consequence the brief calls out survives with it: the toggle destroys and
 // recreates .shelf and the photo marquee, so the layout pass has to re-run
-// after every branch change, not only on resize. useFit takes `deps: [mode]`
+// after every branch change, not only on resize. useFit takes `deps: [shownMode]`
 // for exactly that, and afterFit re-measures the marquee.
 //
-// `mode` starts null, so nothing renders until a branch is chosen. Below 900px
-// there is no way to choose one, which leaves the mobile page blank. That is a
-// known, deferred issue — listed in the brief's deferred section. Preserved
-// deliberately; do not "fix" it here.
+// `mode` starts null, so nothing renders until a branch is chosen. That empty
+// first paint is the authored desktop composition — two unselected radios and a
+// choice to make — and it stays exactly as it was.
+//
+// Below 900px it was a blank white page: the toggles live in .stage, which the
+// mobile media query hides, so there was no way to choose a branch at all. The
+// mobile stack now renders its own copy of the toggles, and a null mode resolves
+// to `designer` there (`shownMode`). Resolved at render rather than seeded into
+// state, so the desktop null state survives untouched and crossing 900 in either
+// direction lands on the right composition.
 
 const SHELF_L = [772, 632]; // [value@1440, value@1300] — left edge, px
 
@@ -121,7 +129,7 @@ function PersonBranch({ reduceMotion, timeline, lyricsRef, shelfRef }) {
       </div>
 
       <div className={"shelf" + revealClass} ref={shelfRef}>
-        <img src="/uploads/shelf.png" alt="A shelf of books, potted plants, pine cones and a candle" />
+        <img src="/uploads/shelf.png" {...dims("/uploads/shelf.png")} alt="A shelf of books, potted plants, pine cones and a candle" />
         <p className="shelf-cap">Always in “let me try this” mode, curious, building &amp; exploring.</p>
       </div>
     </div>
@@ -141,6 +149,15 @@ export default function About() {
   const [reduceMotion] = useState(
     () => window.matchMedia("(prefers-reduced-motion: reduce)").matches
   );
+
+  // Below 900 there is no null state. The mobile stack has no room for the
+  // "pick a lens" moment, and a null mode there renders an empty page — which
+  // is what it did. `person` cannot be the fallback: its lyrics panel and shelf
+  // are hidden until the first Play (the stepped reveal), so at rest it is an
+  // eyebrow and a button. Every read below is of shownMode; only `pick` writes
+  // to `mode`, so the desktop null state is never overwritten by the fallback.
+  const narrow = useIsNarrow();
+  const shownMode = narrow && mode === null ? "designer" : mode;
 
   const setLyricsRef = (i) => (el) => { lyricsRefs.current[i] = el; };
 
@@ -187,16 +204,16 @@ export default function About() {
     stageRef,
     columns: [{ ref: shelfRef, at1440: SHELF_L[0], at1300: SHELF_L[1] }],
     afterFit: phMeasure,
-    deps: [mode],
+    deps: [shownMode],
   });
 
   // Leaving the branch always resets it — returning starts fresh.
   useEffect(() => {
-    if (mode !== "person") teardown();
-  }, [mode, teardown]);
+    if (shownMode !== "person") teardown();
+  }, [shownMode, teardown]);
 
   const pick = (next) => {
-    if (mode === next) return; // already active — no deselect
+    if (shownMode === next) return; // already active — no deselect
     setMode(next);
   };
 
@@ -206,7 +223,7 @@ export default function About() {
         type="button"
         className="mode-toggle is-designer"
         role="radio"
-        aria-checked={String(mode === "designer")}
+        aria-checked={String(shownMode === "designer")}
         data-mode="designer"
         onClick={() => pick("designer")}>
         <span className="radio"></span>
@@ -216,7 +233,7 @@ export default function About() {
         type="button"
         className="mode-toggle is-person"
         role="radio"
-        aria-checked={String(mode === "person")}
+        aria-checked={String(shownMode === "person")}
         data-mode="person"
         onClick={() => pick("person")}>
         <span className="radio"></span>
@@ -226,9 +243,9 @@ export default function About() {
   );
 
   const branch = (which) => {
-    if (mode === null) return null;
-    if (mode === "designer") return <DesignerBranch />;
-    if (mode === "person")
+    if (shownMode === null) return null;
+    if (shownMode === "designer") return <DesignerBranch />;
+    if (shownMode === "person")
       return (
         <PersonBranch
           reduceMotion={reduceMotion}
@@ -237,7 +254,7 @@ export default function About() {
           shelfRef={which === "desktop" ? shelfRef : shelfMobileRef}
         />
       );
-    return <p className="stub">{mode} branch</p>;
+    return <p className="stub">{shownMode} branch</p>;
   };
 
   return (
@@ -259,6 +276,11 @@ export default function About() {
 
       <div className="mobile-stack">
         <SiteRail variant="mobile" />
+        {/* Same fragment the stage renders, in the same order relative to the
+            rail and the content. Only one copy is ever visible — .canvas and
+            .mobile-stack are display:none for each other — which is how the
+            rail and .mode-content have always been duplicated here. */}
+        <div className="mode-toggles">{toggles}</div>
         <div className="mode-content" id="modeContentMobile" style={{ position: "static", left: "auto", top: "auto" }}>{branch("mobile")}</div>
       </div>
     </div>

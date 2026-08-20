@@ -1,5 +1,5 @@
 import { useLayoutEffect } from "react";
-import { useResponsiveCss } from "../site/shared.jsx";
+import { useResponsiveCss, FRAMED } from "../site/shared.jsx";
 import "./project.css";
 
 // Wraps every ported case study. Owns the two things the old HTML shells set
@@ -29,10 +29,14 @@ export function useProjectShell({ forceFullscreen = false, variant, responsive =
     const root = document.documentElement;
     root.classList.add("project-route");
     if (variant) root.classList.add(variant);
+    // Lets CSS ask whether it is rendering inside the stage. The narrow-screen
+    // blocks are scoped :not(.is-framed) — see the note on FRAMED in shared.jsx.
+    if (FRAMED) root.classList.add("is-framed");
     if (forceFullscreen) document.body.classList.add("is-fullscreen");
     return () => {
       root.classList.remove("project-route");
       if (variant) root.classList.remove(variant);
+      if (FRAMED) root.classList.remove("is-framed");
       if (forceFullscreen) document.body.classList.remove("is-fullscreen");
     };
   }, [forceFullscreen, variant]);

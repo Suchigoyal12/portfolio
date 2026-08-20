@@ -267,10 +267,6 @@ body:not(.is-fullscreen) .route-check-access-full .shell { grid-template-columns
 .route-check-access-full .reel .media { position: relative; width: 100%; aspect-ratio: 16/9; background: #C5D8E4; border: 1px solid var(--ink); border-radius: 4px; overflow: hidden }
 .route-check-access-full .reel .media img, .route-check-access-full .reel .media video { display: block; width: 100%; height: 100%; object-fit: cover }
 .route-check-access-full .reel .media .bar { position: absolute; left: 0; bottom: 0; height: 2px; width: 0; background: var(--accent); z-index: 2 }
-@media(max-width:760px) {
-  .route-check-access-full .reels { gap: 64px }
-  .route-check-access-full .reel .take .bold { font-size: 22px }
-}
 
 /* impact dark band */
 .route-check-access-full section.row.impact { background: var(--ink-panel); color: var(--ink-inverse); border-top: 1px solid var(--line); border-bottom: 1px solid var(--line) }
@@ -309,3 +305,95 @@ body:not(.is-fullscreen) .route-check-access-full .shell { grid-template-columns
 .route-check-access-full footer.page .owner { font-family: 'Cormorant Garamond'; font-size: 32px }
 .route-check-access-full footer.page .end { grid-column: 1/-1; border-top: 1px solid #26241F; padding-top: 14px; margin-top: 24px; display: flex; justify-content: space-between; font-family: 'JetBrains Mono'; font-size: 9px; letter-spacing: 0.1em; text-transform: uppercase; color: #7A786F }
 .route-check-access-full footer.page a { color: var(--ink-inverse); text-decoration: none }
+
+
+/* ============================================================
+   NARROW SCREENS — roadmap item 2b
+   Last in the file on purpose. These are overrides, and several of the rules
+   they override (.lessons, .impact-stats, .footer-row, footer.page) are
+   declared further down than this block originally sat — same specificity,
+   so source order decided it and the base rules silently won. Anything added
+   here must stay below every rule it is meant to beat.
+
+   Scoped :not(.is-framed) for the same reason as project.css: the stage's
+   iframe is roughly viewport-244, so these would otherwise fire inside the
+   frame at a desktop window size and diverge from Stage 1.
+   ============================================================ */
+@media(max-width:760px) {
+  html:not(.is-framed) .route-check-access-full .reels { gap: 64px }
+  html:not(.is-framed) .route-check-access-full .reel .take .bold { font-size: 22px }
+
+  /* ---------- Narrow-screen collapse, roadmap item 2b ----------
+   * This page opts out of the shared responsive stylesheet (responsive:false,
+   * decision 1) and carried no mobile treatment beyond the two rules above,
+   * while running ~24 multi-column grids at 64px side padding. Measured at
+   * 390: 315px of horizontal overflow.
+   *
+   * Every declaration below is mechanical — one column, less padding, smaller
+   * headings. No per-section judgement is encoded here, deliberately: how this
+   * page should *read* on a phone is item 19, and mixing the two would make a
+   * regression impossible to attribute.
+   *
+   * 760px because the file already breaks here and overflow clears at exactly
+   * this width. The harness measures 900 and up, so nothing below is reachable
+   * from any parity number.
+   *
+   * The cause in every case is the same: `1fr` carries an automatic
+   * min-content floor, so a track will not shrink past its longest word.
+   */
+  html:not(.is-framed) .route-check-access-full .shell { grid-template-columns: minmax(0, 1fr) }
+
+  /* The hero is a <section class="hero">, not a .row, so it keeps its own
+     padding — and its h1 is clamp(56px, 8vw, 108px), where 8vw at 390 is 31px
+     and the 56px FLOOR is what actually renders. "PERMISSIONS." at 56px is
+     362px wide inside a 262px column: the last 36px of overflow on this page
+     was one word in one heading.
+
+     Only the floor moves, so the clamp still governs everywhere. Be precise
+     about what that changes: the OLD floor bound until 8vw reached 56px, i.e.
+     700px wide. So 475-700px now scales smoothly where it used to sit flat at
+     56px, and 700px and above is byte-identical. All of it is inside this
+     760px block, which the harness never reaches. */
+  html:not(.is-framed) .route-check-access-full .hero { padding: 40px 20px 48px }
+  html:not(.is-framed) .route-check-access-full .hero h1 { font-size: clamp(38px, 8vw, 108px) }
+
+  html:not(.is-framed) .route-check-access-full section.row,
+  html:not(.is-framed) .route-check-access-full .summary { grid-template-columns: minmax(0, 1fr); gap: 20px; padding: 40px 20px }
+  html:not(.is-framed) .route-check-access-full section.row h2 { font-size: 32px }
+  html:not(.is-framed) .route-check-access-full section.row.next h2 { font-size: 40px }
+
+  /* Equal-track grids — nothing to preserve, they simply stack. */
+  html:not(.is-framed) .route-check-access-full .pain-row,
+  html:not(.is-framed) .route-check-access-full .grid-4,
+  html:not(.is-framed) .route-check-access-full .art-row,
+  html:not(.is-framed) .route-check-access-full .quotes,
+  html:not(.is-framed) .route-check-access-full .pillars,
+  html:not(.is-framed) .route-check-access-full .ab,
+  html:not(.is-framed) .route-check-access-full .steps,
+  html:not(.is-framed) .route-check-access-full .impact-stats,
+  html:not(.is-framed) .route-check-access-full .lessons,
+  html:not(.is-framed) .route-check-access-full .incomp ul,
+  html:not(.is-framed) .route-check-access-full .decstrip ul,
+  html:not(.is-framed) .route-check-access-full section.row.next .footer-row,
+  html:not(.is-framed) .route-check-access-full .project-overview .grid { grid-template-columns: minmax(0, 1fr) }
+
+  /* Label/content splits — the fixed label column goes above its content. */
+  html:not(.is-framed) .route-check-access-full .takeaway,
+  html:not(.is-framed) .route-check-access-full .insight,
+  html:not(.is-framed) .route-check-access-full .decstrip,
+  html:not(.is-framed) .route-check-access-full .decisions .card,
+  html:not(.is-framed) .route-check-access-full .decisions .card .grid { grid-template-columns: minmax(0, 1fr); gap: 12px }
+
+  /* The comparison table is the one place stacking changes meaning: its two
+     columns are a before/after pair, and a vertical rule between them is what
+     said so. Stacked, that rule falls between unrelated cells — so it rotates
+     to a horizontal one, the same move the pillar cards made in 2a. */
+  html:not(.is-framed) .route-check-access-full .ctable .row-h,
+  html:not(.is-framed) .route-check-access-full .ctable .row-b { grid-template-columns: minmax(0, 1fr) }
+  html:not(.is-framed) .route-check-access-full .ctable .row-h > div,
+  html:not(.is-framed) .route-check-access-full .ctable .row-b > div { border-right: 0 }
+  html:not(.is-framed) .route-check-access-full .ctable .row-b > div:not(:last-child) { border-bottom: 1px solid var(--line) }
+
+  html:not(.is-framed) .route-check-access-full footer.page { grid-template-columns: minmax(0, 1fr); padding: 40px 20px 24px }
+  html:not(.is-framed) .route-check-access-full footer.page .end { flex-direction: column; gap: 8px }
+}

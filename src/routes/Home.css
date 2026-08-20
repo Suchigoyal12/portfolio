@@ -256,6 +256,75 @@
 }
 .route-home .pill:hover { color: var(--accent); border-color: var(--accent); }
 
+/* ---------- Tooling "+" toggle, roadmap item 8 ----------
+   Plain text, not a pill: no border, no border-radius, no background — a
+   sibling of .pill-grid, not a member of it. Font/size/tracking match the
+   pill labels' rendered size (9px, the inline override on this composition,
+   not the 10px base .pill carries before it). Default color is var(--muted),
+   the same secondary-text token .mono-label uses; hover/focus shift to
+   var(--accent) only, no underline or other decoration added.
+
+   Explored inline-vs-stacked, three casings and three reveal treatments in
+   an interactive comparison before settling here — see roadmap item 8.
+   Settled: inline, lowercase, a 6px slide-in, 20px above the pill grid
+   (was 8px; the gap read as too tight against the pills at that size).
+
+   Click toggles .tooling-expanded on the wrapper (see React state in
+   Home.jsx) and reuses the sitewide highlighted-pill declaration verbatim —
+   color + border-color: var(--accent) — on a fixed cross-group set of pills,
+   [data-highlight="build-note"]. It does not reuse the hover mechanism's
+   opacity-dim of the rest: those pills stay in their default state, exactly
+   as specified.
+
+   The highlighted set is Figma, Jitter, Claude, GitHub, HTML, CSS, JS, React
+   (2026-08-20). GitHub was briefly dropped and restored the same day — not
+   an inconsistency, once named: it is part of the pipeline this site was
+   actually built and shipped through. Cursor is excluded for a different,
+   simpler reason — Suchi didn't use it for this portfolio, so it is
+   factually not part of the answer, not a line-drawing call like the rest. */
+.route-home .tooling-trigger-row {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  margin-top: 20px;
+}
+.route-home .tooling-toggle {
+  display: block;
+  padding: 0;
+  border: 0;
+  background: none;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9px;
+  letter-spacing: 0.08em;
+  color: var(--muted);
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  transition: color 0.15s ease;
+}
+.route-home .tooling-toggle:hover,
+.route-home .tooling-toggle:focus-visible { color: var(--accent); }
+.route-home .tooling.tooling-expanded .pill[data-highlight="build-note"] {
+  color: var(--accent);
+  border-color: var(--accent);
+}
+
+/* Mounts fresh every time it appears (conditional render, not display/opacity
+   toggle — see Home.jsx), so a plain @keyframes plays automatically on mount
+   without any JS-driven enter/exit state. No exit animation: the spec calls
+   for the line to be genuinely absent on collapse, not faded out first. */
+.route-home .tooling-note {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9px;
+  letter-spacing: 0.08em;
+  text-transform: lowercase;
+  color: var(--muted);
+  animation: tooling-note-in 0.22s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+@keyframes tooling-note-in {
+  from { opacity: 0; transform: translateX(-6px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+
 /* Tooling group-hover: highlight hovered pill's group, dim the rest, swap heading */
 .route-home .tool-heading { position: relative; display: inline-block; }
 .route-home .tool-heading .th-sizer { visibility: hidden; white-space: nowrap; }
@@ -276,7 +345,8 @@
 .route-home .tooling:has(.pill[data-tool-group="ai"]:hover) .pill:not([data-tool-group="ai"]) { opacity: 0.78; }
 
 @media (prefers-reduced-motion: reduce) {
-  .route-home a, .route-home .pill, .route-home .cursor-tag, .route-home .tool-heading .th-label { transition-duration: 0.001ms !important; }
+  .route-home a, .route-home .pill, .route-home .cursor-tag, .route-home .tool-heading .th-label, .route-home .tooling-toggle { transition-duration: 0.001ms !important; }
+  .route-home .tooling-note { animation-duration: 0.001ms !important; }
 }
 
 /* ---------- Zone 4: Right rail ---------- */

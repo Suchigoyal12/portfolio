@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { LeftRail } from "../site/shared.jsx";
 import { useProjectShell } from "./ProjectShell.jsx";
 import "./CheckAccessFull.css";
+import { dims } from "../site/image-dims.js";
 
 // The long version. Reached from inside the short version and nowhere else;
 // never enters the card stack. The last hand-written HTML page in the project
@@ -147,7 +148,7 @@ function Reel({ src, poster, eyebrow, bold, support }) {
             <div className="bar" ref={barRef} />
           </>
         ) : (
-          <img src={poster} alt={bold} loading="lazy" />
+          <img src={poster} {...dims(poster)} alt={bold} loading="lazy" />
         )}
       </div>
     </figure>
@@ -271,7 +272,7 @@ function Lightbox({ shot, onClose }) {
         </div>
       </div>
       <div className="lb-stage" ref={stageRef}>
-        <img ref={imgRef} src={shot ? shot.src : undefined} alt={shot ? shot.title : ""} draggable="false" />
+        <img ref={imgRef} src={shot ? shot.src : undefined} {...dims(shot && shot.src)} alt={shot ? shot.title : ""} draggable="false" />
       </div>
       <div className="lb-hint">Scroll or pinch to zoom · drag to pan · click image to zoom · Esc to close</div>
     </div>
@@ -344,12 +345,21 @@ export default function CheckAccessFull() {
     };
   }, []);
 
-  // ← BACK. The original went back in history when there was history and fell
-  // through to the short version's URL otherwise. Same rule, except the
-  // fallback is a client-side route change rather than a page load.
+  // ← BACK always returns to the short version, in whatever view this page is
+  // being read in.
+  //
+  // It used to try `history.back()` first and only fall through to this URL
+  // when there was no history — the original's rule. That reads as "back" but
+  // behaves as "leave": arriving from a shared link on LinkedIn or in an email,
+  // the previous entry is that other site, so the one prominent control on the
+  // page sent the reader off the portfolio entirely. Roadmap item 3.
+  //
+  // Nothing here has to preserve stage-vs-fullscreen. Framed, this navigates
+  // the iframe only, and the mode belongs to the parent stage; unframed, it is
+  // a route change within the same document. Either way the view survives on
+  // its own.
   const onBack = (e) => {
     e.preventDefault();
-    if (window.history.length > 1) { window.history.back(); return; }
     navigate("/work/check-access");
   };
 
@@ -662,13 +672,13 @@ export default function CheckAccessFull() {
               <div className="ab">
                 <div className="card">
                   <div className="top"><span className="opt">Option A</span><span className="desc">Dropdown-Based Selection</span></div>
-                  <button type="button" className="shot" onClick={() => setShot({ src: "/uploads/option-a.png", title: "Option A — Dropdown-Based Selection" })}><img src="/uploads/option-a.png" alt="Option A — Dropdown-based folder path selection" loading="lazy" /></button>
+                  <button type="button" className="shot" onClick={() => setShot({ src: "/uploads/option-a.png", title: "Option A — Dropdown-Based Selection" })}><img src="/uploads/option-a.png" {...dims("/uploads/option-a.png")} alt="Option A — Dropdown-based folder path selection" loading="lazy" /></button>
                   <h4>Allowed users to select folder paths via a dropdown.</h4>
                   <p><span className="lbl">Limitation · </span>Lacked visibility into hierarchy and made it difficult to understand structure at a glance.</p>
                 </div>
                 <div className="card sel">
                   <div className="top"><span className="opt">Option B · Selected</span><span className="desc">Tree Navigation</span></div>
-                  <button type="button" className="shot" onClick={() => setShot({ src: "/uploads/option-b.png", title: "Option B — Tree Navigation" })}><img src="/uploads/option-b.png" alt="Option B — Persistent folder tree navigation" loading="lazy" /></button>
+                  <button type="button" className="shot" onClick={() => setShot({ src: "/uploads/option-b.png", title: "Option B — Tree Navigation" })}><img src="/uploads/option-b.png" {...dims("/uploads/option-b.png")} alt="Option B — Persistent folder tree navigation" loading="lazy" /></button>
                   <h4>Introduced a persistent folder tree.</h4>
                   <p>Enables users to explore hierarchy and understand context while auditing access.</p>
                 </div>

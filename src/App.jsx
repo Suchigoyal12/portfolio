@@ -8,7 +8,6 @@ import { ContactProvider } from "./components/ContactOverlay.jsx";
 import Home from "./routes/Home.jsx";
 import About from "./routes/About.jsx";
 import Work from "./routes/Work.jsx";
-import CheckAccessFull from "./routes/CheckAccessFull.jsx";
 import NotFound from "./routes/NotFound.jsx";
 
 // The four case studies are no longer imported here. They are reached through
@@ -48,12 +47,20 @@ export default function App() {
               positions on every card click. One route means changing the slug
               is a prop change and the stage never unmounts.
 
-              The long Check Access page is deliberately NOT part of that. It
-              is two segments deep, so `:slug?` cannot match it, and it is not
-              a card — it is reached from inside the short version and never
-              enters the stack. */}
-          <Route path="/work/check-access/full" element={<CheckAccessFull />} />
-          <Route path="/work/:slug?" element={<Work />} />
+              The long Check Access page used to sit outside that, on its own
+              `/work/check-access/full` route rendering CheckAccessFull
+              directly. That is why a shared link to it opened as a bare
+              document with no stage, no chrome and — because the section rail
+              is gated on `is-fullscreen`, which only the stage ever sets — no
+              table of contents either. Roadmap item 3.
+
+              It now goes through the same door as the other four. The optional
+              second segment is what lets ONE route cover /work, the four
+              slugs, and /work/check-access/full: adding a separate Route for
+              the long read would put it in a different position in the tree,
+              and switching to it would unmount the stage and reload all four
+              iframes — the exact thing the paragraph above exists to prevent. */}
+          <Route path="/work/:slug?/:sub?" element={<Work />} />
         </Route>
 
         {/* Last, and in neither layout — a not-found page gets no site rail,

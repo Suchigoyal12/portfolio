@@ -291,7 +291,7 @@ function CardWindow({
 // ============================================================
 // MAIN
 // ============================================================
-export default function WorkStage({ focused }) {
+export default function WorkStage({ focused, seedFrame = null, seedFs = false }) {
   const vp = useViewport();
   const navigate = useNavigate();
   const contact = useContact();
@@ -327,16 +327,25 @@ export default function WorkStage({ focused }) {
   // Resolved once and held in state rather than read during render, because
   // changing an iframe's src is a navigation: recomputing would reload the
   // card.
+  //
+  // `seedFrame` is the URL asking for a specific page inside a card — a direct
+  // link to /work/check-access/full. It wins over the stored value, because the
+  // URL is a deliberate request and sessionStorage is only a memory of where
+  // you were. It goes through the same guard: an unvalidated value here would
+  // be exactly the injection the guard exists to stop.
   const [frameSrc] = React.useState(() => {
     const out = {};
     WORK_CARDS.forEach((c) => {
-      const saved = ssGet(ssFrameKey(c.key));
-      const ok = saved === c.href || saved && saved.startsWith(c.href + "/");
-      out[c.key] = ok ? saved : c.href;
+      const wanted = seedFrame && seedFrame.slug === c.slug ? seedFrame.path : ssGet(ssFrameKey(c.key));
+      const ok = wanted === c.href || wanted && wanted.startsWith(c.href + "/");
+      out[c.key] = ok ? wanted : c.href;
     });
     return out;
   });
-  const [fs, setFs] = React.useState(() => ssGet(SS_FS) === "1");
+  // A sub-page URL opens fullscreen: the section rail is gated on
+  // `is-fullscreen`, so a shared long-read link landing in stage view would
+  // arrive with no table of contents.
+  const [fs, setFs] = React.useState(() => seedFs || ssGet(SS_FS) === "1");
   const [stackRevealed, setStackRevealed] = React.useState(false);
   const [swapping, setSwapping] = React.useState(false);
   const iframeRefs = React.useRef({});
