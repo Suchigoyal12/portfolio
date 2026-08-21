@@ -315,7 +315,16 @@ function VideoPlaceholder({ src, poster, onEnterView }) {
 }
 
 // ── Combined stateful pillars + screen section ────────────────
-function CheckAccessSolutionSection({ pillars }) {
+// Owns the whole solution block for Check Access, in this order:
+//   SOLUTION PILLARS -> the three cards -> their descriptions -> the walkthrough
+//
+// The descriptions are passed in rather than left where they were, in
+// page-project.jsx's `children`. They have to sit BETWEEN the cards and the
+// video, and CSSection renders frameSlot before children — so with the video
+// in here and the descriptions out there, no arrangement of the two puts the
+// video last. Taking the descriptions in is what makes the order expressible
+// at all. Every other project still renders its own copy out there.
+function CheckAccessSolutionSection({ pillars, artifacts }) {
   const [activePillar, setActivePillar] = React.useState(null);
 
   // One walkthrough per pillar, in the order the pillars are declared in
@@ -349,12 +358,7 @@ function CheckAccessSolutionSection({ pillars }) {
   return (
     <React.Fragment>
 
-      <VideoPlaceholder
-        src={videoSrc}
-        poster={media ? media.poster : null}
-        onEnterView={handleEnterView} />
-
-      <div style={{ marginTop: 24 }}>
+      <div>
         <MonoLabel>SOLUTION PILLARS</MonoLabel>
 
         <style>{`
@@ -460,6 +464,34 @@ function CheckAccessSolutionSection({ pillars }) {
                 <MonoLabel>{p.tag}</MonoLabel>
               </div>);
           })}
+        </div>
+
+        {/* The pillar descriptions. The mono label each one carried
+            (DISCLOSE PROGRESSIVELY, …) is gone: the card directly above names
+            the same pillar, so the label was saying it twice. Keeps the
+            .artifact-grid class — project.css collapses it to one column below
+            700px, and that rule should keep applying here. */}
+        {artifacts && artifacts.length > 0 &&
+          <div className="artifact-grid" style={{ display: "grid", gap: 16, marginTop: 24 }}>
+            {artifacts.map((a) =>
+              <div key={a.label} style={{ borderTop: "1px solid var(--ink)", paddingTop: 14 }}>
+                <p style={{ fontFamily: sansFamily, fontSize: 14, lineHeight: 1.5, margin: 0, color: "var(--ink)" }}>
+                  {a.desc}
+                </p>
+              </div>
+            )}
+          </div>
+        }
+
+        {/* The walkthrough, last. 40px rather than the 24px used between the
+            cards and their descriptions: those two belong together, and the
+            video is a separate beat that should not read as a fourth column
+            of the same group. */}
+        <div style={{ marginTop: 40 }}>
+          <VideoPlaceholder
+            src={videoSrc}
+            poster={media ? media.poster : null}
+            onEnterView={handleEnterView} />
         </div>
       </div>
     </React.Fragment>);

@@ -573,7 +573,9 @@ function ProjectDetailPage({ projectId }) {
 
             {projectId === "uipath-check-access" && CheckAccessSolutionSection ?
           <div style={{ marginTop: 32 }}>
-                <CheckAccessSolutionSection pillars={[
+                <CheckAccessSolutionSection
+            artifacts={data.solution.artifacts}
+            pillars={[
             { label: "Disclose Progressively", tag: "COGNITIVE LOAD" },
             { label: "Trace Origins", tag: "POLICY LINEAGE" },
             { label: "Scope Separation", tag: "NARRATIVE LOGS" }]
@@ -595,6 +597,12 @@ function ProjectDetailPage({ projectId }) {
           </React.Fragment>
           }>
 
+            {/* Check Access renders these inside CheckAccessSolutionSection
+                instead, so they can sit between the pillar cards and the
+                walkthrough. CSSection puts frameSlot before children, so
+                leaving them here would force the video above them. Every
+                other project is unchanged. */}
+            {!(projectId === "uipath-check-access" && CheckAccessSolutionSection) &&
             <div className="artifact-grid" style={{ display: "grid", gap: 16, marginTop: 24 }}>
               {data.solution.artifacts.map((a) =>
             <div key={a.label} style={{ borderTop: "1px solid var(--ink)", paddingTop: 14 }}>
@@ -605,6 +613,7 @@ function ProjectDetailPage({ projectId }) {
                 </div>
             )}
             </div>
+            }
           </CSSection>
 
           {/* OUTCOMES — dark band */}
