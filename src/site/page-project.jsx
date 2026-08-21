@@ -573,9 +573,7 @@ function ProjectDetailPage({ projectId }) {
 
             {projectId === "uipath-check-access" && CheckAccessSolutionSection ?
           <div style={{ marginTop: 32 }}>
-                <CheckAccessSolutionSection
-            artifacts={data.solution.artifacts}
-            pillars={[
+                <CheckAccessSolutionSection pillars={[
             { label: "Disclose Progressively", tag: "COGNITIVE LOAD" },
             { label: "Trace Origins", tag: "POLICY LINEAGE" },
             { label: "Scope Separation", tag: "NARRATIVE LOGS" }]
@@ -597,23 +595,21 @@ function ProjectDetailPage({ projectId }) {
           </React.Fragment>
           }>
 
-            {/* Check Access renders these inside CheckAccessSolutionSection
-                instead, so they can sit between the pillar cards and the
-                walkthrough. CSSection puts frameSlot before children, so
-                leaving them here would force the video above them. Every
-                other project is unchanged. */}
-            {!(projectId === "uipath-check-access" && CheckAccessSolutionSection) &&
-            <div className="artifact-grid" style={{ display: "grid", gap: 16, marginTop: 24 }}>
+            {/* The pillar descriptions, last in the section. Each one used to
+                carry a mono label (DISCLOSE PROGRESSIVELY, …) above a rule —
+                both gone: the pillar card above already names it, so the label
+                said it twice, and the rule was separating a heading that no
+                longer exists. This file renders Check Access only, so nothing
+                else is affected. */}
+            <div className="artifact-grid" style={{ display: "grid", gap: 16, marginTop: 28 }}>
               {data.solution.artifacts.map((a) =>
-            <div key={a.label} style={{ borderTop: "1px solid var(--ink)", paddingTop: 14 }}>
-                  <MonoLabel>{a.label}</MonoLabel>
-                  <p style={{ fontFamily: sansFamily, fontSize: 14, lineHeight: 1.5, marginTop: 8, color: "var(--ink)" }}>
+            <div key={a.label}>
+                  <p style={{ fontFamily: sansFamily, fontSize: 14, lineHeight: 1.5, margin: 0, color: "var(--ink)" }}>
                     {a.desc}
                   </p>
                 </div>
             )}
             </div>
-            }
           </CSSection>
 
           {/* OUTCOMES — dark band */}

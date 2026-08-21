@@ -315,16 +315,20 @@ function VideoPlaceholder({ src, poster, onEnterView }) {
 }
 
 // ── Combined stateful pillars + screen section ────────────────
-// Owns the whole solution block for Check Access, in this order:
-//   SOLUTION PILLARS -> the three cards -> their descriptions -> the walkthrough
+// The solution block for Check Access:
+//   SOLUTION PILLARS -> the walkthrough -> the three cards
 //
-// The descriptions are passed in rather than left where they were, in
-// page-project.jsx's `children`. They have to sit BETWEEN the cards and the
-// video, and CSSection renders frameSlot before children — so with the video
-// in here and the descriptions out there, no arrangement of the two puts the
-// video last. Taking the descriptions in is what makes the order expressible
-// at all. Every other project still renders its own copy out there.
-function CheckAccessSolutionSection({ pillars, artifacts }) {
+// The descriptions follow, rendered by page-project.jsx as this section's
+// children — CSSection puts frameSlot before children, which is exactly the
+// order wanted, so they stay where they were authored.
+//
+// The heading sits above the walkthrough rather than above the cards: it
+// labels the whole block, and the video is part of what it labels.
+//
+// The video and the cards are deliberately close together. Clicking a card
+// changes the video, and that relationship has to be legible before anyone
+// has clicked anything — proximity is the only thing carrying it.
+function CheckAccessSolutionSection({ pillars }) {
   const [activePillar, setActivePillar] = React.useState(null);
 
   // One walkthrough per pillar, in the order the pillars are declared in
@@ -361,6 +365,13 @@ function CheckAccessSolutionSection({ pillars, artifacts }) {
       <div>
         <MonoLabel>SOLUTION PILLARS</MonoLabel>
 
+        <div style={{ marginTop: 14 }}>
+          <VideoPlaceholder
+            src={videoSrc}
+            poster={media ? media.poster : null}
+            onEnterView={handleEnterView} />
+        </div>
+
         <style>{`
           .pillar-card {
             background: var(--surface);
@@ -382,7 +393,11 @@ function CheckAccessSolutionSection({ pillars, artifacts }) {
              computed-identical to the inline values they replace: three equal
              tracks, and a right border on every card but the last. */
           .pillar-grid { grid-template-columns: 1fr 1fr 1fr; }
-          .pillar-card { height: 160px; }
+          /* No fixed height: the cards hug their content and the grid row
+             equalises them. With 32px of top padding and a 160px box they read
+             as cards with a lot of empty space below the label; tighter, they
+             read as the buttons they actually are. */
+          .pillar-card { min-height: 120px; }
           .pillar-card:not(:last-child) { border-right: 1px solid var(--ink); }
 
           /* Three 300px-min cards cannot sit side by side on a phone. Measured
@@ -400,7 +415,7 @@ function CheckAccessSolutionSection({ pillars, artifacts }) {
              stay Stage 1's. */
           @media (max-width: 699px) {
             html:not(.is-framed) .pillar-grid { grid-template-columns: minmax(0, 1fr); }
-            html:not(.is-framed) .pillar-card { min-width: 0; height: auto; min-height: 160px; }
+            html:not(.is-framed) .pillar-card { min-width: 0; height: auto; min-height: 120px; }
             html:not(.is-framed) .pillar-card:not(:last-child) {
               border-right: none;
               border-bottom: 1px solid var(--ink);
@@ -411,7 +426,7 @@ function CheckAccessSolutionSection({ pillars, artifacts }) {
         <div
           className="pillar-grid"
           style={{
-            marginTop: 14,
+            marginTop: 10,
             display: "grid",
             gap: 0,
             border: "1px solid var(--ink)"
@@ -426,10 +441,10 @@ function CheckAccessSolutionSection({ pillars, artifacts }) {
                 className={`pillar-card${isActive ? " pillar-active" : ""}`}
                 onClick={() => setActivePillar(isActive ? null : num)}
                 style={{
-                  paddingTop: 32,
+                  paddingTop: 18,
                   paddingLeft: 22,
                   paddingRight: 22,
-                  paddingBottom: 0,
+                  paddingBottom: 18,
                   display: "flex",
                   flexDirection: "column",
                   alignItems: "flex-start",
@@ -466,33 +481,6 @@ function CheckAccessSolutionSection({ pillars, artifacts }) {
           })}
         </div>
 
-        {/* The pillar descriptions. The mono label each one carried
-            (DISCLOSE PROGRESSIVELY, …) is gone: the card directly above names
-            the same pillar, so the label was saying it twice. Keeps the
-            .artifact-grid class — project.css collapses it to one column below
-            700px, and that rule should keep applying here. */}
-        {artifacts && artifacts.length > 0 &&
-          <div className="artifact-grid" style={{ display: "grid", gap: 16, marginTop: 24 }}>
-            {artifacts.map((a) =>
-              <div key={a.label} style={{ borderTop: "1px solid var(--ink)", paddingTop: 14 }}>
-                <p style={{ fontFamily: sansFamily, fontSize: 14, lineHeight: 1.5, margin: 0, color: "var(--ink)" }}>
-                  {a.desc}
-                </p>
-              </div>
-            )}
-          </div>
-        }
-
-        {/* The walkthrough, last. 40px rather than the 24px used between the
-            cards and their descriptions: those two belong together, and the
-            video is a separate beat that should not read as a fourth column
-            of the same group. */}
-        <div style={{ marginTop: 40 }}>
-          <VideoPlaceholder
-            src={videoSrc}
-            poster={media ? media.poster : null}
-            onEnterView={handleEnterView} />
-        </div>
       </div>
     </React.Fragment>);
 }
