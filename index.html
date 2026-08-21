@@ -9,11 +9,15 @@
        route, because per-route tags need prerendering (roadmap item 12) and a
        single honest card beats a bare URL today.
 
-       ⚠ THE THREE ABSOLUTE URLS BELOW ARE THE VERCEL ALIAS. Change all three
-       the day a custom domain lands (roadmap item 6) - canonical especially,
-       since pointing it at the wrong host tells Google the wrong page is the
-       real one. og:image must stay absolute: several scrapers will not
-       resolve a relative one.
+       The four absolute URLs below are the live apex domain, set 2026-08-21
+       when it went live (roadmap item 6). They must stay absolute and must
+       stay on this host: og:image and twitter:image are what LinkedIn, Slack
+       and X fetch the card from, and a card served from a host that does not
+       match the link is the failure mode that shows nothing at all rather
+       than erroring. canonical on the wrong host tells Google the wrong page
+       is the real one.
+
+       www redirects to the apex, so the apex is the canonical form.
 
        No em dash in the description, deliberately.
 
@@ -23,14 +27,14 @@
        share ratio at a real desktop width, so the composition is not cropped)
        at deviceScaleFactor 2, then downsampling to 1200 wide. -->
   <meta name="description" content="Suchi - design technologist. Enterprise platform design at UiPath: permissions, AI governance, admin systems. Portfolio '26.">
-  <link rel="canonical" href="https://portfolio-suchi2.vercel.app/">
+  <link rel="canonical" href="https://suchigoyal.com/">
 
   <meta property="og:type" content="website">
   <meta property="og:site_name" content="Suchi. Portfolio '26">
   <meta property="og:title" content="Suchi. Portfolio '26">
   <meta property="og:description" content="Suchi - design technologist. Enterprise platform design at UiPath: permissions, AI governance, admin systems. Portfolio '26.">
-  <meta property="og:url" content="https://portfolio-suchi2.vercel.app/">
-  <meta property="og:image" content="https://portfolio-suchi2.vercel.app/og-image.png">
+  <meta property="og:url" content="https://suchigoyal.com/">
+  <meta property="og:image" content="https://suchigoyal.com/og-image.png">
   <meta property="og:image:width" content="1200">
   <meta property="og:image:height" content="630">
   <meta property="og:image:alt" content="The Suchi. Portfolio '26 homepage - design technologist, beyond product design.">
@@ -38,7 +42,7 @@
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="Suchi. Portfolio '26">
   <meta name="twitter:description" content="Suchi - design technologist. Enterprise platform design at UiPath: permissions, AI governance, admin systems. Portfolio '26.">
-  <meta name="twitter:image" content="https://portfolio-suchi2.vercel.app/og-image.png">
+  <meta name="twitter:image" content="https://suchigoyal.com/og-image.png">
 
   <link rel="icon" type="image/svg+xml" href="/favicon.svg">
   <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">

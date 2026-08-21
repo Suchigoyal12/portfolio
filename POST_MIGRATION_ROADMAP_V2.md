@@ -175,10 +175,20 @@ The live path was verified working: contact overlay → `/suchi-resume.pdf`, fil
 
 **A standing preference, recorded 2026-08-19:** no em dashes in copy published under Suchi's name - she reads them as AI-written, and the whole positioning rests on the site reading as hand-made. Hyphens instead. The pre-existing em dashes in `index.html`'s font comment are developer-facing and were left alone.
 
-**6 — Custom domain.**
-Both production and preview are on default `*.vercel.app` subdomains. `suchi.design/work` on a résumé reads differently. Verify in Vercel → Settings → Domains; Claude Code cannot see this.
+**6 — Custom domain. DONE (2026-08-21).**
 
-**Now blocks a correctness fix, not just polish.** Item 5 shipped `canonical`, `og:url` and `og:image` as absolute URLs on `portfolio-suchi2.vercel.app`, because a domain has to be decided before they can be right. All three need updating in `index.html` the moment the domain lands - a three-line edit, but leaving canonical on the old host actively misdirects search engines.
+Live at **`https://suchigoyal.com`** — apex is primary, `www` redirects to it. Verified before repointing anything: both return 200 and `www` resolves through to the apex.
+
+**It was four URLs in `index.html`, not three.** `canonical`, `og:url`, `og:image` — and `twitter:image`, which was missed in the hand-count and has exactly the same failure mode as `og:image`: fully qualified, fetched by the platform rather than the visitor, and silently renders nothing when the host does not match the link. All four now on the apex.
+
+> **⚠ `tools/compare.mjs` STILL POINTS AT A `vercel.app` URL, AND MUST.**
+> `REFERENCE = "https://portfolio-dk8r4mnca-suchi2.vercel.app"` is the frozen Stage 1 per-deployment URL. It is deliberately not the production alias, and it must not be updated to `suchigoyal.com` — that would make the harness diff the React build against itself and report 0.000% forever, destroying the baseline silently. A repo-wide grep for `vercel.app` will surface it; leave it alone. The comment above it says the same thing.
+
+*Also checked and left alone:* `MIGRATION_BRIEF.md` records the Stage 1 deploy target as a `*.vercel.app` subdomain — historically accurate, not a live reference. **No `robots.txt` or `sitemap.xml` exists** in `public/` or at root, so neither carried a stale absolute URL. A sitemap would help Search Console and pairs naturally with item 12's prerendering; not created here.
+
+*Unaffected:* item 11's soft-404 rewrite has nothing to do with the host and stays below the line.
+
+**Outstanding, and not something Claude Code can do:** add `suchigoyal.com` to Google Search Console and verify by DNS TXT in Cloudflare, then paste the URL into LinkedIn's Post Inspector to force a re-scrape of the card — LinkedIn caches aggressively and will otherwise keep serving the old preview.
 
 **7 — Image weight, lite. DONE (2026-08-19).**
 
