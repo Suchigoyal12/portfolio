@@ -360,6 +360,24 @@ export default function CheckAccessFull() {
   // its own.
   const onBack = (e) => {
     e.preventDefault();
+    // Tell the stage the card is showing the short version again.
+    //
+    // This is a client-side route change: no document is replaced, so the
+    // stage's load-time recorder (syncIframeFs) never fires and sessionStorage
+    // would keep pointing at the long read. Following the link INTO the long
+    // read is a plain <a>, i.e. a real document load, which is why the trip
+    // out records itself and the trip back has to say so explicitly.
+    //
+    // Regression introduced with item 3: the previous onBack called
+    // history.back(), which inside the frame popped to a real document load
+    // and re-recorded as a side effect. Replacing it with navigate() was
+    // correct for the "arriving from LinkedIn" case and silently broke this.
+    if (window.parent && window.parent !== window) {
+      window.parent.postMessage(
+        { type: "work:frame", slug: "check-access", path: "/work/check-access" },
+        "*"
+      );
+    }
     navigate("/work/check-access");
   };
 

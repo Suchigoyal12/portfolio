@@ -313,6 +313,12 @@ Suchi is supplying a design. When it lands: export at 1200x630, replace `public/
 
 *A first attempt built from the site's tokens (wordmark, DESIGN TECHNOLOGIST lockup, rail labels, metadata block) was rejected 2026-08-19; it is not in the repo.*
 
+**Fixed 2026-08-21, found by Suchi in the live build:**
+
+**Check Access short version — the three pillar walkthroughs are wired.** `CheckAccessSolutionSection` carried `pillarSrcs = [null, null, null]` with a "until wired up" comment; the three MP4s existed at the repo root and mapped 1:1 to the pillars by name. Clicking a pillar now plays its own walkthrough. The `<video>` also needed `muted`, `playsInline`, `loop` and a `poster` — a bare `src` renders a blank frame that never plays. `preload="metadata"`, so nobody who does not click a pillar downloads three videos. Two consequences worth knowing: the frame's "PLACEHOLDER · PRODUCT SCREEN" label swaps to the pillar's name while a real screen is playing (leaving it would tell a recruiter the work is unfinished), and the written stand-in description is hidden while playing, because it described the very thing now visible and rendered as unreadable dark text over the footage.
+
+**A card no longer reopens on the long read after you navigated back. REGRESSION FROM ITEM 3, introduced here and fixed here.** The stage records which page a card is showing from the iframe's document `load` event. Following the link *into* the long read is a plain `<a>`, so it is a real document load and records itself. Item 3 replaced `← BACK`'s `history.back()` — which popped to a real document load, and re-recorded as a side effect — with a client-side `navigate()`. No document is replaced, so the stage never learned the card came back, and `work:frame:check-access` stayed pointing at the long read forever: leaving `/work` and returning restored the long version. The long read now posts a `work:frame` message on back-navigation, and the stage applies it through the same guard `frameSrc` uses (the card's own route or a segment below it, because the value ends up in an iframe `src`).
+
 ---
 
 ## Not a task — documentation debt, do it at the first natural pause

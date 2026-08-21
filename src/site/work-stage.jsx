@@ -527,6 +527,20 @@ export default function WorkStage({ focused, seedFrame = null, seedFs = false })
         // newly-focused iframe on order change.
         focusRef.current(d.key);
       }
+      // A card navigated WITHIN itself, client-side. syncIframeFs records the
+      // frame path on document load, which catches following a plain <a> into
+      // the long read — but a React Router navigate() replaces no document, so
+      // the stage would otherwise never learn the card came back, and
+      // re-entering /work would restore the long read forever.
+      //
+      // Same guard as frameSrc's seeding: the value ends up in an iframe src,
+      // so it must be the card's own route or a segment below it.
+      if (d && d.type === "work:frame" && typeof d.path === "string") {
+        const card = WORK_CARDS.find((c) => c.slug === d.slug);
+        if (card && (d.path === card.href || d.path.startsWith(card.href + "/"))) {
+          ssSet(ssFrameKey(card.key), d.path);
+        }
+      }
     };
     window.addEventListener("message", onMsg);
     return () => window.removeEventListener("message", onMsg);

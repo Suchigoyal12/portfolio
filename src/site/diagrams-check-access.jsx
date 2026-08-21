@@ -232,7 +232,23 @@ function AuditQueryFlow() {
 }
 
 // ── Video placeholder — hatched fallback, video when src provided ──
-function VideoPlaceholder({ note, src }) {
+function VideoPlaceholder({ note, src, poster, label }) {
+  const videoRef = React.useRef(null);
+
+  // Play from the top each time a different pillar is chosen, and stop when
+  // the selection is cleared. Matching the long read's reels: muted +
+  // playsInline so autoplay is permitted at all, preload="metadata" so three
+  // walkthroughs are not fetched by anyone who never clicks a pillar, and a
+  // poster so the frame is never blank while the file arrives.
+  React.useEffect(() => {
+    const v = videoRef.current;
+    if (!v) return undefined;
+    if (!src) { v.pause(); return undefined; }
+    v.currentTime = 0;
+    v.play().catch(() => {}); // blocked autoplay simply leaves the poster up
+    return () => v.pause();
+  }, [src]);
+
   return (
     <div
       style={{
@@ -250,7 +266,13 @@ function VideoPlaceholder({ note, src }) {
       }}>
 
       <video
+        ref={videoRef}
         src={src || undefined}
+        poster={poster || undefined}
+        muted
+        loop
+        playsInline
+        preload="metadata"
         style={{
           position: "absolute",
           inset: 0,
@@ -261,19 +283,30 @@ function VideoPlaceholder({ note, src }) {
         }} />
 
       <div style={{ display: "flex", justifyContent: "space-between", position: "relative", zIndex: 1 }}>
-        <MonoLabel>PLACEHOLDER · PRODUCT SCREEN</MonoLabel>
+        {/* "PLACEHOLDER" is only true while nothing is playing. Leaving it up
+            over a real product walkthrough would tell a recruiter the work is
+            unfinished when it is not. */}
+        <MonoLabel>{src ? label : "PLACEHOLDER · PRODUCT SCREEN"}</MonoLabel>
       </div>
-      <div
-        style={{
-          fontFamily: sansFamily,
-          fontSize: 14,
-          color: "var(--ink)",
-          maxWidth: "70%",
-          position: "relative",
-          zIndex: 1
-        }}>
-        {note}
-      </div>
+      {/* The note is a written stand-in for the product screen. Once the real
+          screen is playing it is describing what the reader can already see,
+          and it renders as unstyled dark text directly over the footage —
+          illegible, and it reads as a layering bug rather than a caption.
+          The framing labels above and below stay: those are chrome, and they
+          are what make the panel read as a screen rather than a raw video. */}
+      {!src && (
+        <div
+          style={{
+            fontFamily: sansFamily,
+            fontSize: 14,
+            color: "var(--ink)",
+            maxWidth: "70%",
+            position: "relative",
+            zIndex: 1
+          }}>
+          {note}
+        </div>
+      )}
       <div style={{ display: "flex", justifyContent: "space-between", position: "relative", zIndex: 1 }}>
         <MonoLabel>SUCHI.COM / CHECK-ACCESS</MonoLabel>
         <MonoLabel>↗ FULL FIDELITY</MonoLabel>
@@ -285,16 +318,31 @@ function VideoPlaceholder({ note, src }) {
 function CheckAccessSolutionSection({ pillars }) {
   const [activePillar, setActivePillar] = React.useState(null);
 
-  // Pillar video sources — all null until wired up
-  const pillarSrcs = [null, null, null];
-  const videoSrc = activePillar != null ? pillarSrcs[activePillar - 1] : null;
+  // One walkthrough per pillar, in the order the pillars are declared in
+  // page-project.jsx: Disclose Progressively, Trace Origins, Scope Separation.
+  // The long read shows all three as a scroll-triggered sequence; here they are
+  // selected, one at a time, by clicking the pillar they belong to.
+  //
+  // "seperation" is the real filename, misspelled on disk. CLAUDE.md is
+  // explicit that the misspelling is corrected in all three places at once or
+  // not at all, and not at all is fine — so this matches the file rather than
+  // quietly renaming half of it.
+  const PILLAR_MEDIA = [
+    { src: "/disclose-progressively.mp4", poster: "/disclose-progressively.png", label: "DISCLOSE PROGRESSIVELY" },
+    { src: "/trace-origins.mp4",          poster: "/trace-origins.png",          label: "TRACE ORIGINS" },
+    { src: "/scope-seperation.mp4",       poster: "/scope-seperation.png",       label: "SCOPE SEPARATION" },
+  ];
+  const media = activePillar != null ? PILLAR_MEDIA[activePillar - 1] : null;
+  const videoSrc = media ? media.src : null;
 
   return (
     <React.Fragment>
 
       <VideoPlaceholder
         note="Check Access — unified permissions surface. Single navigable view across 15+ services."
-        src={videoSrc} />
+        src={videoSrc}
+        poster={media ? media.poster : null}
+        label={media ? media.label : null} />
 
       <div style={{ marginTop: 24 }}>
         <MonoLabel>SOLUTION PILLARS</MonoLabel>
