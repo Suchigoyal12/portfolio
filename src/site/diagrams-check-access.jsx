@@ -232,14 +232,40 @@ function AuditQueryFlow() {
 }
 
 // ── Video placeholder — hatched fallback, video when src provided ──
-function VideoPlaceholder({ note, src, poster, label }) {
+function VideoPlaceholder({ src, poster, onEnterView }) {
   const videoRef = React.useRef(null);
+  const frameRef = React.useRef(null);
 
-  // Play from the top each time a different pillar is chosen, and stop when
-  // the selection is cleared. Matching the long read's reels: muted +
-  // playsInline so autoplay is permitted at all, preload="metadata" so three
-  // walkthroughs are not fetched by anyone who never clicks a pillar, and a
-  // poster so the frame is never blank while the file arrives.
+  // Autoplay on scroll, pause off-screen. Same shape as the long read's reels
+  // (CheckAccessFull.jsx): a video that keeps running out of view is wasted
+  // decode work and, on a phone, wasted battery.
+  //
+  // onEnterView also selects the first pillar the first time the section is
+  // reached, so the reader arrives to something already playing rather than to
+  // an empty frame that has to be clicked before it does anything.
+  React.useEffect(() => {
+    const fig = frameRef.current;
+    if (!fig) return undefined;
+    const io = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((en) => {
+          if (en.isIntersecting) {
+            if (onEnterView) onEnterView();
+            const v = videoRef.current;
+            if (v && v.getAttribute("src")) v.play().catch(() => {});
+          } else {
+            const v = videoRef.current;
+            if (v) v.pause();
+          }
+        });
+      },
+      { threshold: 0.5 }
+    );
+    io.observe(fig);
+    return () => io.disconnect();
+  }, [onEnterView]);
+
+  // Restart whenever the chosen pillar changes.
   React.useEffect(() => {
     const v = videoRef.current;
     if (!v) return undefined;
@@ -251,6 +277,7 @@ function VideoPlaceholder({ note, src, poster, label }) {
 
   return (
     <div
+      ref={frameRef}
       style={{
         position: "relative",
         width: "100%",
@@ -258,13 +285,15 @@ function VideoPlaceholder({ note, src, poster, label }) {
         border: "1px solid var(--ink)",
         background:
           "repeating-linear-gradient(45deg, transparent 0 14px, color-mix(in oklch, var(--ink) 6%, transparent) 14px 15px), var(--surface)",
-        display: "flex",
-        flexDirection: "column",
-        justifyContent: "space-between",
-        padding: 18,
         overflow: "hidden"
       }}>
 
+      {/* Nothing overlays the footage. The frame carried a "PLACEHOLDER ·
+          PRODUCT SCREEN" label, a written stand-in description, and
+          "SUCHI.COM / CHECK-ACCESS" and "↗ FULL FIDELITY" along the bottom —
+          all of it invented chrome from before real product screens existed.
+          Over a real walkthrough it read as a layering bug, and the border
+          alone frames the video perfectly well. */}
       <video
         ref={videoRef}
         src={src || undefined}
@@ -281,37 +310,8 @@ function VideoPlaceholder({ note, src, poster, label }) {
           objectFit: "cover",
           display: src ? "block" : "none"
         }} />
-
-      <div style={{ display: "flex", justifyContent: "space-between", position: "relative", zIndex: 1 }}>
-        {/* "PLACEHOLDER" is only true while nothing is playing. Leaving it up
-            over a real product walkthrough would tell a recruiter the work is
-            unfinished when it is not. */}
-        <MonoLabel>{src ? label : "PLACEHOLDER · PRODUCT SCREEN"}</MonoLabel>
-      </div>
-      {/* The note is a written stand-in for the product screen. Once the real
-          screen is playing it is describing what the reader can already see,
-          and it renders as unstyled dark text directly over the footage —
-          illegible, and it reads as a layering bug rather than a caption.
-          The framing labels above and below stay: those are chrome, and they
-          are what make the panel read as a screen rather than a raw video. */}
-      {!src && (
-        <div
-          style={{
-            fontFamily: sansFamily,
-            fontSize: 14,
-            color: "var(--ink)",
-            maxWidth: "70%",
-            position: "relative",
-            zIndex: 1
-          }}>
-          {note}
-        </div>
-      )}
-      <div style={{ display: "flex", justifyContent: "space-between", position: "relative", zIndex: 1 }}>
-        <MonoLabel>SUCHI.COM / CHECK-ACCESS</MonoLabel>
-        <MonoLabel>↗ FULL FIDELITY</MonoLabel>
-      </div>
-    </div>);
+    </div>
+  );
 }
 
 // ── Combined stateful pillars + screen section ────────────────
@@ -335,14 +335,24 @@ function CheckAccessSolutionSection({ pillars }) {
   const media = activePillar != null ? PILLAR_MEDIA[activePillar - 1] : null;
   const videoSrc = media ? media.src : null;
 
+  // Select pillar 01 the first time the section is scrolled into view, so the
+  // reader arrives to the first walkthrough already running. Only ever fires
+  // once, and only while nothing is selected: re-selecting on every scroll-by
+  // would yank a reader off whichever pillar they had chosen.
+  const autoSelectedRef = React.useRef(false);
+  const handleEnterView = React.useCallback(() => {
+    if (autoSelectedRef.current) return;
+    autoSelectedRef.current = true;
+    setActivePillar((cur) => (cur == null ? 1 : cur));
+  }, []);
+
   return (
     <React.Fragment>
 
       <VideoPlaceholder
-        note="Check Access — unified permissions surface. Single navigable view across 15+ services."
         src={videoSrc}
         poster={media ? media.poster : null}
-        label={media ? media.label : null} />
+        onEnterView={handleEnterView} />
 
       <div style={{ marginTop: 24 }}>
         <MonoLabel>SOLUTION PILLARS</MonoLabel>
