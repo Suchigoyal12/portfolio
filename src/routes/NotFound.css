@@ -1,0 +1,182 @@
+/* Not-found page. Ported from the approved mock (design/404-mock.html)
+   with the two documented substitutions: real colour tokens from
+   DESIGN_SYSTEM.md in place of the mock's approximations, and the real
+   LeftRail wordmark in place of the "Suchi Goyal" stand-in.
+
+   Everything is scoped under .nf. The mock styles `body` and uses a
+   `* { margin:0; padding:0 }` reset — both fine in a standalone file,
+   both would leak into every other route from a shared stylesheet, so
+   the wrapper carries them instead. Nothing here can affect another
+   page.
+
+   Tokens are declared locally for now because the app has no shared
+   token layer yet — the static pages each carry their own :root. When
+   the Homepage port introduces that layer, this block is deleted and
+   these names resolve globally. The names are already the real ones so
+   that deletion is all it takes. */
+
+.nf {
+  --bg: #E8E4DC;
+  --ink: #111110;
+  --muted: #8A857C;
+  --line: #D9D4C8;
+  --accent: #B5522E;
+  --nf-ease: cubic-bezier(0.22, 1, 0.36, 1);
+
+  /* Exactly one viewport, never more. The page scrolled before because
+     body's default 8px margin sat under a 100vh child — base.css zeroes
+     it, and box-sizing keeps the padding inside the 100vh rather than
+     adding to it. min-height rather than height so the mobile layout can
+     still grow if it has to. */
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: clamp(24px, 5vw, 72px);
+
+  background: var(--bg);
+  color: var(--ink);
+  font-family: "DM Sans", sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+.nf,
+.nf *,
+.nf *::before,
+.nf *::after { box-sizing: border-box; }
+
+/* 1300px is the same reference width the homepage and About are authored
+   against — not a coincidence to tidy away later. */
+.nf-sheet {
+  width: min(1300px, 100%);
+  border-top: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
+  padding: clamp(40px, 7vh, 72px) 0;
+  display: grid;
+  grid-template-columns: minmax(160px, 1fr) minmax(0, 3fr);
+  gap: clamp(24px, 4vw, 64px);
+}
+
+/* ── Left rail: identity + status ─────────────────────────────────── */
+
+.nf-rail {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding-top: 0.5em;
+}
+
+/* Matches LeftRail's wordmark in legacy/site/shared.jsx exactly —
+   Archivo 600, 16px, -0.03em, line-height 1. The mock's 15px/-0.01em
+   was part of the stand-in. No window.top escape here: the 404 never
+   renders inside the stage manager's iframe. */
+.nf-wordmark {
+  font-family: "Archivo", sans-serif;
+  font-weight: 600;
+  font-size: 16px;
+  letter-spacing: -0.03em;
+  line-height: 1;
+  color: var(--ink);
+  text-decoration: none;
+}
+
+/* 10px / 0.08em — the homepage's mono label size, and `mono-sm` in
+   DESIGN_SYSTEM.md. The mock's 11px/0.09em matched neither. */
+.nf-status {
+  margin: 0;
+  font-family: "JetBrains Mono", monospace;
+  font-size: 10px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--accent);
+}
+
+/* ── Body ─────────────────────────────────────────────────────────── */
+
+/* Cormorant 400, not the mock's 300: 300 is in neither DESIGN_SYSTEM.md
+   nor the app's font request, so it would have silently rounded to 400
+   anyway. Confirmed with Suchi rather than assumed.
+
+   32px, down from the mock's 72px. The homepage is a fixed composition
+   with a tight range — its largest serif is the 24px pull-quote and its
+   body is 14px — so a 72px display belonged to a different page than the
+   one it links back to. 32px sits just above the pull-quote and well
+   under the 64px wordmark, which is the only thing on the homepage
+   allowed to be large. Fixed rather than clamped, like the homepage. */
+.nf-display {
+  margin: 0;
+  font-family: "Cormorant Garamond", serif;
+  font-weight: 400;
+  font-size: 32px;
+  line-height: 1.2;
+  letter-spacing: -0.01em;
+  max-width: 18ch;
+}
+
+/* 14px / 1.5 — the homepage's .body-text, exactly. */
+.nf-sub {
+  margin: 16px 0 0;
+  font-size: 14px;
+  line-height: 1.5;
+  color: var(--muted);
+  max-width: 46ch;
+}
+
+.nf-actions {
+  margin-top: 32px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 28px;
+}
+
+/* ── Links ────────────────────────────────────────────────────────── */
+
+.nf-link {
+  position: relative;
+  padding-bottom: 4px;
+  font-family: "JetBrains Mono", monospace;
+  font-size: 12px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ink);
+  text-decoration: none;
+}
+
+/* Underline starts drawn and wipes out from the right on hover —
+   interaction only, nothing on arrival. */
+.nf-link::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 100%;
+  height: 1px;
+  background: var(--ink);
+  transform: scaleX(1);
+  transform-origin: right;
+  transition: transform 300ms var(--nf-ease);
+}
+
+.nf-link:hover::after { transform: scaleX(0); }
+
+.nf-arrow {
+  display: inline-block;
+  transition: transform 300ms var(--nf-ease);
+}
+
+.nf-link:hover .nf-arrow { transform: translateX(-4px); }
+
+.nf-link.is-secondary { color: var(--muted); }
+.nf-link.is-secondary::after { background: var(--line); }
+
+@media (max-width: 720px) {
+  .nf-sheet {
+    grid-template-columns: 1fr;
+    gap: 28px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .nf-link::after,
+  .nf-arrow { transition: none; }
+}

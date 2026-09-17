@@ -1,0 +1,134 @@
+/* Rail-route shell.
+ *
+ * legacy/index.html and legacy/about.html both open with
+ *
+ *   html, body { height: 100%; overflow: hidden; }
+ *   @media (max-width: 899px) { html, body { overflow: auto; } }
+ *
+ * — a full-viewport composition with no page scroll on desktop. That rule
+ * targets elements above any route wrapper, so it cannot be nested and cannot
+ * be page CSS: left global it would reach the project pages, which have to
+ * scroll. RailLayout adds .rail-route to <html> on mount and removes it on
+ * unmount, so the rule exists exactly while a rail route is on screen.
+ */
+
+html.rail-route,
+html.rail-route body {
+  height: 100%;
+  overflow: hidden;
+}
+
+@media (max-width: 899px) {
+  html.rail-route,
+  html.rail-route body {
+    overflow: auto;
+  }
+}
+
+/* ---------- The main site rail ----------
+ * Byte-identical in legacy/index.html and legacy/about.html — About's copy is
+ * even commented "markup + CSS reused from index.html". Both pages' copies are
+ * deleted; this is the one that remains, paired with SiteRail.jsx.
+ *
+ * Scoped to .rail-route so it reaches only Homepage and About, matching the two
+ * pages that declared it. The colours resolve from whichever route wrapper is
+ * mounted — the two pages agree on --muted and --accent, and each keeps its own
+ * declaration, so nothing had to be hoisted with it.
+ *
+ * The leading `html` is load-bearing, not decoration. In the original these
+ * rules sat in the same file as, and after, `a:hover { color: var(--accent) }`
+ * — equal specificity, later wins, so rail items do not take the hover colour.
+ * Split across files that tie breaks the other way, because each page's CSS
+ * loads after the layout's. `html.rail-route .rail-nav a` outweighs
+ * `.route-home a:hover` outright and restores the original outcome.
+ */
+html.rail-route .rail-nav {
+  position: absolute;
+  left: 24px;
+  top: 54.511%;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+html.rail-route .rail-nav a {
+  font-family: 'JetBrains Mono', monospace;
+  font-weight: 700;
+  font-size: 10px;
+  letter-spacing: 0.08em;
+  line-height: 1.46;
+  text-transform: uppercase;
+  text-decoration: none;
+  color: var(--muted);
+  position: relative;
+}
+html.rail-route .rail-nav a.active { color: var(--accent); }
+
+/* ---------- Rail travel indicator, roadmap item 9 ----------
+ * Above 900px the `>` is no longer drawn by the active link. It is one
+ * element rendered above <Routes> (RailTravel.jsx) so it can move between
+ * pages instead of being destroyed with them — a pseudo-element cannot
+ * outlive its parent, which is why the authored ::before could never travel.
+ *
+ * Every item reserves the 14px gutter, not just the active one. The site
+ * authored it on .active alone, which meant three labels jumped sideways on
+ * every navigation; with a marker that moves, the labels have to hold still
+ * or the motion reads as a glitch. Settled on a live bench 2026-08-20.
+ *
+ * The colour crossfade shares the marker's 280ms / out-quart so the two
+ * halves of the transition finish together. `html.rail-route` prefix is
+ * load-bearing here for the same reason the block above documents: it has to
+ * outweigh `.route-home a`, which sets its own 0.15s colour transition. */
+@media (min-width: 900px) {
+  html.rail-route .rail-nav a { padding-left: 14px; }
+  html.rail-route.rail-travel-ready .rail-nav a { transition: color 280ms cubic-bezier(0.25, 1, 0.5, 1); }
+}
+
+/* Suppress ALL colour transition on rail links until the first navigation.
+ *
+ * This fixes a regression that predates item 9 — verified against HEAD and
+ * against the frozen Stage 1 reference on 2026-08-20. Stage 1 serves the rail
+ * already correct, so its `transition: color 0.15s ease` (Home.css:50,
+ * About.css:31, both ported verbatim) never had anything to animate. Under
+ * React the page mounts client-side: the link paints as --ink, then
+ * `html.rail-route` lands and it animates ink -> accent over ~150ms. Measured
+ * on the production build: rgb(74,39,26) at 160ms, settling at 280ms.
+ *
+ * That is an entrance animation, and this site does not have one by policy
+ * ("motion lives on interaction, not on arrival" — PROJECT_CONTEXT). Stage 1
+ * shows the accent at 40ms flat.
+ *
+ * Scoped to rail links only; every other transition on both pages is
+ * untouched. Nothing animates before a navigation, which is the point. */
+html.rail-route:not(.rail-travel-ready) .rail-nav a { transition: none; }
+
+/* Below 900 there is no travelling marker — the rail is a plain stacked list
+ * in .mobile-stack with nothing to travel between — so the authored behaviour
+ * stays exactly as it was. */
+@media (max-width: 899px) {
+  html.rail-route .rail-nav a.active { padding-left: 14px; }
+  html.rail-route .rail-nav a.active::before { content: ">"; position: absolute; left: 0; top: 0; }
+}
+
+/* The travelling marker itself. Fixed, because it is positioned from measured
+ * viewport rects and must not be affected by any page's transforms — both
+ * rail pages run fit() scaling on .stage. Type matches .rail-nav a exactly;
+ * colour is assigned at runtime from the active link, since --accent is
+ * declared on the page wrapper and this element sits above it. */
+.rail-travel {
+  position: fixed;
+  left: 0;
+  top: 0;
+  z-index: 50;
+  pointer-events: none;
+  font-family: 'JetBrains Mono', monospace;
+  font-weight: 700;
+  font-size: 10px;
+  letter-spacing: 0.08em;
+  line-height: 1.46;
+  will-change: transform;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html.rail-route.rail-travel-ready .rail-nav a { transition-duration: 0.001ms !important; }
+  .rail-travel { transition-duration: 0.001ms !important; }
+}

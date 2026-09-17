@@ -1,40 +1,52 @@
-# Files listed here stay in the private repo but are never uploaded to the
-# deployed site. Exclusion happens at the upload level, not by unlinking —
-# an unlinked page is still reachable at its own URL.
+# ── How exclusion works now (this changed in Stage 2) ──────────────────
+#
+# In Stage 1 this file WAS the privacy mechanism: the site was served
+# straight from the repo, so keeping a file out of the upload kept it off
+# the web.
+#
+# There is a build step now. Vercel serves only dist/, and dist/ contains
+# exactly two things: the JavaScript bundle, and a verbatim copy of
+# public/. So the two rules that actually keep something off the site are:
+#
+#   1. It is not in public/.  Everything in public/ ships, no exceptions.
+#   2. No routed component imports it.  An un-imported module is not in
+#      the bundle.
+#
+# This file is now only an upload-size and tidiness measure. Do not rely
+# on it to keep anything private — check dist/ instead.
 
-# ── Non-public: the detailed UiPath Admin Shell case study ──────────────
-# The .html shell is only 25 lines; the case study text lives in the .jsx.
-# Excluding the shell alone would leave the full prose fetchable.
-# All 7 frames/ diagrams are used by this page and by nothing else.
-project-admin-shell.html
-site/page-project-admin-shell.jsx
-frames/
+# ── Porting reference: the original static site ────────────────────────
+# The nine hand-authored pages and their .jsx, kept readable while each
+# one is ported. Deleted when Stage 2 is complete. Nothing imports them,
+# so they are not in the bundle either way.
+#
+# Includes project-admin-shell.html and legacy/frames/ — the non-public
+# UiPath Admin Shell case study. It has no route (brief 2.3) and is
+# imported by nothing, which is what keeps it off the site.
+legacy/
 
-# ── Image masters, kept for re-export ───────────────────────────────────
-# The 600px PNG originals for the About marquee. Kept in the repo as the
-# sources to re-encode from when the photos change; the site serves the
-# 400px WebP built from them, so the PNGs must never ship.
-assets/about/*.png
+# ── Approved design mocks ──────────────────────────────────────────────
+# Reference artifacts a route was built against, kept so parity can be
+# re-checked later. Not part of the site and imported by nothing.
+design/
 
-# ── Archived design, kept for reference ─────────────────────────────────
-# Components removed from live pages but preserved so the design can be
-# recovered. Loaded by nothing. Must not deploy — password-gate.jsx still
-# contains the old passcode string.
-site/_archive/
+# ── Image and video masters, kept for re-export ────────────────────────
+# The 600px PNG originals for the About marquee, and the ProRes video
+# sources. The site serves the WebP and MP4 built from these.
+masters/
 
-# ── Not part of the site ────────────────────────────────────────────────
-# Developer control panel (themes, type scales). No longer loaded by any
-# page. Kept in the repo; never published.
-tweaks-panel.jsx
-# Generic printable-document scaffold, unrelated to the portfolio.
-doc-page.js
-# Release Notes annotation explorations — design rounds, superseded.
-site/release-notes-annotation-style-options.html
-site/release-notes-annotation-styles-v2.html
-site/release-notes-annotation-styles-v3.html
-
-# ── Internal documentation ──────────────────────────────────────────────
-# HANDOFF, MIGRATION_BRIEF, PROJECT_CONTEXT, DESIGN_SYSTEM and the uploads
-# prompt file. No page loads a .md at runtime — every mention in the code
-# is a comment — so excluding these changes nothing on screen.
+# ── Internal documentation ─────────────────────────────────────────────
+# HANDOFF, MIGRATION_BRIEF, PROJECT_CONTEXT, DESIGN_SYSTEM, CLAUDE.
 *.md
+
+# ── Parity goldens ─────────────────────────────────────────────────────
+# Screenshots of the frozen Stage 1 deployment, committed as insurance in
+# case that deployment is ever pruned. Verification input, never site
+# content. tools/ has no route and nothing imports it, but these are the
+# only large binaries in it and there is no reason to upload them.
+tools/golden/
+
+# ── Archived design ─────────────────────────────────────────────────────
+# Assets taken off a live page, kept with restore notes. Outside public/,
+# so never deployed; listed here only to keep the upload small.
+archive/

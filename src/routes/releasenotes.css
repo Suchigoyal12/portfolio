@@ -1,0 +1,11 @@
+/* project-release-notes.html's shell, in the two ways it differs from the
+   others: the same var() fallbacks as Admin Shell, and its own stacking rules.
+   It carries no .left-nav or .project-overview rules because it has neither —
+   that is the deliberate difference, not an omission. */
+html.project-route.release-notes,
+html.project-route.release-notes body { background: var(--bg, #E8E4DC); color: var(--ink, #1C1C1A); }
+
+@media (max-width: 1024px) {
+  .rn-row { grid-template-columns: 1fr !important; gap: 28px !important; }
+  .rn-sticky { position: static !important; }
+}

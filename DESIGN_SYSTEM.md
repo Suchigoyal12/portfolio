@@ -99,6 +99,7 @@ JetBrains Mono is **always** uppercase with `letter-spacing: 0.1em` (or 0.06–0
 - **Numerals (serif drop)** — Cormorant 500, 36–88px, line-height 1, in `--accent`. Used for ordinals (`01 / 02 / 03`) on cards and impact stats.
 - **Selection** — `::selection { background: var(--accent); color: #fff; }`. The whole site selects terracotta.
 - **Contact modal "Let's talk."** — uses `h-editorial`, weight 500.
+- **Copy punctuation and spelling.** Visitor-facing text uses no em dashes and American spelling. Labels and eyebrows separate their parts with a spaced middle dot (`V1 · PREVIEW`). Full rules and the `npm run check:copy` check are in `CLAUDE.md` under "Copy rules".
 
 ### 1.5 Spacing rhythm (vertical type)
 

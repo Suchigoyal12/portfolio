@@ -1,0 +1,32 @@
+/* Base reset for the app shell.
+ *
+ * Only what every page in the static site already sets for itself —
+ * legacy/index.html:28, work.html and all seven others open with the same
+ * `html, body { margin: 0; padding: 0 }`. Hoisting it here is not a design
+ * decision; it is the shared floor those pages assume.
+ *
+ * Nothing else belongs in this file. No typography, no colour, no overflow
+ * rule — the static pages differ on all three (Homepage and Work suppress
+ * page scroll, the project pages depend on it), so each route sets its own.
+ */
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+}
+
+/* All nine static pages open with exactly this, so every ported width is
+ * authored against it. Found the hard way: the contact modal is
+ * `width: min(560px, 92vw)` with a 1px border, and without the reset it
+ * rendered 562px wide against the original's 560.
+ *
+ * `*` and nothing more — deliberately. The modern habit is to write
+ * `*, *::before, *::after`, and doing that here is a visible regression:
+ * `*` does not match pseudo-elements, so in the original About's radio
+ * markers (.radio::before, a 9.6px circle with a 1px border) sit in
+ * content-box and paint 11.6px across. Adding the pseudo-element selectors
+ * shrinks them to 9.6px. Caught by the pixel diff on the About port. */
+* {
+  box-sizing: border-box;
+}

@@ -1,0 +1,121 @@
+/* Ported from legacy/work.html's inline <style>. Declarations verbatim —
+ * nothing renamed, no value changed, no rule reordered.
+ *
+ * Same three mechanical changes as Home.css and About.css: every selector is
+ * nested under .route-work, :root is folded into that wrapper, and the global
+ * box-sizing / margin reset is dropped because base.css owns it.
+ *
+ * The `html, body { height: 100%; overflow: hidden }` half cannot be nested —
+ * it targets elements above the wrapper — so it hangs off a class the stage
+ * puts on <html> while it is mounted, exactly as RailLayout.css does for the
+ * two rail pages. It has to come off on unmount: the case studies and the 404
+ * all depend on the page scrolling.
+ *
+ * That class goes on from the STAGE, not from WorkLayout. WorkLayout wraps the
+ * case-study routes too, and those need .project-route and a scrolling page —
+ * the opposite of this.
+ */
+
+html.work-route,
+html.work-route body {
+  background: var(--bg, #E8E4DC);
+  color: var(--ink, #111110);
+  font-family: 'DM Sans', system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  height: 100%;
+  overflow: hidden;
+}
+@media (max-width: 899px) {
+  html.work-route,
+  html.work-route body { overflow: auto; }
+}
+
+.route-work {
+  --bg:     #E8E4DC;
+  --paper:  #FBFAF6;
+  --ink:    #111110;
+  --muted:  #8A857C;
+  --line:   #D9D4C8;
+  --accent: #B5522E;
+  --green:  #1F8A5B;
+  --red:    #E5564E;
+  --mono: 'JetBrains Mono', ui-monospace, monospace;
+  --sans: 'DM Sans', system-ui, sans-serif;
+}
+.route-work ::selection { background: var(--accent); color: #fff; }
+
+/* Defined in the original and referenced by nothing in stage.jsx or cards.jsx.
+   Carried over verbatim rather than dropped — same treatment as the unused
+   blocks in the long Check Access page. */
+@keyframes wkFade { from { opacity: 0; } to { opacity: 1; } }
+@keyframes wkPop  { from { opacity: 0; transform: translateY(-12px) scale(0.98); } to { opacity: 1; transform: translateY(0) scale(1); } }
+@keyframes wkPulse {
+  0% { box-shadow: 0 0 0 0 rgba(31,138,91,0.45); }
+  70% { box-shadow: 0 0 0 8px rgba(31,138,91,0); }
+  100% { box-shadow: 0 0 0 0 rgba(31,138,91,0); }
+}
+
+/* ============================================================
+   CHROME BAR — matched to reference
+   ============================================================ */
+.route-work .wk-chrome {
+  position: absolute; top: 0; left: 0; right: 0; z-index: 6;
+  height: 46px;
+  display: flex; align-items: center; gap: 14px;
+  padding: 0 18px;
+  border-bottom: 1px solid rgba(17,17,16,0.06);
+  background: linear-gradient(to bottom, rgba(251,250,246,0.96), rgba(251,250,246,0.84));
+  backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+  user-select: none;
+}
+.route-work .wk-tl-cluster { display: flex; align-items: center; gap: 8px; }
+.route-work .wk-dot {
+  all: unset; width: 13px; height: 13px; border-radius: 999px;
+  cursor: pointer; display: inline-flex; align-items: center; justify-content: center;
+  box-shadow: inset 0 0 0 0.5px rgba(0,0,0,0.18); flex: 0 0 auto; position: relative;
+}
+.route-work .wk-red   { background: var(--red); }
+.route-work .wk-green { background: var(--green); }
+.route-work .wk-dot svg { opacity: 0; transition: opacity 160ms ease; display: block; }
+.route-work .wk-tl-cluster:hover .wk-dot svg { opacity: 1; }
+
+.route-work .wk-navpill {
+  display: inline-flex; align-items: center; height: 22px;
+  border: 1px solid rgba(17,17,16,0.10); border-radius: 999px; background: rgba(17,17,16,0.03);
+}
+.route-work .wk-navpill button {
+  all: unset; cursor: pointer; width: 26px; height: 22px;
+  display: inline-flex; align-items: center; justify-content: center;
+  color: rgba(17,17,16,0.55); font-family: var(--mono); font-size: 10px;
+  position: relative;
+}
+.route-work .wk-navpill button span { opacity: 0; transition: opacity 160ms ease; }
+.route-work .wk-tl-cluster:hover .wk-navpill button span { opacity: 1; }
+.route-work .wk-navpill button:hover { color: var(--ink); background: rgba(17,17,16,0.05); }
+.route-work .wk-navpill button:first-child { border-right: 1px solid rgba(17,17,16,0.08); }
+
+/* tooltips */
+.route-work [data-tip] { position: relative; }
+.route-work [data-tip]::after {
+  content: attr(data-tip);
+  position: absolute; top: calc(100% + 9px); left: 50%;
+  transform: translateX(-50%) translateY(-2px);
+  background: #1C1C1A; color: #F2EEE6;
+  font-family: var(--mono); font-size: 10px; letter-spacing: 0.08em; text-transform: uppercase;
+  padding: 5px 9px; border-radius: 6px; white-space: nowrap;
+  opacity: 0; pointer-events: none;
+  transition: opacity 160ms ease 200ms, transform 160ms ease 200ms; z-index: 30;
+}
+.route-work [data-tip]:hover::after { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+
+.route-work .wk-crumb {
+  position: absolute; left: 50%; top: 50%;
+  transform: translate(-50%, -50%);
+  max-width: calc(100% - 340px); overflow: hidden;
+  display: flex; align-items: baseline; gap: 10px;
+  font-family: var(--mono); font-size: 10px; letter-spacing: 0.08em;
+  text-transform: uppercase; color: rgba(17,17,16,0.45); white-space: nowrap; pointer-events: none;
+}
+.route-work .wk-crumb-title { color: var(--ink); font-weight: 500; letter-spacing: 0.1em; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; min-width: 0; }
+.route-work .wk-sep { opacity: 0.4; }
