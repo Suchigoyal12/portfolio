@@ -51,6 +51,23 @@ These look wrong. They are staying until Stage 2.
 
 `project-admin-shell.html` and its seven `frames/` diagrams are excluded from the deployed build. Do not fix the passcode gate — exclude the page instead. Verify both the page and every diagram 404 on the live site.
 
+## Copy rules
+
+These apply to every change, in every stage, to anything a visitor can see or a browser receives: page text, headings, captions, image `alt` text, `title` and `aria-label` attributes, the tab title, meta and link-preview tags, and any comment inside `index.html` or an injected `<style>` string. Developer notes in `//` and `/* */` that the build removes, and the `*.md` working documents, are exempt.
+
+1. **No em dashes (—).** Use the punctuation the sentence actually needs, not a one-for-one swap:
+   - An aside mid-sentence: comma, or parentheses.
+   - A lead-in to a list or an explanation: colon.
+   - Two complete thoughts: period or semicolon.
+   - A caption shaped "Name — description": colon ("Index manager: govern...").
+   - Short labels and eyebrows: a spaced middle dot ("V1 · PREVIEW", "404 · NOT FOUND"), which matches the site's existing labels.
+   - Quote attributions: no leading dash, commas between name and role ("SORIN VISAN, PLATFORM PRODUCT MANAGER, UIPATH").
+   - Number ranges: a plain hyphen ("2024-25"). The en dash (–) is left as it is where it already appears.
+2. **American spelling.** organization, systemize, centralizing, behavior, labeling, color, center, categorized, analyze, modeling, license (noun). Not the British forms.
+3. **Check before committing:** `npm run check:copy`. It builds the site and scans `dist/` for em dashes and British spellings. It must pass. If it flags a word that is genuinely correct, adjust the list in `tools/check-copy.mjs` rather than ignoring the result.
+
+Leave "Scope Seperation" alone under this rule too; see "Do not fix".
+
 ---
 
 ## How to work here
