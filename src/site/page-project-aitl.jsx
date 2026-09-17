@@ -1,11 +1,12 @@
 import React from "react";
 import { MonoLabel, PageShell, WaveMotif, chromeHorizon, monoFamily, sansFamily, serifFamily } from "./shared.jsx";
 import { dims } from "./image-dims.js";
+import "./aitl-impact.css";
 // =============================================================
 // PROJECT DETAIL — AI TRUST LAYER (AITL)
 // Reuses the Check Access V5 layout (sticky left rail + magazine
 // flow). All copy grounded to the AITL PDF source — narrative
-// kept intact: The Stakes → Context Grounding → BYO LLM →
+// kept intact: The Stakes → Context Grounding → LLM Configurations →
 // Audit Export → AI Governance → Learnings.
 // =============================================================
 
@@ -22,7 +23,7 @@ const AITL = {
   ["PLATFORM", "UiPath (Admin Console)"],
   ["STATUS", "Shipped (GA)"]],
 
-  tags: ["AI Governance", "LLMOps", "Context Grounding", "BYO LLM", "Audit & Compliance", "UiPath Admin"],
+  tags: ["AI Governance", "LLMOps", "Context Grounding", "LLM Configurations", "Audit & Compliance", "UiPath Admin"],
   readingTime: 8
 };
 
@@ -224,6 +225,131 @@ function AITLLightbox({ items, index, setIndex, onClose }) {
 // As the page scrolls down, the stage pins and the screen track
 // translates horizontally; when the track ends, the page keeps
 // scrolling. Falls back to a plain swipe strip on narrow screens.
+// ── Impact block (numbers first, qualitative cards underneath) ─
+// Markup and classes follow the "AI Trust Layer — Impact Sections" artifact;
+// styles live in aitl-impact.css. Audit Export has no figures, so it uses a
+// statement hero and no stat grid. That asymmetry is intentional.
+function ImpactBlock({ label, hero, stats, cards }) {
+  return (
+    <div className="aitl-impact">
+      <p className="meta">Impact · <span>{label}</span></p>
+      {hero}
+      {stats &&
+      <div className="stat-grid">
+          {stats.map(([num, cap]) =>
+        <div key={cap} className="stat-card">
+              <span className="stat-num">{num}</span>
+              <p className="stat-cap">{cap}</p>
+            </div>
+        )}
+        </div>
+      }
+      <div className="changed-grid">
+        {cards.map((c) =>
+        <div key={c.kw} className={c.span ? "changed-card span" : "changed-card"}>
+            <p className="changed-kw">{c.kw}</p>
+            <p className="changed-line">{c.line}</p>
+          </div>
+        )}
+      </div>
+    </div>);
+
+}
+
+const IMPACT = {
+  grounding:
+  <ImpactBlock
+    label="Context Grounding"
+    hero={
+    <div className="hero-block">
+        <span className="hero-num">~$5M</span>
+        <p className="hero-cap">Net ARR through first-party products</p>
+      </div>
+    }
+    stats={[
+    ["~20%", "Better retrieval accuracy, completeness & NDCG"],
+    ["0\u21921", "First-class feature in UiPath Cloud"],
+    ["5", "UiPath first-party products embedding it at launch"],
+    ["5", "Data sources supported at launch"]]
+    }
+    cards={[
+    {
+      kw: "Answers became traceable",
+      line: <>Every index names its origin: folder, bucket, connector, account. A wrong answer becomes <strong>a lookup, not an investigation.</strong></>
+    },
+    {
+      kw: "Broken data stopped being invisible",
+      line: <>Sync failures, stale indexes, and in-progress jobs each surface their own state, where admins already look, <strong>catching a bad index before it produces a bad answer.</strong></>
+    },
+    {
+      kw: "Customers kept their choice of stack",
+      line: <>Five data sources at launch, including two third-party vector databases. <strong>No forced migration, no lock-in.</strong></>
+    },
+    {
+      kw: "Developers stopped rebuilding the same thing",
+      line: <>One index, configured once, consumed by every GenAI surface on the platform. <strong>The work moved from every developer to one admin.</strong></>
+    }]
+    } />,
+
+  byollm:
+  <ImpactBlock
+    label="LLM Configurations"
+    hero={
+    <div className="hero-block">
+        <span className="hero-num sm">$1.7M / $2.3M</span>
+        <p className="hero-cap">ARR / iARR: competitive revenue this work was built against</p>
+      </div>
+    }
+    stats={[
+    ["5", "Customers onboarded in private preview"],
+    ["7", "UiPath products onboarded at launch ensuring increased visibility and control for customers"]]
+    }
+    cards={[
+    {
+      kw: "Enterprises stopped paying twice",
+      line: <>Customers route UiPath's AI through Azure, AWS, or Google subscriptions <strong>they already own.</strong></>
+    },
+    {
+      kw: "Compliance stopped being a blocker",
+      line: <>Regulated customers run UiPath AI <strong>inside their own infrastructure, in their own region.</strong></>
+    },
+    {
+      kw: "Misconfiguration stopped reaching production",
+      line: <>Validation moved to setup time: <strong>a broken endpoint is caught by the admin who made it</strong>, not a failed run days later.</>
+    },
+    {
+      kw: "AI infrastructure became visible",
+      line: <>One table answers what was unanswerable: <strong>which model powers which product, through whose subscription, connected right now.</strong></>
+    },
+    {
+      kw: "Built once, extends to the whole platform",
+      span: true,
+      line: <>Seven products onboarded at launch. <strong>Adding a product became an onboarding task, not a new interface.</strong></>
+    }]
+    } />,
+
+  audit:
+  <ImpactBlock
+    label="Audit Export"
+    hero={
+    <>
+        <p className="hero-line">Proof that governance <em>actually ran.</em></p>
+        <p className="hero-cap" style={{ marginBottom: 48 }}>Audit now gives a record that an auditor can defend, instead of a log of what succeeded.</p>
+      </>
+    }
+    cards={[
+    {
+      kw: "The file proves enforcement, not just activity",
+      line: <>Blocked requests are in it, so the export shows governance <strong>actually working</strong>, not only the requests that succeeded. That's the part an auditor is checking.</>
+    },
+    {
+      kw: "Compliance evidence stays defensible later",
+      line: <>Every export carries its own provenance: <strong>{"\u201C"}where did this file come from{"\u201D"} has an answer inside the platform.</strong></>
+    }]
+    } />
+
+};
+
 function AITLCarousel({ items, label }) {
   const wrapRef = React.useRef(null);
   const stageRef = React.useRef(null);
@@ -542,7 +668,7 @@ function AITLProjectPage() {
   const sections = [
   { id: "premise", no: "00", label: "The Stakes" },
   { id: "grounding", no: "01", label: "Context Grounding" },
-  { id: "byollm", no: "02", label: "BYO LLM" },
+  { id: "byollm", no: "02", label: "LLM Configurations" },
   { id: "audit", no: "03", label: "Audit Export" },
   { id: "governance", no: "04", label: "AI Governance" },
   { id: "learnings", no: "05", label: "Reflection" }];
@@ -669,88 +795,10 @@ function AITLProjectPage() {
           no="00"
           kicker="THE STAKES"
           title="AI Scaled. Trust didn't"
-          intro="UiPath had powerful GenAI across its automation platform. What it didn't have was a way to govern it. Every enterprise rollout surfaced the same unanswered questions about data, model control, and auditability.">
+          intro="UiPath had powerful GenAI across its platform, and no way to govern it. Every enterprise rollout surfaced the same four questions.">
           
-            <div style={{ borderTop: "1px solid var(--ink)", paddingTop: 16, marginTop: 32, maxWidth: "var(--copy-w)" }}>
-              <div
-              style={{
-                fontFamily: serifFamily,
-                fontSize: 72,
-                lineHeight: 1,
-                color: "var(--accent)"
-              }}>
-                
-                $1.99M
-              </div>
-              <p
-              style={{
-                fontFamily: sansFamily,
-                fontSize: 16,
-                lineHeight: 1.55,
-                marginTop: 12,
-                marginBottom: 0,
-                color: "var(--ink)",
-                maxWidth: 520
-              }}>97 enterprise deals stalled on missing audit controls, with the
-EU AI Act coming into force.
-
-            </p>
-            </div>
-            <Body>
-              The AI Trust Layer was UiPath's answer: a governance layer inside the Admin Console. I designed four of
-              its surfaces, each solving a distinct trust problem.{"\n"}All four are now shipped to GA and live today.
-            </Body>
-            <Body>
-              The hard part wasn't drawing screens. It was making invisible infrastructure feel visible, predictable,
-              and safe, and giving four surfaces, built separately over time, one coherent mental model.
-            </Body>
-
             <div
-            style={{
-              borderTop: "1px solid var(--ink)",
-              paddingTop: 18,
-              marginTop: 36,
-              display: "grid",
-              gridTemplateColumns: "repeat(3, 1fr)",
-              gap: 28,
-              maxWidth: "var(--copy-w-wide)"
-            }}>
-              {[
-            {
-              label: "SCOPE",
-              body: "End-to-end UX/UI across four AITL surfaces."
-            },
-            {
-              label: "COLLABORATION",
-              body: "Product (licensing, compliance), Engineering (connection validation, async constraints). Design guidance from Paresh Joshi."
-            },
-            {
-              label: "DECISION AUTHORITY",
-              body: "Drove IA, interaction patterns, and configuration mental models across the four surfaces."
-            }].
-            map((c) =>
-            <div key={c.label}>
-                  <MonoLabel size={10} style={{ display: "block" }}>
-                    {c.label}
-                  </MonoLabel>
-                  <p
-                style={{
-                  fontFamily: sansFamily,
-                  fontSize: 16,
-                  lineHeight: 1.62,
-                  marginTop: 10,
-                  marginBottom: 0,
-                  color: "var(--ink)"
-                }}>
-                    
-                    {c.body}
-                  </p>
-                </div>)}
-
-            </div>
-
-            <div
-              style={{ maxWidth: "var(--copy-w-wide)", marginTop: 40, marginBottom: 8 }}
+              style={{ maxWidth: "var(--copy-w-wide)", marginTop: 40 }}
               dangerouslySetInnerHTML={{
                 __html: `<svg xmlns="http://www.w3.org/2000/svg" style="display:block;width:100%;max-width:780px;height:auto;margin-left:auto;margin-right:auto" viewBox="0 0 680 376" role="img" aria-label="AI Trust Layer system map: one governance layer with four surfaces.">
   <rect width="680" height="376" fill="#EAE5DB"/>
@@ -776,6 +824,54 @@ EU AI Act coming into force.
   <text x="628" y="330" text-anchor="end" font-family="Georgia,'Times New Roman',serif" font-style="italic" font-size="15" fill="#6F6E66">Who is allowed to use AI?</text>
 </svg>`
               }}>
+            </div>
+            <Body mt={40}>
+              I designed the primary features answering them: four surfaces, built separately over time, given one
+              coherent mental model. All now shipped to GA and live today.
+            </Body>
+
+            <div
+            style={{
+              borderTop: "1px solid var(--ink)",
+              paddingTop: 18,
+              marginTop: 36,
+              display: "grid",
+              gridTemplateColumns: "repeat(3, 1fr)",
+              gap: 28,
+              maxWidth: "var(--copy-w-wide)"
+            }}>
+              {[
+            {
+              label: "SCOPE",
+              body: "End-to-end UX/UI across four AITL surfaces."
+            },
+            {
+              label: "COLLABORATION",
+              body: "Product (licensing, compliance), Engineering (connection validation, async constraints). Design guidance from Paresh Joshi."
+            },
+            {
+              label: "DECISION AUTHORITY",
+              body: "Drove IA, interaction patterns, and configuration mental models."
+            }].
+            map((c) =>
+            <div key={c.label}>
+                  <MonoLabel size={10} style={{ display: "block" }}>
+                    {c.label}
+                  </MonoLabel>
+                  <p
+                style={{
+                  fontFamily: sansFamily,
+                  fontSize: 16,
+                  lineHeight: 1.62,
+                  marginTop: 10,
+                  marginBottom: 0,
+                  color: "var(--ink)"
+                }}>
+                    
+                    {c.body}
+                  </p>
+                </div>)}
+
             </div>
           </Sec>
 
@@ -922,9 +1018,10 @@ EU AI Act coming into force.
               } />
             
             </div>
+            {IMPACT.grounding}
           </Sec>
 
-          {/* ───────── 02 · BYO LLM ───────── */}
+          {/* ───────── 02 · LLM CONFIGURATIONS ───────── */}
           <Sec
           id="byollm"
           no="02"
@@ -1004,7 +1101,7 @@ EU AI Act coming into force.
             style={{ width: "100%", margin: "48px auto" }}
             dangerouslySetInnerHTML={{
               __html:
-              '<svg xmlns="http://www.w3.org/2000/svg" style="display:block;width:100%;max-width:780px;height:auto;margin-left:auto;margin-right:auto" viewBox="0 0 680 474" role="img" aria-label="The reframe: from configuring a model to configuring a product."><title>BYO LLM mental-model inversion</title><desc>Before: an admin configures a model directly and the products that depend on it are invisible. After: the admin configures a product, with feature and model nested beneath in a visible chain.</desc><defs><marker id="arr" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="context-stroke" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker></defs><rect width="680" height="474" fill="#EAE5DB"/><rect x="24" y="24" width="632" height="426" fill="none" stroke="#1F1E1B" stroke-opacity="0.22" stroke-width="1"/><text x="52" y="60" font-family="ui-monospace,\'IBM Plex Mono\',monospace" font-size="11" letter-spacing="2.5" fill="#6F6E66">THE REFRAME</text><text x="52" y="95" font-family="Georgia,\'Times New Roman\',serif" font-size="28" fill="#1F1E1B">Configure the product, not the model<tspan fill="#B5482C">.</tspan></text><text x="52" y="121" font-family="Georgia,\'Times New Roman\',serif" font-style="italic" font-size="15" fill="#6F6E66">The mental model, inverted.</text><line x1="52" y1="140" x2="628" y2="140" stroke="#1F1E1B" stroke-opacity="0.16" stroke-width="1"/><text x="52" y="176" font-family="ui-monospace,\'IBM Plex Mono\',monospace" font-size="11" letter-spacing="2" fill="#6F6E66">BEFORE · MODEL-CENTRIC</text><text x="372" y="176" font-family="ui-monospace,\'IBM Plex Mono\',monospace" font-size="11" letter-spacing="2" fill="#B5482C">AFTER · PRODUCT-CENTRIC</text><rect x="86" y="198" width="180" height="48" rx="4" fill="#DDD8CC" stroke="#6F6E66" stroke-opacity="0.5" stroke-width="1"/><text x="176" y="222" text-anchor="middle" dominant-baseline="central" font-family="system-ui,-apple-system,sans-serif" font-size="16" font-weight="500" fill="#3A3A37">Model endpoint</text><line x1="176" y1="246" x2="176" y2="288" stroke="#6F6E66" stroke-opacity="0.5" stroke-width="1" stroke-dasharray="4 4" marker-end="url(#arr)"/><rect x="86" y="288" width="180" height="48" rx="4" fill="none" stroke="#6F6E66" stroke-opacity="0.45" stroke-width="1" stroke-dasharray="4 4"/><text x="176" y="312" text-anchor="middle" dominant-baseline="central" font-family="system-ui,-apple-system,sans-serif" font-size="16" fill="#6F6E66">Unknown impact</text><line x1="314" y1="267" x2="358" y2="267" stroke="#6F6E66" stroke-opacity="0.6" stroke-width="1" marker-end="url(#arr)"/><rect x="406" y="190" width="180" height="56" rx="4" fill="#F3DBCF" stroke="#B5482C" stroke-opacity="0.6" stroke-width="1"/><text x="496" y="212" text-anchor="middle" dominant-baseline="central" font-family="system-ui,-apple-system,sans-serif" font-size="16" font-weight="500" fill="#712B13">Product</text><text x="496" y="232" text-anchor="middle" dominant-baseline="central" font-family="system-ui,-apple-system,sans-serif" font-size="12" fill="#993C1D">Document Understanding</text><line x1="496" y1="246" x2="496" y2="284" stroke="#B5482C" stroke-opacity="0.7" stroke-width="1" marker-end="url(#arr)"/><rect x="406" y="284" width="180" height="48" rx="4" fill="#F3DBCF" stroke="#B5482C" stroke-opacity="0.6" stroke-width="1"/><text x="496" y="308" text-anchor="middle" dominant-baseline="central" font-family="system-ui,-apple-system,sans-serif" font-size="16" fill="#712B13">Feature</text><line x1="496" y1="332" x2="496" y2="370" stroke="#B5482C" stroke-opacity="0.7" stroke-width="1" marker-end="url(#arr)"/><rect x="406" y="370" width="180" height="48" rx="4" fill="#F3DBCF" stroke="#B5482C" stroke-opacity="0.6" stroke-width="1"/><text x="496" y="394" text-anchor="middle" dominant-baseline="central" font-family="system-ui,-apple-system,sans-serif" font-size="16" fill="#712B13">Model</text><text x="52" y="440" font-family="Georgia,\'Times New Roman\',serif" font-style="italic" font-size="15" fill="#6F6E66">Model first. Impact hidden.</text><text x="372" y="440" font-family="Georgia,\'Times New Roman\',serif" font-style="italic" font-size="15" fill="#6F6E66">Product first. Chain visible.</text></svg>'
+              '<svg xmlns="http://www.w3.org/2000/svg" style="display:block;width:100%;max-width:780px;height:auto;margin-left:auto;margin-right:auto" viewBox="0 0 680 474" role="img" aria-label="The reframe: from configuring a model to configuring a product."><title>LLM Configurations mental-model inversion</title><desc>Before: an admin configures a model directly and the products that depend on it are invisible. After: the admin configures a product, with feature and model nested beneath in a visible chain.</desc><defs><marker id="arr" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="context-stroke" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker></defs><rect width="680" height="474" fill="#EAE5DB"/><rect x="24" y="24" width="632" height="426" fill="none" stroke="#1F1E1B" stroke-opacity="0.22" stroke-width="1"/><text x="52" y="60" font-family="ui-monospace,\'IBM Plex Mono\',monospace" font-size="11" letter-spacing="2.5" fill="#6F6E66">THE REFRAME</text><text x="52" y="95" font-family="Georgia,\'Times New Roman\',serif" font-size="28" fill="#1F1E1B">Configure the product, not the model<tspan fill="#B5482C">.</tspan></text><text x="52" y="121" font-family="Georgia,\'Times New Roman\',serif" font-style="italic" font-size="15" fill="#6F6E66">The mental model, inverted.</text><line x1="52" y1="140" x2="628" y2="140" stroke="#1F1E1B" stroke-opacity="0.16" stroke-width="1"/><text x="52" y="176" font-family="ui-monospace,\'IBM Plex Mono\',monospace" font-size="11" letter-spacing="2" fill="#6F6E66">BEFORE · MODEL-CENTRIC</text><text x="372" y="176" font-family="ui-monospace,\'IBM Plex Mono\',monospace" font-size="11" letter-spacing="2" fill="#B5482C">AFTER · PRODUCT-CENTRIC</text><rect x="86" y="198" width="180" height="48" rx="4" fill="#DDD8CC" stroke="#6F6E66" stroke-opacity="0.5" stroke-width="1"/><text x="176" y="222" text-anchor="middle" dominant-baseline="central" font-family="system-ui,-apple-system,sans-serif" font-size="16" font-weight="500" fill="#3A3A37">Model endpoint</text><line x1="176" y1="246" x2="176" y2="288" stroke="#6F6E66" stroke-opacity="0.5" stroke-width="1" stroke-dasharray="4 4" marker-end="url(#arr)"/><rect x="86" y="288" width="180" height="48" rx="4" fill="none" stroke="#6F6E66" stroke-opacity="0.45" stroke-width="1" stroke-dasharray="4 4"/><text x="176" y="312" text-anchor="middle" dominant-baseline="central" font-family="system-ui,-apple-system,sans-serif" font-size="16" fill="#6F6E66">Unknown impact</text><line x1="314" y1="267" x2="358" y2="267" stroke="#6F6E66" stroke-opacity="0.6" stroke-width="1" marker-end="url(#arr)"/><rect x="406" y="190" width="180" height="56" rx="4" fill="#F3DBCF" stroke="#B5482C" stroke-opacity="0.6" stroke-width="1"/><text x="496" y="212" text-anchor="middle" dominant-baseline="central" font-family="system-ui,-apple-system,sans-serif" font-size="16" font-weight="500" fill="#712B13">Product</text><text x="496" y="232" text-anchor="middle" dominant-baseline="central" font-family="system-ui,-apple-system,sans-serif" font-size="12" fill="#993C1D">Document Understanding</text><line x1="496" y1="246" x2="496" y2="284" stroke="#B5482C" stroke-opacity="0.7" stroke-width="1" marker-end="url(#arr)"/><rect x="406" y="284" width="180" height="48" rx="4" fill="#F3DBCF" stroke="#B5482C" stroke-opacity="0.6" stroke-width="1"/><text x="496" y="308" text-anchor="middle" dominant-baseline="central" font-family="system-ui,-apple-system,sans-serif" font-size="16" fill="#712B13">Feature</text><line x1="496" y1="332" x2="496" y2="370" stroke="#B5482C" stroke-opacity="0.7" stroke-width="1" marker-end="url(#arr)"/><rect x="406" y="370" width="180" height="48" rx="4" fill="#F3DBCF" stroke="#B5482C" stroke-opacity="0.6" stroke-width="1"/><text x="496" y="394" text-anchor="middle" dominant-baseline="central" font-family="system-ui,-apple-system,sans-serif" font-size="16" fill="#712B13">Model</text><text x="52" y="440" font-family="Georgia,\'Times New Roman\',serif" font-style="italic" font-size="15" fill="#6F6E66">Model first. Impact hidden.</text><text x="372" y="440" font-family="Georgia,\'Times New Roman\',serif" font-style="italic" font-size="15" fill="#6F6E66">Product first. Chain visible.</text></svg>'
             }} />
 
             <div style={{ marginTop: 36 }}>
@@ -1038,6 +1135,7 @@ EU AI Act coming into force.
               } />
             
             </div>
+            {IMPACT.byollm}
           </Sec>
 
           {/* ───────── 03 · AUDIT EXPORT ───────── */}
@@ -1054,12 +1152,17 @@ EU AI Act coming into force.
             left={{
               tag: "THE PROBLEM",
               body:
-              "Enterprises have to prove to auditors exactly what their AI did: every request, model, and outcome. But the audit log was visible for only 60 days, with no scalable way to export it: the compliance gap behind the stalled deals in Section 00. And the export itself was a minefield: massive CSVs failed silently, and hidden licensing tiers quietly capped how much history a customer could pull."
+              "Enterprises have to prove to auditors exactly what their AI did: every request, model, and outcome. The EU AI Act turned that into a legal deadline, and finance and healthcare were the first to ask.\n\nThe platform logged all of it, but admins could only see 60 days on screen, and there was no reliable way to get it out. Large exports failed silently, and licensing tiers quietly capped how much history a customer could pull.",
+              append:
+              <Body mt={16}>
+                <strong>$1.99M across 97 deals</strong> was recorded as lost to insufficient auditing at the platform
+                level - the gap this feature was scoped against.
+              </Body>
             }}
             right={{
               tag: "THE DESIGN SOLUTION",
               body:
-              "Rather than expose those backend limits or ship a naive \u201CDownload\u201D button, I designed export as a visible, asynchronous lifecycle (request, process, retry) and surfaced the system's constraints as intentional UI instead of hidden traps. Retention windows, export quotas, and download deadlines became things a user could see and plan around, so the experience stayed predictable even when the backend wasn't."
+              "Rather than expose the backend's limits or ship a naive \u201CDownload\u201D button, I designed export as a visible, asynchronous lifecycle and turned those constraints into UI. Retention windows, quotas and deadlines became things a user could see and plan around, so the experience stayed predictable even when the backend wasn't."
             }} />
           
             <div
@@ -1085,7 +1188,7 @@ EU AI Act coming into force.
             <div
             style={{
               display: "grid",
-              gridTemplateColumns: "1fr 1fr 1fr",
+              gridTemplateColumns: "1fr 1fr",
               gap: 16,
               marginTop: 28
             }}>
@@ -1094,19 +1197,29 @@ EU AI Act coming into force.
               tag: "01 · ASYNCHRONOUS LIFECYCLE",
               lead: "A long export can't pretend to be instant.",
               body:
-              "Big exports take time and sometimes fail. I designed a request \u2192 processing \u2192 ready \u2192 retry lifecycle with a persistent tracker, so a user can fire an export, leave, and get pulled back when it's done, never staring at a frozen screen."
+              "I designed a request \u2192 processing \u2192 ready \u2192 retry lifecycle with a persistent tracker, so a user can fire an export, leave, and get pulled back when it's done."
             },
             {
               tag: "02 · ENTITLEMENT-AWARE STATES",
               lead: "The UI knows what your license allows.",
               body:
-              "Retention and quotas vary by tier: up to 180 days of history, four exports a month with inputs and outputs. I surfaced those limits in context (\u201C2 of 4 remaining\u201D), so users meet a clear ceiling instead of a silent failure."
+              <React.Fragment>
+                Retention and quotas vary by tier, so I surfaced them in context (<em>2 of 4 remaining</em>), and users
+                meet a stated ceiling instead of a silent failure. Only exports carrying prompts and responses are
+                metered; the compliance record itself stays uncapped.
+              </React.Fragment>
             },
             {
-              tag: "03 · NOTIFICATIONS THAT RESPECT THE WINDOW",
-              lead: "Warn people before the download expires.",
+              tag: "03 · SCOPING THE EXPORT",
+              lead: "Filters decide whether the file survives.",
               body:
-              "A ready export only lives for a limited window. I designed a three-stage email cadence (ready, a mid-window nudge, a final warning before expiry) so a compliance export never quietly lapses."
+              "Every export has a size it can't exceed, and the honest place to handle that is before the request, not after. I made the filter set do that work (time, product, model, status, tenant, user), so the admin chooses what to leave out instead of the system deciding by failing."
+            },
+            {
+              tag: "04 · EVERY FILE EXPLAINS ITSELF",
+              lead: "An export has to hold up months after it was pulled.",
+              body:
+              "The exports list keeps who generated each file, when, and the exact filters behind it."
             }].
             map((c) =>
             <div key={c.tag} style={{ borderTop: "1px solid var(--ink)", paddingTop: 14 }}>
@@ -1168,6 +1281,7 @@ EU AI Act coming into force.
               } />
             
             </div>
+            {IMPACT.audit}
           </Sec>
 
           {/* ───────── 04 · AI GOVERNANCE ───────── */}
@@ -1178,12 +1292,14 @@ EU AI Act coming into force.
           title="Who gets to use AI">
           
             <Mission>
-              Scattered AI toggles, consolidated into policy you set once, at the right level.
+              AI policy, created and deployed where the rest of AI is managed.
             </Mission>
             <Body mt={20}>
-              Generative-AI access was governed by scattered, low-level switches. I consolidated them into a single
-              governance surface inside AITL: an organization sets AI policy once and deploys it across tenants, groups,
-              or users.
+              AI access policies used to live in Automation Ops, a separate product that handled every policy type.
+              Creating one meant leaving Admin. Deploying one meant working through tenant, then user, then a policy per
+              product. AI Governance was the first policy type to move into Admin, inside the AI Trust Layer, alongside
+              everything else it governs. Create a policy, deploy it across the organization, tenants, groups or users,
+              and see where it applies. One surface. Fewer steps.
             </Body>
           
             <div
@@ -1203,7 +1319,7 @@ EU AI Act coming into force.
                 color: "var(--ink)",
                 maxWidth: "var(--copy-w-wide)"
               }}>
-                Settings are toggles you flip. Governance is policy you deploy.
+                Start from the policy, then choose who it's for.
               </p>
             </div>
             <div
@@ -1215,16 +1331,16 @@ EU AI Act coming into force.
             }}>
               {[
             {
-              tag: "01 · POLICY AT THE RIGHT LEVEL",
-              lead: "Org-wide, or down to a tenant.",
+              tag: "01 · CLEAR SCOPE",
+              lead: "Organization, tenant, group or user.",
               body:
-              "Policies apply at organization or tenant level, so a global rule and a team-specific exception can coexist without fighting each other."
+              "A policy is created for the organization or a tenant. Admins then choose which groups or users it applies to, and only valid options are shown."
             },
             {
-              tag: "02 · PRECEDENCE YOU CAN REASON ABOUT",
+              tag: "02 · CONFLICTS, CAUGHT IN PLACE",
               lead: "The most specific policy wins.",
               body:
-              "When policies stack across tenants, groups, and users, user-level takes precedence over higher levels: a clear, predictable rule for what actually applies."
+              "A user's policy overrides their group's or tenant's. If a group already has a policy, admins see it before saving."
             }].
             map((c) =>
             <div key={c.tag} style={{ borderTop: "1px solid var(--ink)", paddingTop: 14 }}>
@@ -1262,14 +1378,32 @@ EU AI Act coming into force.
               {
                 label: "04a",
                 ratio: "4098 / 2931",
-                src: "/site/assets/aitl/gov-settings.png",
-                note: "AI Trust Layer governance: manage Autopilot usage across organization, tenants and groups, choosing org- or tenant-level policy."
+                src: "/site/assets/aitl/gov-policy-list.png",
+                note: "Policies live in the AI Trust Layer. Each one is created as an Organization or Tenant policy."
               },
               {
                 label: "04b",
+                ratio: "4098 / 2931",
+                src: "/site/assets/aitl/gov-new-policy.png",
+                note: "The new policy appears in the list. Deployment starts from its row."
+              },
+              {
+                label: "04c",
                 ratio: "1548 / 2931",
-                src: "/site/assets/aitl/gov-deployments.png",
-                note: "Manage deployments: apply a policy across tenants, users and groups, with precedence rules made legible."
+                src: "/site/assets/aitl/gov-deploy-tenant.png",
+                note: "Tenants, groups and users from one panel. The precedence rule stays in view."
+              },
+              {
+                label: "04c.2",
+                ratio: "1548 / 2931",
+                src: "/site/assets/aitl/gov-deploy-org.png",
+                note: "An Organization policy can't target individual tenants, so the option isn't offered."
+              },
+              {
+                label: "04d",
+                ratio: "1548 / 2931",
+                src: "/site/assets/aitl/gov-deploy-error.png",
+                note: "Conflicts are flagged before saving, not discovered later."
               }]
               } />
             

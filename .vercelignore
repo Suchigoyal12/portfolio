@@ -45,3 +45,8 @@ masters/
 # content. tools/ has no route and nothing imports it, but these are the
 # only large binaries in it and there is no reason to upload them.
 tools/golden/
+
+# ── Archived design ─────────────────────────────────────────────────────
+# Assets taken off a live page, kept with restore notes. Outside public/,
+# so never deployed; listed here only to keep the upload small.
+archive/
