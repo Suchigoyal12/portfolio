@@ -50,10 +50,10 @@ const TOC = [
   { id: "problem", no: "02", label: "Problem" },
   { id: "challenge", no: "03", label: "Challenge" },
   { id: "decisions", no: "04", label: "Decisions" },
-  { id: "v1", no: "05", label: "V1 — Preview" },
+  { id: "v1", no: "05", label: "V1 · Preview" },
   { id: "feedback", no: "06", label: "Feedback" },
   { id: "v15", no: "07", label: "V1.5" },
-  { id: "v2", no: "08", label: "V2 — Final" },
+  { id: "v2", no: "08", label: "V2 · Final" },
   { id: "walkthrough", no: "09", label: "Walkthrough" },
   { id: "impact", no: "10", label: "Impact" },
   { id: "learnings", no: "11", label: "Learnings" }
@@ -72,21 +72,21 @@ const REELS = [
   {
     src: "/disclose-progressively.mp4",
     poster: "/disclose-progressively.png",
-    eyebrow: "01 — Disclose Progressively",
+    eyebrow: "01 · Disclose Progressively",
     bold: "Overview first, detail on demand.",
     support: "Start with roles across every service; open permissions only when the task requires it."
   },
   {
     src: "/scope-seperation.mp4",
     poster: "/scope-seperation.png",
-    eyebrow: "02 — Scope Separation",
+    eyebrow: "02 · Scope Separation",
     bold: "Tenant, service, and folder, never confused.",
     support: "Navigate access by scope, each level cleanly separated from the one above."
   },
   {
     src: "/trace-origins.mp4",
     poster: "/trace-origins.png",
-    eyebrow: "03 — Trace Origins",
+    eyebrow: "03 · Trace Origins",
     bold: "Every assignment surfaces its own source.",
     support: "See whether access is explicit, inherited from a group, or inherited from a folder."
   }
@@ -446,7 +446,7 @@ export default function CheckAccessFull() {
             <div className="lbl">Section 01<br />System</div>
             <div>
               <h2>Unpacking a distributed architecture<span className="acc">.</span></h2>
-              <p className="body">Permissions in UiPath aren't stored in one place — they are the output of dynamic, distributed system logic. Because groups, roles, and nested folders interact across multiple services, a user's effective access is the output of distributed logic, not a static assignment.</p>
+              <p className="body">Permissions in UiPath aren't stored in one place; they are the output of dynamic, distributed system logic. Because groups, roles, and nested folders interact across multiple services, a user's effective access is the output of distributed logic, not a static assignment.</p>
 
               <div className="cascade">
                 <span className="mono ink" style={{ fontSize: 10 }}>ARCHITECTURE LOGIC</span>
@@ -463,7 +463,7 @@ export default function CheckAccessFull() {
           <section id="problem" className="row">
             <div className="lbl">Section 02<br />Problem</div>
             <div>
-              <h2>The cost of decentralised chaos<span className="acc">.</span></h2>
+              <h2>The cost of decentralized chaos<span className="acc">.</span></h2>
               <blockquote className="pull"><span className="o">"</span>What access does this user actually have across the platform?</blockquote>
               <p className="body">Because permissions were scattered across Orchestrator, Data Service, Automation Ops and multiple other services; admins had to manually cross-reference identity dashboards against nested folder policies. This inability to reliably trace the origin of access made routine audits exceptionally tedious and increased the risk of misconfiguration.</p>
               <div className="pain-row">
@@ -563,13 +563,13 @@ export default function CheckAccessFull() {
 
           {/* 05 V1 PRIVATE PREVIEW */}
           <section id="v1" className="row">
-            <div className="lbl">Section 05<br />V1 — Preview</div>
+            <div className="lbl">Section 05<br />V1 · Preview</div>
             <div>
-              <div className="vtag"><span className="dot"></span><span className="lbl">V1 — INITIAL SOLUTION (PRIVATE PREVIEW)</span></div>
+              <div className="vtag"><span className="dot"></span><span className="lbl">V1 · INITIAL SOLUTION (PRIVATE PREVIEW)</span></div>
               <h2>Consolidating access visibility across services<span className="acc">.</span></h2>
-              <p className="body">The MVP version focused on bringing fragmented access data into a single, navigable interface. It reduced the need for administrators to scrutinise multiple systems to understand user permissions.</p>
+              <p className="body">The MVP version focused on bringing fragmented access data into a single, navigable interface. It reduced the need for administrators to scrutinize multiple systems to understand user permissions.</p>
 
-              <p className="credit">Satiswar Dash (Senior Designer) led V1. I worked on it, under his mentorship — and led the work from V1.5 onward.</p>
+              <p className="credit">Satiswar Dash (Senior Designer) led V1. I worked on it, under his mentorship, and led the work from V1.5 onward.</p>
 
               <div className="art-row">
                 <div>
@@ -591,10 +591,10 @@ export default function CheckAccessFull() {
 
               <div className="incomp">
                 <span className="lbl">WHERE V1 STOPPED SHORT</span>
-                <div className="it">V1 proved the concept. Four limits were visible before any feedback came in — and they set the scope of what I led next.</div>
+                <div className="it">V1 proved the concept. Four limits were visible before any feedback came in, and they set the scope of what I led next.</div>
                 <ul>
                   <li>· Unclear assignment visibility</li>
-                  <li>· Ambiguous navigation behaviour across levels</li>
+                  <li>· Ambiguous navigation behavior across levels</li>
                   <li>· Limited visibility into absence of access</li>
                   <li>· Entry point ambiguity against Manage Access</li>
                 </ul>
@@ -639,7 +639,7 @@ export default function CheckAccessFull() {
           <section id="v15" className="row">
             <div className="lbl">Section 07<br />V1.5</div>
             <div>
-              <div className="vtag"><span className="dot"></span><span className="lbl">V1.5 — DESIGNING UNDER CONSTRAINT</span></div>
+              <div className="vtag"><span className="dot"></span><span className="lbl">V1.5 · DESIGNING UNDER CONSTRAINT</span></div>
               <h2>The ideal vs. the shipped<span className="acc">.</span></h2>
 
               <div className="ctable">
@@ -659,7 +659,7 @@ export default function CheckAccessFull() {
                 <div className="p">
                   <div className="l">A</div>
                   <div className="h">Access Structure Clarity</div>
-                  <div className="b">Made role scope more explicit through clearer labelling and separation.</div>
+                  <div className="b">Made role scope more explicit through clearer labeling and separation.</div>
                   <span className="o">Outcome · Reduced ambiguity.</span>
                 </div>
                 <div className="p">
@@ -680,23 +680,23 @@ export default function CheckAccessFull() {
 
           {/* 08 V2 FINAL */}
           <section id="v2" className="row">
-            <div className="lbl">Section 08<br />V2 — Final</div>
+            <div className="lbl">Section 08<br />V2 · Final</div>
             <div>
-              <div className="vtag"><span className="dot"></span><span className="lbl">V2 — VISIBILITY TO TRACEABILITY</span></div>
+              <div className="vtag"><span className="dot"></span><span className="lbl">V2 · VISIBILITY TO TRACEABILITY</span></div>
               <h2>Centralized, explicit, and traceable<span className="acc">.</span></h2>
-              <p className="body">Admins no longer just audited access — they could explicitly map it. The UI now fully matched their mental model of investigating.</p>
+              <p className="body">Admins no longer just audited access; they could explicitly map it. The UI now fully matched their mental model of investigating.</p>
               <p className="body" style={{ fontFamily: "'JetBrains Mono'", fontSize: 13, letterSpacing: "0.08em", textTransform: "uppercase", color: "var(--accent)" }}>Who → What Role → What Scope → Why.</p>
 
               <div className="ab">
                 <div className="card">
                   <div className="top"><span className="opt">Option A</span><span className="desc">Dropdown-Based Selection</span></div>
-                  <button type="button" className="shot" onClick={() => setShot({ src: "/uploads/option-a.png", title: "Option A — Dropdown-Based Selection" })}><img src="/uploads/option-a.png" {...dims("/uploads/option-a.png")} alt="Option A — Dropdown-based folder path selection" loading="lazy" /></button>
+                  <button type="button" className="shot" onClick={() => setShot({ src: "/uploads/option-a.png", title: "Option A: Dropdown-Based Selection" })}><img src="/uploads/option-a.png" {...dims("/uploads/option-a.png")} alt="Option A: Dropdown-based folder path selection" loading="lazy" /></button>
                   <h4>Allowed users to select folder paths via a dropdown.</h4>
                   <p><span className="lbl">Limitation · </span>Lacked visibility into hierarchy and made it difficult to understand structure at a glance.</p>
                 </div>
                 <div className="card sel">
                   <div className="top"><span className="opt">Option B · Selected</span><span className="desc">Tree Navigation</span></div>
-                  <button type="button" className="shot" onClick={() => setShot({ src: "/uploads/option-b.png", title: "Option B — Tree Navigation" })}><img src="/uploads/option-b.png" {...dims("/uploads/option-b.png")} alt="Option B — Persistent folder tree navigation" loading="lazy" /></button>
+                  <button type="button" className="shot" onClick={() => setShot({ src: "/uploads/option-b.png", title: "Option B: Tree Navigation" })}><img src="/uploads/option-b.png" {...dims("/uploads/option-b.png")} alt="Option B: Persistent folder tree navigation" loading="lazy" /></button>
                   <h4>Introduced a persistent folder tree.</h4>
                   <p>Enables users to explore hierarchy and understand context while auditing access.</p>
                 </div>
@@ -745,11 +745,11 @@ export default function CheckAccessFull() {
               <div className="lessons">
                 <div className="l">
                   <div className="row"><h4>The structure is the experience.</h4><span className="n">01</span></div>
-                  <p>The hardest problem wasn't UI — it was modeling access in a way admins could understand. I designed around user mental models (who has access where) instead of backend structures (roles, inheritance chains).</p>
+                  <p>The hardest problem wasn't UI. It was modeling access in a way admins could understand. I designed around user mental models (who has access where) instead of backend structures (roles, inheritance chains).</p>
                 </div>
                 <div className="l">
                   <div className="row"><h4>Complexity requires narrative.</h4><span className="n">02</span></div>
-                  <p>When presenting dense data, you can't just show everything at once. Progressive disclosure is a form of storytelling — guiding the user through layers of complexity only when they ask for it.</p>
+                  <p>When presenting dense data, you can't just show everything at once. Progressive disclosure is a form of storytelling, guiding the user through layers of complexity only when they ask for it.</p>
                 </div>
                 <div className="l">
                   <div className="row"><h4>Edge cases are the system.</h4><span className="n">03</span></div>

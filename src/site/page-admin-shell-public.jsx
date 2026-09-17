@@ -255,13 +255,13 @@ function AdminShellPublicPage() {
 
   const meta = [
   ["ROLE", "Product Designer"],
-  ["TIMELINE", "2024 — 2025"],
+  ["TIMELINE", "2024-2025"],
   ["DOMAIN", "Enterprise Administration"],
   ["PLATFORM", "UiPath Automation Cloud"]];
 
 
   const owned = [
-  "Navigation components — tenant picker, left nav",
+  "Navigation components: tenant picker, left nav",
   "Page templates & header system",
   "Admin grid & spacing system",
   "Design-system explorations & component states"];
@@ -355,7 +355,7 @@ function AdminShellPublicPage() {
 
             <div style={{ marginTop: 20, display: "flex", alignItems: "center", gap: 10, color: "var(--muted)" }}>
               <Lock size={15} color="var(--muted)" />
-              <MonoLabel>PRE-RELEASE WORK — SHOWN IN ABSTRACT</MonoLabel>
+              <MonoLabel>PRE-RELEASE WORK · SHOWN IN ABSTRACT</MonoLabel>
             </div>
 
 
@@ -401,7 +401,7 @@ function AdminShellPublicPage() {
           no="02"
           kicker="WHERE IT BROKE"
           title="Growth outpaced the structure."
-          intro="UiPath administration expanded across dozens of pages. The homepage connected them all, but every new capability added another destination — even simple tasks scattered across multiple pages.">
+          intro="UiPath administration expanded across dozens of pages. The homepage connected them all, but every new capability added another destination, even simple tasks scattered across multiple pages.">
           
             <div style={{ marginTop: 32 }}>
               <div style={{ position: "relative", width: "100%", aspectRatio: "16 / 9" }}>
@@ -444,7 +444,7 @@ function AdminShellPublicPage() {
                 }}>
                 
                     {p.h}
-                    <span style={{ color: "var(--muted)", fontWeight: 500 }}> — {p.b}</span>
+                    <span style={{ color: "var(--muted)", fontWeight: 500 }}>: {p.b}</span>
                   </div>
                 </div>
             )}
@@ -467,7 +467,7 @@ function AdminShellPublicPage() {
               </div>
               <MonoLabel color="var(--accent)">RESTRICTED · SHARED ON REQUEST</MonoLabel>
               <p style={{ fontFamily: sans, fontSize: 18, lineHeight: 1.55, margin: "24px auto 0", maxWidth: 560, color: "var(--muted)" }}>
-                The IA work, the component system, and the designed surfaces — shared with hiring teams under password.
+                The IA work, the component system, and the designed surfaces, shared with hiring teams under password.
               </p>
               <a
               href={mailto}

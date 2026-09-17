@@ -16,7 +16,7 @@ export default function NotFound() {
       <main className="nf-sheet">
         <div className="nf-rail">
           <Link className="nf-wordmark" to="/">SuCHI</Link>
-          <p className="nf-status">404 — Not found</p>
+          <p className="nf-status">404 · Not found</p>
         </div>
 
         <div>

@@ -20,7 +20,7 @@ const RN = {
   headline: ["RELEASE NOTES,", "beyond the doc dive"],
   presence: "walking you through case · 004",
   summary:
-  "Bringing release communication out of buried docs and into three connected, in-product surfaces — calibrated by importance.",
+  "Bringing release communication out of buried docs and into three connected, in-product surfaces, calibrated by importance.",
   meta: [
   ["ROLE", "Product Designer"],
   ["TIMELINE", "1.5 months"],
@@ -313,7 +313,7 @@ function ContextBlock() {
     <div>
       <SectionPill>Context</SectionPill>
       <NarrativeBody mt={24}>
-        Release notes existed — buried eight hops deep, dumped as bulk content per product line. We wanted to bring
+        Release notes existed, but were buried eight hops deep, dumped as bulk content per product line. We wanted to bring
         release info <strong style={{ fontWeight: 700 }}>into the product</strong> instead.
       </NarrativeBody>
       <InfoBox label="RELEASE NOTES?">
@@ -376,11 +376,11 @@ function ProblemBlock() {
           color: "var(--muted)"
         }}>
         
-        — UiPath Customer
+        UiPath Customer
       </div>
       <InfoBox label="THE PIVOT" tint={"color-mix(in srgb, " + STEEL + " 45%, transparent)"}>
         <p style={{ fontFamily: sansFamily, fontSize: 14, lineHeight: 1.55, margin: 0, color: "var(--ink)" }}>
-          From "one docs page per product" to three connected in-product surfaces — calibrated by importance.
+          From "one docs page per product" to three connected in-product surfaces, calibrated by importance.
         </p>
       </InfoBox>
     </div>);
@@ -406,7 +406,7 @@ function SolutionBlock({ active }) {
         {ser("calibrated by importance")}.
       </h2>
       <div style={{ display: "flex", flexDirection: "column", gap: 12, marginTop: 26 }}>
-        <SurfaceCard n="1" title="Restructured Docs — Release Notes" active={active === 0} />
+        <SurfaceCard n="1" title="Restructured Docs: Release Notes" active={active === 0} />
         <SurfaceCard n="2" title="Announcement Widget" active={active === 1} />
         <SurfaceCard n="3" title="Critical-update Popup" active={active === 2} />
       </div>
@@ -542,10 +542,10 @@ function ReleaseNotesProjectPage() {
               <div className="rn-sticky" style={rnSticky}>
                 <PreviewPanel
                   heading="The original structure"
-                  subtitle="UiPath Docs, 2023 — release docs lived one bulk page deep per product line, behind extensive navigation."
+                  subtitle="UiPath Docs, 2023: release docs lived one bulk page deep per product line, behind extensive navigation."
                   tag="BEFORE">
                   
-                  <Frame src={FRAMES.before} alt="Before · 2022 — the old documentation portal" />
+                  <Frame src={FRAMES.before} alt="Before · 2022: the old documentation portal" />
                 </PreviewPanel>
               </div>
             </div>
@@ -559,22 +559,22 @@ function ReleaseNotesProjectPage() {
                 <PreviewPanel
                   refEl={f0}
                   heading="Restructured documentation"
-                  subtitle="Same page, now timeline-first. Categorised sidebar, single-scroll read, easy scan, scope toggle, update type filters."
+                  subtitle="Same page, now timeline-first. Categorized sidebar, single-scroll read, easy scan, scope toggle, update type filters."
                   tag="AFTER">
                   
-                  <Frame src={FRAMES.after} alt="After — restructured documentation">
+                  <Frame src={FRAMES.after} alt="After: restructured documentation">
                     <Anno right="3%" top="8.5%" square>Scope switch</Anno>
                     <Anno left="2%" top="18.5%" square>Improved findability</Anno>
                     <Anno left="2%" top="41%" square>Update-type filter</Anno>
                     <Anno right="2%" top="18.5%" square>Integrated Platform overview &amp; Products</Anno>
                     <Anno left="33%" top="61%" square>One scroll read</Anno>
-                    <Anno right="2%" top="55%" square>Categorised release notes in sub-sections</Anno>
+                    <Anno right="2%" top="55%" square>Categorized release notes in sub-sections</Anno>
                   </Frame>
                 </PreviewPanel>
                 <PreviewPanel
                   refEl={f1}
                   heading="Announcement widget"
-                  subtitle="A 'What's new' entry in the product header — two clicks to the latest release relevant to this service."
+                  subtitle="A 'What's new' entry in the product header, two clicks from the latest release relevant to this service."
                   tag="IN-PRODUCT">
                   
                   <Frame src={FRAMES.widget + '?v=2'} alt="In-product announcement widget">

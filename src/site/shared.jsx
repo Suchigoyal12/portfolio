@@ -87,12 +87,12 @@ const DEFAULT_TWEAKS = /*EDITMODE-BEGIN*/{
 // =============================================================
 const RESPONSIVE_CSS = `
   :root {
-    /* Shared width system for large screens — same tokens used across
+    /* Shared width system for large screens: same tokens used across
        every project page (short + long versions). Keep in sync with
        project-check-access-long-v2.html, which duplicates these since
        it's a standalone (non-React) document. */
     --content-w: 1160px;  /* body copy, metadata grids, standard section content */
-    --frame-w: 1160px;    /* diagrams / illustrations / animation frames — never wider than content */
+    --frame-w: 1160px;    /* diagrams / illustrations / animation frames, never wider than content */
     --copy-w: 640px;      /* lede / intro paragraphs */
     --copy-w-wide: 760px; /* standard body paragraphs */
   }
@@ -100,7 +100,7 @@ const RESPONSIVE_CSS = `
   * { box-sizing: border-box; }
   img, svg { max-width: 100%; }
 
-  /* HOME — 4 card grid */
+  /* HOME: 4 card grid */
   .home-stage { padding: 56px 48px 96px; background: var(--bg); }
   .home-grid {
     display: grid;

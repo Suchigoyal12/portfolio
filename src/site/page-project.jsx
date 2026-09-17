@@ -20,11 +20,11 @@ const PROJECT_DATA = {
     sector: "Enterprise SaaS",
     status: "Shipped (GA)",
     summary:
-    "A unified framework for centralising audit governance in enterprise automation platform, via Check Access @ UiPath.",
+    "A unified framework for centralizing audit governance in enterprise automation platform, via Check Access @ UiPath.",
     tags: ["User Access", "Permissions Audit Pipeline", "Enterprise SaaS"],
     readingTime: 5,
     problem: {
-      title: "The Cost of Decentralised Chaos",
+      title: "The Cost of Decentralized Chaos",
       navLabel: "Why?",
       body:
       "Administrators were navigating 15+ disparate UiPath services across multiple tenant layers just to compile a single compliance report or verify basic access controls. This compounding cognitive load wasn't just an annoyance; it was an active security vulnerability and a massive drain on operational expenditure.",
@@ -38,10 +38,10 @@ const PROJECT_DATA = {
       title: "Core Principles",
       navLabel: "Approach",
       body:
-      "Three principles drove every decision — from the data model up to the surface. Understand the access landscape first, systemise it into a coherent model, then design for the scale that enterprise complexity demands.",
+      "Three principles drove every decision, from the data model up to the surface. Understand the access landscape first, systemize it into a coherent model, then design for the scale that enterprise complexity demands.",
       bullets: [
       "Understand. Map the access landscape to uncover gaps and hidden complexity.",
-      "Systemise. Bring structure to roles and permissions through a coherent, unified model.",
+      "Systemize. Bring structure to roles and permissions through a coherent, unified model.",
       "Scale. Enable consistent access decisions as complexity grows."]
 
     },
@@ -67,14 +67,14 @@ const PROJECT_DATA = {
       hero: ["~13", " services · Private Preview → GA in ", "4", " months"],
       note: "Built to move three numbers the team owned: adoption, audit-time, and access-related support load.",
       body:
-      "One query returns a user's full access across the tenant — grouped by service, read top to bottom."
+      "One query returns a user's full access across the tenant, grouped by service, read top to bottom."
     },
     reflection: {
       title: "Reflection",
       body:
-      "Working under enterprise constraint is a design discipline of its own. Each version (MVP → Private Preview → V1.5) was a negotiation between the ideal model and what could ship — and the framework only got sharper because of it.",
+      "Working under enterprise constraint is a design discipline of its own. Each version (MVP → Private Preview → V1.5) was a negotiation between the ideal model and what could ship, and the framework only got sharper because of it.",
       pull: "Honestly, it was one of the best deliverables I saw this year and I really had little-to-no comments to add after it was shipped.",
-      pullAttribution: "SORIN VISAN — PLATFORM PRODUCT MANAGER, UIPATH"
+      pullAttribution: "SORIN VISAN, PLATFORM PRODUCT MANAGER, UIPATH"
     }
   },
   "datasync-design-system": {
@@ -83,7 +83,7 @@ const PROJECT_DATA = {
     headline: ["UNIFIED", "DESIGN SYSTEM."],
     client: "DataSync Inc.",
     role: "Junior Product Designer",
-    timeline: "'24 — '25",
+    timeline: "'24-'25",
     sector: "B2B / SaaS Enterprise",
     summary:
     "Migrated 45+ legacy sketch components to a unified Figma structure utilizing local variables. Reduced engineering QA kickbacks by roughly 15%.",
@@ -91,7 +91,7 @@ const PROJECT_DATA = {
     readingTime: 6,
     problem: {
       title: "The Situation",
-      body: "DataSync had grown from a single product to four surfaces in eighteen months. Each surface had forked its own component set. Engineers were re-implementing the same modal, button, and table across four codebases — and design QA was catching the divergence months too late.",
+      body: "DataSync had grown from a single product to four surfaces in eighteen months. Each surface had forked its own component set. Engineers were re-implementing the same modal, button, and table across four codebases, and design QA was catching the divergence months too late.",
       stats: [
       { k: "45+", v: "LEGACY COMPONENTS" },
       { k: "4", v: "PRODUCT SURFACES" },
@@ -100,7 +100,7 @@ const PROJECT_DATA = {
     },
     approach: {
       title: "Approach",
-      body: "I treated the system as a contract between design and engineering, not a finished product. Token migration came first — color, spacing, type — because tokens are the only thing both disciplines have to agree on every day. Components followed, audited surface by surface.",
+      body: "I treated the system as a contract between design and engineering, not a finished product. Token migration came first (color, spacing, type) because tokens are the only thing both disciplines have to agree on every day. Components followed, audited surface by surface.",
       bullets: [
       "Audit every shipped component against its Figma source.",
       "Map tokens to local Figma variables before touching components.",
@@ -112,7 +112,7 @@ const PROJECT_DATA = {
       title: "Solution",
       body: "A unified Figma file with local variables, paired with a Storybook surface that engineers could fork from. The system now has one source of truth per token, and the QA loop runs against the system instead of against eyeballs.",
       artifacts: [
-      { label: "TOKENS", desc: "Color, spacing, type, radius — local variables." },
+      { label: "TOKENS", desc: "Color, spacing, type, radius: local variables." },
       { label: "COMPONENTS", desc: "12 atomic + 8 molecular, fully variant-mapped." },
       { label: "STORYBOOK", desc: "Read-only mirror, hosted alongside the Figma source." }]
 
@@ -120,15 +120,15 @@ const PROJECT_DATA = {
     outcomes: {
       title: "Outcomes",
       stats: [
-      { k: "−15%", v: "ENG. QA KICKBACKS", note: "Q1 — Q3, '25" },
+      { k: "−15%", v: "ENG. QA KICKBACKS", note: "Q1-Q3, '25" },
       { k: "12 → 1", v: "SOURCE OF TRUTH" },
       { k: "4×", v: "FASTER COMPONENT SHIP" }],
 
-      body: "QA kickbacks measurably dropped in the quarters following rollout. The team uses the system without thinking about it — which is the highest compliment a system can earn."
+      body: "QA kickbacks measurably dropped in the quarters following rollout. The team uses the system without thinking about it, which is the highest compliment a system can earn."
     },
     reflection: {
       title: "Reflection",
-      body: "Design systems are easy to start and hard to maintain. The hardest part wasn't building — it was teaching the team to amend the system instead of forking it. I'd spend more time, earlier, on governance rituals next round.",
+      body: "Design systems are easy to start and hard to maintain. The hardest part wasn't building. It was teaching the team to amend the system instead of forking it. I'd spend more time, earlier, on governance rituals next round.",
       pull: "The beauty is in the utility."
     }
   },
@@ -146,7 +146,7 @@ const PROJECT_DATA = {
     readingTime: 8,
     problem: {
       title: "The Situation",
-      body: "New admins arriving at DataSync had to complete a 6-step wizard before they could see their data. The wizard locked the product in a modal. Admins dropped off at step 3 — the step where they had to invite their team without knowing what the product looked like yet.",
+      body: "New admins arriving at DataSync had to complete a 6-step wizard before they could see their data. The wizard locked the product in a modal. Admins dropped off at step 3, the step where they had to invite their team without knowing what the product looked like yet.",
       stats: [
       { k: "6", v: "WIZARD STEPS" },
       { k: "Step 3", v: "DROP-OFF POINT" },
@@ -160,7 +160,7 @@ const PROJECT_DATA = {
       "Map every wizard step to a piece of the product UI it gates.",
       "Identify which steps are truly blocking vs. defer-able.",
       "Move blocking steps inline; move defer-able steps to a checklist.",
-      "Keep the product visible at all times — context teaches faster than copy."]
+      "Keep the product visible at all times; context teaches faster than copy."]
 
     },
     solution: {
@@ -179,7 +179,7 @@ const PROJECT_DATA = {
       { k: "−40%", v: "DROP-OFF AT STEP 3" },
       { k: "+22%", v: "TEAM INVITES SENT" }],
 
-      body: "Time-to-first-value improved meaningfully — admins now see their data within 90 seconds. Team invites went up because admins invite once they understand what they're inviting people to."
+      body: "Time-to-first-value improved meaningfully: admins now see their data within 90 seconds. Team invites went up because admins invite once they understand what they're inviting people to."
     },
     reflection: {
       title: "Reflection",
@@ -694,7 +694,7 @@ function ProjectDetailPage({ projectId }) {
             </blockquote>
             {data.reflection.pullAttribution &&
           <MonoLabel style={{ marginTop: 16, display: "block" }}>
-                — {data.reflection.pullAttribution}
+                {data.reflection.pullAttribution}
               </MonoLabel>
           }
           </CSSection>

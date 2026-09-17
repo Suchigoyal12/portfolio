@@ -23,7 +23,7 @@ const PIPELINE_NODES = [
 },
 {
   id: 2,
-  title: "Organisation Level",
+  title: "Organization Level",
   dot: "oklch(0.55 0.13 290)",
   render: () =>
   <div style={{ display: "grid", gap: 10 }}>

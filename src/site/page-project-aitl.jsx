@@ -15,7 +15,7 @@ const AITL = {
   eyebrow: "PRODUCT DESIGN CASE STUDY",
   headline: ["AI "],
   summary:
-  "The control plane for enterprise GenAI \u2014 designed to make AI safe, transparent, and governable at scale.",
+  "The control plane for enterprise GenAI, designed to make AI safe, transparent, and governable at scale.",
   meta: [
   ["ROLE", "Sole Product Designer"],
   ["TIMELINE", "2024-25"],
@@ -669,7 +669,7 @@ function AITLProjectPage() {
           no="00"
           kicker="THE STAKES"
           title="AI Scaled. Trust didn't"
-          intro="UiPath had powerful GenAI across its automation platform. What it didn't have was a way to govern it. Every enterprise rollout surfaced the same unanswered questions — about data, model control, and auditability.">
+          intro="UiPath had powerful GenAI across its automation platform. What it didn't have was a way to govern it. Every enterprise rollout surfaced the same unanswered questions about data, model control, and auditability.">
           
             <div style={{ borderTop: "1px solid var(--ink)", paddingTop: 16, marginTop: 32, maxWidth: "var(--copy-w)" }}>
               <div
@@ -691,18 +691,18 @@ function AITLProjectPage() {
                 marginBottom: 0,
                 color: "var(--ink)",
                 maxWidth: 520
-              }}>97 enterprise deals stalled on missing audit controls — with the
+              }}>97 enterprise deals stalled on missing audit controls, with the
 EU AI Act coming into force.
 
             </p>
             </div>
             <Body>
               The AI Trust Layer was UiPath's answer: a governance layer inside the Admin Console. I designed four of
-              its surfaces, each solving a distinct trust problem{"\n"}— all now shipped to GA and live today.
+              its surfaces, each solving a distinct trust problem.{"\n"}All four are now shipped to GA and live today.
             </Body>
             <Body>
               The hard part wasn't drawing screens. It was making invisible infrastructure feel visible, predictable,
-              and safe — and giving four surfaces, built separately over time, one coherent mental model.
+              and safe, and giving four surfaces, built separately over time, one coherent mental model.
             </Body>
 
             <div
@@ -787,14 +787,14 @@ EU AI Act coming into force.
           title="Demystifying the black box">
           
             <Mission>
-              The Mission: empower developers to ground GenAI in their own proprietary data — with transparent source
+              The Mission: empower developers to ground GenAI in their own proprietary data, with transparent source
               traceability.
             </Mission>
             <DuoBlock
             left={{
               tag: "THE PROBLEM",
               body:
-              "Automation developers wanted to use Generative AI with their own proprietary data \u2014 internal documents, knowledge bases, records. But foundational models are trained on a general, public corpus. They don't know your business, can't cite their sources, and when they hallucinate there's no trail to follow. \nDevelopers were building automations on outputs they had no way to verify.",
+              "Automation developers wanted to use Generative AI with their own proprietary data: internal documents, knowledge bases, records. But foundational models are trained on a general, public corpus. They don't know your business, can't cite their sources, and when they hallucinate there's no trail to follow. \nDevelopers were building automations on outputs they had no way to verify.",
               append:
               <div style={{ marginTop: 14 }}>
                 <InlineLink href="https://www.uipath.com/blog/ai/understanding-context-grounding">
@@ -805,7 +805,7 @@ EU AI Act coming into force.
             right={{
               tag: "THE DESIGN SOLUTION",
               body:
-              "I designed Context Grounding as a platform service inside the Admin Console \u2014 letting admins ground GenAI in customer-selected data, and giving developers transparent evidence of where every answer came from.\n"
+              "I designed Context Grounding as a platform service inside the Admin Console, letting admins ground GenAI in customer-selected data, and giving developers transparent evidence of where every answer came from.\n"
             }} />
           
             <div
@@ -826,7 +826,7 @@ EU AI Act coming into force.
                 maxWidth: "var(--copy-w-wide)"
               }}>
                 Reduce hallucination risk by anchoring every answer in citable data. Build trust by making the
-                model's reasoning reviewable {"\u2014"} not opaque.
+                model's reasoning reviewable, not opaque.
               </p>
             </div>
             <div
@@ -841,19 +841,19 @@ EU AI Act coming into force.
               tag: "DESIGNING THE DATA LAYER",
               lead: "RAG, as a workflow admins already know.",
               body:
-              "Register a source, build an index per tenant, watch sync resolve \u2014 In progress, Failed, done. The vector-database complexity stays underneath."
+              "Register a source, build an index per tenant, watch sync resolve: In progress, Failed, done. The vector-database complexity stays underneath."
             },
             {
               tag: "TRANSPARENT RETRIEVAL",
               lead: "Surfaced the retrieval, didn't hide it.",
               body:
-              "A grounded answer shows the documents it pulled and where they came from \u2014 validation becomes part of the flow, not a separate audit."
+              "A grounded answer shows the documents it pulled and where they came from, so validation becomes part of the flow, not a separate audit."
             },
             {
               tag: "MULTI-TENANT SCOPING",
               lead: "Scoped grounding to the tenant.",
               body:
-              "A source live in production stays out of dev \u2014 closing a quiet path for test data to bleed into production answers."
+              "A source live in production stays out of dev, closing a quiet path for test data to bleed into production answers."
             }].
             map((c) =>
             <div key={c.tag} style={{ borderTop: "1px solid var(--ink)", paddingTop: 14 }}>
@@ -899,7 +899,7 @@ EU AI Act coming into force.
                 label: "01.1",
                 ratio: "4704 / 2706",
                 src: "/site/assets/aitl/grounding-list.png",
-                note: "Index manager — govern the proprietary data used as context with UiPath GenAI features, with sync status per index."
+                note: "Index manager: govern the proprietary data used as context with UiPath GenAI features, with sync status per index."
               },
               {
                 label: "01.2",
@@ -911,13 +911,13 @@ EU AI Act coming into force.
                 label: "01.3",
                 ratio: "4704 / 2706",
                 src: "/site/assets/aitl/grounding-add-connection.png",
-                note: "Or ground from an Integration Service connection — e.g. OneDrive & SharePoint — scoped to a data source location."
+                note: "Or ground from an Integration Service connection (e.g. OneDrive & SharePoint), scoped to a data source location."
               },
               {
                 label: "01.4",
                 ratio: "4320 / 3891",
                 src: "/site/assets/aitl/grounding-detail.png",
-                note: "Index detail — the configured source, description and sync state, ready to ground GenAI responses."
+                note: "Index detail: the configured source, description and sync state, ready to ground GenAI responses."
               }]
               } />
             
@@ -935,7 +935,7 @@ EU AI Act coming into force.
               The Mission: design for infrastructure autonomy without production risk.
             </Mission>
             <Body mt={24}>
-              Enterprise customers didn't just want UiPath's models {"\u2014"} they wanted to route AI workloads through
+              Enterprise customers didn't just want UiPath's models; they wanted to route AI workloads through
               their own subscriptions (Azure OpenAI, Google Vertex). However, if an admin misconfigured a connection,
               multiple AI-powered products would silently fail in production.
             </Body>
@@ -951,19 +951,19 @@ EU AI Act coming into force.
               tag: "01 \u00B7 THE MVP TRAP",
               lead: "Configuring a model, not a product.",
               body:
-              "Early explorations let an admin point a model at their own endpoint \u2014 but showed nothing about which products depended on it. Change the model, break something downstream, no warning."
+              "Early explorations let an admin point a model at their own endpoint, but showed nothing about which products depended on it. Change the model, break something downstream, no warning."
             },
             {
               tag: "02 \u00B7 THE REFRAME",
               lead: "Configure the product, not the model.",
               body:
-              "I inverted the mental model to a Product \u2192 Feature \u2192 Model map. Admins configure \u201CAI for Document Understanding,\u201D not \u201CGPT-4\u201D \u2014 so the dependency is visible by design."
+              "I inverted the mental model to a Product \u2192 Feature \u2192 Model map. Admins configure \u201CAI for Document Understanding,\u201D not \u201CGPT-4,\u201D so the dependency is visible by design."
             },
             {
               tag: "03 \u00B7 SAFE DEFAULTS",
               lead: "A broken connection can\u2019t go live.",
               body:
-              "Every connection must pass a mandatory test before it can go live \u2014 so a misconfiguration is caught at setup, not in production."
+              "Every connection must pass a mandatory test before it can go live, so a misconfiguration is caught at setup, not in production."
             }].
             map((c) =>
             <div key={c.tag} style={{ borderTop: "1px solid var(--ink)", paddingTop: 14 }}>
@@ -1015,25 +1015,25 @@ EU AI Act coming into force.
                 label: "02.1",
                 ratio: "5760 / 4281",
                 src: "/site/assets/aitl/llm-list.png",
-                note: "Configurations listed per Product → Feature, each carrying a live connection Status — Connected or Failed."
+                note: "Configurations listed per Product → Feature, each carrying a live connection Status: Connected or Failed."
               },
               {
                 label: "02.2",
                 ratio: "5760 / 3240",
                 src: "/site/assets/aitl/llm-view.png",
-                note: "View configuration — the per-feature model panel detailing folder, connector, connection and deployment."
+                note: "View configuration: the per-feature model panel detailing folder, connector, connection and deployment."
               },
               {
                 label: "02.3",
                 ratio: "5760 / 3240",
                 src: "/site/assets/aitl/llm-add.png",
-                note: "Add configuration — routing a feature’s models to the customer’s own subscriptions before activation."
+                note: "Add configuration: routing a feature’s models to the customer’s own subscriptions before activation."
               },
               {
                 label: "02.4",
                 ratio: "5760 / 4281",
                 src: "/site/assets/aitl/llm-error.png",
-                note: "Mandatory connection testing — a failed probe blocks save and points to the exact model that needs attention."
+                note: "Mandatory connection testing: a failed probe blocks save and points to the exact model that needs attention."
               }]
               } />
             
@@ -1054,12 +1054,12 @@ EU AI Act coming into force.
             left={{
               tag: "THE PROBLEM",
               body:
-              "Enterprises have to prove to auditors exactly what their AI did \u2014 every request, model, and outcome. But the audit log was visible for only 60 days, with no scalable way to export it: the compliance gap behind the stalled deals in Section 00. And the export itself was a minefield \u2014 massive CSVs failed silently, and hidden licensing tiers quietly capped how much history a customer could pull."
+              "Enterprises have to prove to auditors exactly what their AI did: every request, model, and outcome. But the audit log was visible for only 60 days, with no scalable way to export it: the compliance gap behind the stalled deals in Section 00. And the export itself was a minefield: massive CSVs failed silently, and hidden licensing tiers quietly capped how much history a customer could pull."
             }}
             right={{
               tag: "THE DESIGN SOLUTION",
               body:
-              "Rather than expose those backend limits or ship a naive \u201CDownload\u201D button, I designed export as a visible, asynchronous lifecycle \u2014 request, process, retry \u2014 and surfaced the system's constraints as intentional UI instead of hidden traps. Retention windows, export quotas, and download deadlines became things a user could see and plan around, so the experience stayed predictable even when the backend wasn't."
+              "Rather than expose those backend limits or ship a naive \u201CDownload\u201D button, I designed export as a visible, asynchronous lifecycle (request, process, retry) and surfaced the system's constraints as intentional UI instead of hidden traps. Retention windows, export quotas, and download deadlines became things a user could see and plan around, so the experience stayed predictable even when the backend wasn't."
             }} />
           
             <div
@@ -1079,7 +1079,7 @@ EU AI Act coming into force.
                 color: "var(--ink)",
                 maxWidth: "var(--copy-w-wide)"
               }}>
-                Don't hide the system's limits. Make them legible {"\u2014"} and let the user plan around them.
+                Don't hide the system's limits. Make them legible, and let the user plan around them.
               </p>
             </div>
             <div
@@ -1094,19 +1094,19 @@ EU AI Act coming into force.
               tag: "01 · ASYNCHRONOUS LIFECYCLE",
               lead: "A long export can't pretend to be instant.",
               body:
-              "Big exports take time and sometimes fail. I designed a request \u2192 processing \u2192 ready \u2192 retry lifecycle with a persistent tracker, so a user can fire an export, leave, and get pulled back when it's done \u2014 never staring at a frozen screen."
+              "Big exports take time and sometimes fail. I designed a request \u2192 processing \u2192 ready \u2192 retry lifecycle with a persistent tracker, so a user can fire an export, leave, and get pulled back when it's done, never staring at a frozen screen."
             },
             {
               tag: "02 · ENTITLEMENT-AWARE STATES",
               lead: "The UI knows what your license allows.",
               body:
-              "Retention and quotas vary by tier \u2014 up to 180 days of history, four exports a month with inputs and outputs. I surfaced those limits in context (\u201C2 of 4 remaining\u201D), so users meet a clear ceiling instead of a silent failure."
+              "Retention and quotas vary by tier: up to 180 days of history, four exports a month with inputs and outputs. I surfaced those limits in context (\u201C2 of 4 remaining\u201D), so users meet a clear ceiling instead of a silent failure."
             },
             {
               tag: "03 · NOTIFICATIONS THAT RESPECT THE WINDOW",
               lead: "Warn people before the download expires.",
               body:
-              "A ready export only lives for a limited window. I designed a three-stage email cadence \u2014 ready, a mid-window nudge, a final warning before expiry \u2014 so a compliance export never quietly lapses."
+              "A ready export only lives for a limited window. I designed a three-stage email cadence (ready, a mid-window nudge, a final warning before expiry) so a compliance export never quietly lapses."
             }].
             map((c) =>
             <div key={c.tag} style={{ borderTop: "1px solid var(--ink)", paddingTop: 14 }}>
@@ -1145,25 +1145,25 @@ EU AI Act coming into force.
                 label: "03a",
                 ratio: "1853 / 1038",
                 src: "/site/assets/aitl/audit-landing.png",
-                note: "Audit landing — a 60-day overview of requests by product, model and status, with export entitlements shown up front."
+                note: "Audit landing: a 60-day overview of requests by product, model and status, with export entitlements shown up front."
               },
               {
                 label: "03b",
                 ratio: "1853 / 1038",
                 src: "/site/assets/aitl/audit-initiate.png",
-                note: "Initiating an export — the filter settings carry through, and remaining monthly export quota is made explicit."
+                note: "Initiating an export: the filter settings carry through, and remaining monthly export quota is made explicit."
               },
               {
                 label: "03c",
                 ratio: "1853 / 1038",
                 src: "/site/assets/aitl/audit-process.png",
-                note: "Processing — an asynchronous, non-blocking state: it may take time and the user is notified on completion."
+                note: "Processing: an asynchronous, non-blocking state. It may take time and the user is notified on completion."
               },
               {
                 label: "03d",
                 ratio: "1853 / 1038",
                 src: "/site/assets/aitl/audit-exports.png",
-                note: "Export history — In progress / Completed / Failed per run, with retry and download, and clear retention rules."
+                note: "Export history: In progress / Completed / Failed per run, with retry and download, and clear retention rules."
               }]
               } />
             
@@ -1178,7 +1178,7 @@ EU AI Act coming into force.
           title="Who gets to use AI">
           
             <Mission>
-              Scattered AI toggles, consolidated into policy you set once {"\u2014"} at the right level.
+              Scattered AI toggles, consolidated into policy you set once, at the right level.
             </Mission>
             <Body mt={20}>
               Generative-AI access was governed by scattered, low-level switches. I consolidated them into a single
@@ -1224,7 +1224,7 @@ EU AI Act coming into force.
               tag: "02 · PRECEDENCE YOU CAN REASON ABOUT",
               lead: "The most specific policy wins.",
               body:
-              "When policies stack across tenants, groups, and users, user-level takes precedence over higher levels \u2014 a clear, predictable rule for what actually applies."
+              "When policies stack across tenants, groups, and users, user-level takes precedence over higher levels: a clear, predictable rule for what actually applies."
             }].
             map((c) =>
             <div key={c.tag} style={{ borderTop: "1px solid var(--ink)", paddingTop: 14 }}>
@@ -1263,13 +1263,13 @@ EU AI Act coming into force.
                 label: "04a",
                 ratio: "4098 / 2931",
                 src: "/site/assets/aitl/gov-settings.png",
-                note: "AI Trust Layer governance — manage Autopilot usage across organization, tenants and groups, choosing org- or tenant-level policy."
+                note: "AI Trust Layer governance: manage Autopilot usage across organization, tenants and groups, choosing org- or tenant-level policy."
               },
               {
                 label: "04b",
                 ratio: "1548 / 2931",
                 src: "/site/assets/aitl/gov-deployments.png",
-                note: "Manage deployments — apply a policy across tenants, users and groups, with precedence rules made legible."
+                note: "Manage deployments: apply a policy across tenants, users and groups, with precedence rules made legible."
               }]
               } />
             
@@ -1285,7 +1285,7 @@ EU AI Act coming into force.
           last>
           
             <Body mt={20}>
-              All four surfaces — Context Grounding, LLM Configurations, Audit Export, and AI Governance — shipped to GA
+              All four surfaces (Context Grounding, LLM Configurations, Audit Export, and AI Governance) shipped to GA
               and are live in the UiPath Admin Console today, governing how enterprises ground, configure, audit, and
               control generative AI.
             </Body>
@@ -1307,7 +1307,7 @@ EU AI Act coming into force.
                 color: "var(--ink)",
                 maxWidth: "var(--copy-w-wide)"
               }}>
-                The work was making AI infrastructure {"\u2014"} invisible by nature {"\u2014"} feel visible,
+                The work was making AI infrastructure, invisible by nature, feel visible,
                 predictable, and safe.
               </p>
             </div>
@@ -1323,13 +1323,13 @@ EU AI Act coming into force.
               tag: "01 · ON TRUST",
               lead: "Transparency is the interface.",
               body:
-              "Whether it's showing where an answer came from or what an export will and won't include, enterprise trust is built by making the system legible \u2014 not by hiding its machinery."
+              "Whether it's showing where an answer came from or what an export will and won't include, enterprise trust is built by making the system legible, not by hiding its machinery."
             },
             {
               tag: "02 · ON ADMIN UX",
               lead: "Constraints are a design material.",
               body:
-              "The strongest moments here weren't new controls \u2014 they were turning backend limits, licensing tiers, and failure states into things a user could see and plan around."
+              "The strongest moments here weren't new controls. They were turning backend limits, licensing tiers, and failure states into things a user could see and plan around."
             },
             {
               tag: "03 · ON OWNERSHIP",

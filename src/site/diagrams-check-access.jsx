@@ -403,13 +403,13 @@ function CheckAccessSolutionSection({ pillars }) {
           /* Three 300px-min cards cannot sit side by side on a phone. Measured
              at 390: the tracks resolve to 160/106/139 inside a 146px column and
              push the page 245px wide. 1fr keeps an automatic min-content floor,
-             so the fix is minmax(0,1fr) plus min-width:0 — a plain 1fr still
+             so the fix is minmax(0,1fr) plus min-width:0; a plain 1fr still
              refuses to shrink past the longest word.
 
              700px, because that is where the tracks stop being equal. Every
              width the parity harness measures (900/1150/1300/1440, framed) is
              above it and is untouched. */
-          /* :not(.is-framed) — the stage's iframe is roughly viewport-244, so a
+          /* :not(.is-framed): the stage's iframe is roughly viewport-244, so a
              900px window hands this page a 656px frame and this block would
              fire at a desktop window size. Inside the stage the layout must
              stay Stage 1's. */
