@@ -278,7 +278,13 @@ The site works, the case studies are strong, attribution is honest. Everything b
 
 ## Below the line
 
-**11 — Soft-404.** `vercel.json` rewrites every unmatched path to `index.html` with status 200, so React Router renders the 404 page correctly for humans while crawlers see a soft-404. Cosmetically fine, technically wrong. Fix when convenient.
+**11 — Soft-404. DONE (2026-09-23), live on suchigoyal.com.**
+
+`vercel.json` now rewrites only the seven real routes to `index.html`. Everything else falls through to `dist/404.html`, a copy of the built `index.html` written by `tools/postbuild.mjs`, so the app still boots and renders its own NotFound page, now with a **404** status. `trailingSlash: false` redirects `/about/` to `/about` rather than letting it 404.
+
+**The route list is maintained by hand, and the build guards it.** `tools/postbuild.mjs` fails the build if any path in `src/routes.js` has no rewrite. Without that, a new case study would work when clicked through to and show the 404 page when opened directly or reloaded. Tested both ways: one rewrite removed exits 1 with a message naming the path; restored exits 0.
+
+**Verified on the `testing` preview first, then on production after PR #4:** all seven routes 200; `/banana`, `/work/banana`, `/work/check-access/banana` 404 and render NotFound; `/about/` 308 to `/about`; `www` still redirects to the apex; résumé, favicon and `og-image.png` 200; the long read's link still opens in the stage; no page errors.
 
 **12 — Per-route meta and link-preview prerendering.** So each case study previews with its own title and thumbnail rather than one shared card.
 
