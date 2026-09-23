@@ -341,9 +341,9 @@ function CheckAccessSolutionSection({ pillars }) {
   // not at all, and not at all is fine — so this matches the file rather than
   // quietly renaming half of it.
   const PILLAR_MEDIA = [
-    { src: "/disclose-progressively.mp4", poster: "/disclose-progressively.png", label: "DISCLOSE PROGRESSIVELY" },
-    { src: "/trace-origins.mp4",          poster: "/trace-origins.png",          label: "TRACE ORIGINS" },
-    { src: "/scope-seperation.mp4",       poster: "/scope-seperation.png",       label: "SCOPE SEPARATION" },
+    { src: "/disclose-progressively.mp4", poster: "/disclose-progressively.webp", label: "DISCLOSE PROGRESSIVELY" },
+    { src: "/trace-origins.mp4",          poster: "/trace-origins.webp",          label: "TRACE ORIGINS" },
+    { src: "/scope-seperation.mp4",       poster: "/scope-seperation.webp",       label: "SCOPE SEPARATION" },
   ];
   const media = activePillar != null ? PILLAR_MEDIA[activePillar - 1] : null;
   const videoSrc = media ? media.src : null;

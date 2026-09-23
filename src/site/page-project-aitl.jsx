@@ -1023,25 +1023,25 @@ function AITLProjectPage() {
               {
                 label: "01.1",
                 ratio: "4704 / 2706",
-                src: "/site/assets/aitl/grounding-list.png",
+                src: "/site/assets/aitl/grounding-list.webp",
                 note: "Index manager: govern the proprietary data used as context with UiPath GenAI features, with sync status per index."
               },
               {
                 label: "01.2",
                 ratio: "4704 / 2706",
-                src: "/site/assets/aitl/grounding-add-bucket.png",
+                src: "/site/assets/aitl/grounding-add-bucket.webp",
                 note: "Add new index via a Storage bucket source, with an optional Tether to validate retrieval against expected answers."
               },
               {
                 label: "01.3",
                 ratio: "4704 / 2706",
-                src: "/site/assets/aitl/grounding-add-connection.png",
+                src: "/site/assets/aitl/grounding-add-connection.webp",
                 note: "Or ground from an Integration Service connection (e.g. OneDrive & SharePoint), scoped to a data source location."
               },
               {
                 label: "01.4",
                 ratio: "4320 / 3891",
-                src: "/site/assets/aitl/grounding-detail.png",
+                src: "/site/assets/aitl/grounding-detail.webp",
                 note: "Index detail: the configured source, description and sync state, ready to ground GenAI responses."
               }]
               } />
@@ -1140,25 +1140,25 @@ function AITLProjectPage() {
               {
                 label: "02.1",
                 ratio: "5760 / 4281",
-                src: "/site/assets/aitl/llm-list.png",
+                src: "/site/assets/aitl/llm-list.webp",
                 note: "Configurations listed per Product → Feature, each carrying a live connection Status: Connected or Failed."
               },
               {
                 label: "02.2",
                 ratio: "5760 / 3240",
-                src: "/site/assets/aitl/llm-view.png",
+                src: "/site/assets/aitl/llm-view.webp",
                 note: "View configuration: the per-feature model panel detailing folder, connector, connection and deployment."
               },
               {
                 label: "02.3",
                 ratio: "5760 / 3240",
-                src: "/site/assets/aitl/llm-add.png",
+                src: "/site/assets/aitl/llm-add.webp",
                 note: "Add configuration: routing a feature’s models to the customer’s own subscriptions before activation."
               },
               {
                 label: "02.4",
                 ratio: "5760 / 4281",
-                src: "/site/assets/aitl/llm-error.png",
+                src: "/site/assets/aitl/llm-error.webp",
                 note: "Mandatory connection testing: a failed probe blocks save and points to the exact model that needs attention."
               }]
               } />
@@ -1286,25 +1286,25 @@ function AITLProjectPage() {
               {
                 label: "03a",
                 ratio: "1853 / 1038",
-                src: "/site/assets/aitl/audit-landing.png",
+                src: "/site/assets/aitl/audit-landing.webp",
                 note: "Audit landing: a 60-day overview of requests by product, model and status, with export entitlements shown up front."
               },
               {
                 label: "03b",
                 ratio: "1853 / 1038",
-                src: "/site/assets/aitl/audit-initiate.png",
+                src: "/site/assets/aitl/audit-initiate.webp",
                 note: "Initiating an export: the filter settings carry through, and remaining monthly export quota is made explicit."
               },
               {
                 label: "03c",
                 ratio: "1853 / 1038",
-                src: "/site/assets/aitl/audit-process.png",
+                src: "/site/assets/aitl/audit-process.webp",
                 note: "Processing: an asynchronous, non-blocking state. It may take time and the user is notified on completion."
               },
               {
                 label: "03d",
                 ratio: "1853 / 1038",
-                src: "/site/assets/aitl/audit-exports.png",
+                src: "/site/assets/aitl/audit-exports.webp",
                 note: "Export history: In progress / Completed / Failed per run, with retry and download, and clear retention rules."
               }]
               } />
@@ -1407,31 +1407,31 @@ function AITLProjectPage() {
               {
                 label: "04a",
                 ratio: "4098 / 2931",
-                src: "/site/assets/aitl/gov-policy-list.png",
+                src: "/site/assets/aitl/gov-policy-list.webp",
                 note: "Policies live in the AI Trust Layer. Each one is created as an Organization or Tenant policy."
               },
               {
                 label: "04b",
                 ratio: "4098 / 2931",
-                src: "/site/assets/aitl/gov-new-policy.png",
+                src: "/site/assets/aitl/gov-new-policy.webp",
                 note: "The new policy appears in the list. Deployment starts from its row."
               },
               {
                 label: "04c",
                 ratio: "1548 / 2931",
-                src: "/site/assets/aitl/gov-deploy-tenant.png",
+                src: "/site/assets/aitl/gov-deploy-tenant.webp",
                 note: "Tenants, groups and users from one panel. The precedence rule stays in view."
               },
               {
                 label: "04c.2",
                 ratio: "1548 / 2931",
-                src: "/site/assets/aitl/gov-deploy-org.png",
+                src: "/site/assets/aitl/gov-deploy-org.webp",
                 note: "An Organization policy can't target individual tenants, so the option isn't offered."
               },
               {
                 label: "04d",
                 ratio: "1548 / 2931",
-                src: "/site/assets/aitl/gov-deploy-error.png",
+                src: "/site/assets/aitl/gov-deploy-error.webp",
                 note: "Conflicts are flagged before saving, not discovered later."
               }]
               } />

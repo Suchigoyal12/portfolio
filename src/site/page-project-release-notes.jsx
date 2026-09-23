@@ -32,10 +32,10 @@ const RN = {
 const STEEL = "#C5D8E4";
 
 const FRAMES = {
-  before: "/site/assets/release-notes/before.png",
-  after: "/site/assets/release-notes/after.png",
-  widget: "/site/assets/release-notes/widget.png",
-  popup: "/site/assets/release-notes/popup-full.png"
+  before: "/site/assets/release-notes/before.webp",
+  after: "/site/assets/release-notes/after.webp",
+  widget: "/site/assets/release-notes/widget.webp",
+  popup: "/site/assets/release-notes/popup-full.webp"
 };
 
 // Matched to the baked-in pills on the supplied frames: those measure 2.468%
