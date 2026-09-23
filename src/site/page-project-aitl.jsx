@@ -354,6 +354,7 @@ function AITLCarousel({ items, label }) {
   const wrapRef = React.useRef(null);
   const stageRef = React.useRef(null);
   const trackRef = React.useRef(null);
+  const stripRef = React.useRef(null);
   const [dist, setDist] = React.useState(0);
   const [cardH, setCardH] = React.useState(520);
   const [isNarrow, setIsNarrow] = React.useState(
@@ -373,25 +374,45 @@ function AITLCarousel({ items, label }) {
     return () => window.removeEventListener("resize", onResize);
   }, []);
 
-  const widths = items.map((it) => Math.round(cardH * parseRatio(it.ratio)));
-  const trackWidth = widths.reduce((a, b) => a + b, 0) + GAP * (items.length - 1);
-
-  // Measure horizontal scroll distance
+  // The width the cards have to fit in: the swipe strip when narrow, the
+  // pan stage's content box when wide. Padding is read, not assumed, because
+  // the stage's follows --aitl-pad.
+  //
+  // A ResizeObserver, not a window resize listener: the page can be hidden
+  // when this first runs, which measures 0, and nothing resizes the window
+  // afterwards to correct it. The observer also catches the stage padding
+  // changing when a media query crosses. A 0 reading means "not laid out
+  // yet" and leaves the cap off rather than collapsing every card.
+  const [avail, setAvail] = React.useState(Infinity);
   React.useLayoutEffect(() => {
-    if (isNarrow) {
-      setDist(0);
-      return;
-    }
+    const el = isNarrow ? stripRef.current : stageRef.current;
+    if (!el) return;
     const measure = () => {
-      const stage = stageRef.current;
-      if (!stage) return;
-      const visible = stage.clientWidth - 128; // subtract 64px L/R padding
-      setDist(Math.max(0, trackWidth - visible));
+      const cs = getComputedStyle(el);
+      const w = el.clientWidth - parseFloat(cs.paddingLeft) - parseFloat(cs.paddingRight);
+      setAvail(w > 0 ? w : Infinity);
     };
     measure();
-    window.addEventListener("resize", measure);
-    return () => window.removeEventListener("resize", measure);
-  }, [trackWidth, isNarrow]);
+    const ro = new ResizeObserver(measure);
+    ro.observe(el);
+    return () => ro.disconnect();
+  }, [isNarrow]);
+
+  // One height per carousel, capped so its widest screen fits the available
+  // width in a single look. Suchi's rule: a screen should never be cut off on
+  // a phone or a small window. Sharing the height keeps the row even, at the
+  // cost of portrait screens coming out small next to landscape ones; a tap
+  // still opens any of them full size. Wide windows are unaffected, because
+  // the cap only bites when the height-derived width would not fit.
+  const maxRatio = Math.max(...items.map((it) => parseRatio(it.ratio)));
+  const fitH = Math.min(cardH, Math.floor(avail / maxRatio));
+  const widths = items.map((it) => Math.round(fitH * parseRatio(it.ratio)));
+  const trackWidth = widths.reduce((a, b) => a + b, 0) + GAP * (items.length - 1);
+
+  // Horizontal scroll distance for the wide pan
+  React.useLayoutEffect(() => {
+    setDist(isNarrow || !isFinite(avail) ? 0 : Math.max(0, trackWidth - avail));
+  }, [trackWidth, isNarrow, avail]);
 
   // Scroll → translate
   React.useEffect(() => {
@@ -434,6 +455,7 @@ function AITLCarousel({ items, label }) {
       <div>
         {header}
         <div
+          ref={stripRef}
           className="aitl-strip"
           style={{
             display: "flex",
@@ -447,7 +469,7 @@ function AITLCarousel({ items, label }) {
           
           {items.map((it, i) =>
           <div key={it.label} style={{ scrollSnapAlign: "start" }}>
-              <AITLCard item={it} width={widths[i]} height={cardH} onOpen={() => setLightbox(i)} />
+              <AITLCard item={it} width={widths[i]} height={fitH} onOpen={() => setLightbox(i)} />
             </div>
           )}
         </div>
@@ -460,15 +482,22 @@ function AITLCarousel({ items, label }) {
 
   // Wide: scroll-pinned horizontal pan — break out of the label
   // gutter + section padding to use the full content width.
+  //
+  // --aitl-pad is the section's side padding, 64px by default. The site-wide
+  // rule in shared.jsx narrows that padding to 40px at 1180px and below, and
+  // aitl-impact.css follows it here. Hardcoding 64 overshot the page edge by
+  // 24px on each side in that band and made the page scroll sideways
+  // (roadmap item 13).
   return (
     <div
       ref={wrapRef}
+      className="aitl-pan"
       style={{
         position: "relative",
         height: `calc(100vh + ${dist}px)`,
-        marginLeft: "calc(-180px - 32px - 64px)",
-        marginRight: "-64px",
-        width: "calc(100% + 180px + 32px + 128px)"
+        marginLeft: "calc(-180px - 32px - var(--aitl-pad, 64px))",
+        marginRight: "calc(-1 * var(--aitl-pad, 64px))",
+        width: "calc(100% + 180px + 32px + 2 * var(--aitl-pad, 64px))"
       }}>
       
       <div
@@ -481,7 +510,7 @@ function AITLCarousel({ items, label }) {
           flexDirection: "column",
           justifyContent: "center",
           overflow: "hidden",
-          padding: "0 64px"
+          padding: "0 var(--aitl-pad, 64px)"
         }}>
         
         {header}
@@ -495,7 +524,7 @@ function AITLCarousel({ items, label }) {
           }}>
           
           {items.map((it, i) =>
-          <AITLCard key={it.label} item={it} width={widths[i]} height={cardH} onOpen={() => setLightbox(i)} />
+          <AITLCard key={it.label} item={it} width={widths[i]} height={fitH} onOpen={() => setLightbox(i)} />
           )}
         </div>
       </div>
