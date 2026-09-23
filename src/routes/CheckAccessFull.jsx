@@ -71,21 +71,21 @@ const META = [
 const REELS = [
   {
     src: "/disclose-progressively.mp4",
-    poster: "/disclose-progressively.png",
+    poster: "/disclose-progressively.webp",
     eyebrow: "01 · Disclose Progressively",
     bold: "Overview first, detail on demand.",
     support: "Start with roles across every service; open permissions only when the task requires it."
   },
   {
     src: "/scope-seperation.mp4",
-    poster: "/scope-seperation.png",
+    poster: "/scope-seperation.webp",
     eyebrow: "02 · Scope Separation",
     bold: "Tenant, service, and folder, never confused.",
     support: "Navigate access by scope, each level cleanly separated from the one above."
   },
   {
     src: "/trace-origins.mp4",
-    poster: "/trace-origins.png",
+    poster: "/trace-origins.webp",
     eyebrow: "03 · Trace Origins",
     bold: "Every assignment surfaces its own source.",
     support: "See whether access is explicit, inherited from a group, or inherited from a folder."
@@ -690,13 +690,13 @@ export default function CheckAccessFull() {
               <div className="ab">
                 <div className="card">
                   <div className="top"><span className="opt">Option A</span><span className="desc">Dropdown-Based Selection</span></div>
-                  <button type="button" className="shot" onClick={() => setShot({ src: "/uploads/option-a.png", title: "Option A: Dropdown-Based Selection" })}><img src="/uploads/option-a.png" {...dims("/uploads/option-a.png")} alt="Option A: Dropdown-based folder path selection" loading="lazy" /></button>
+                  <button type="button" className="shot" onClick={() => setShot({ src: "/uploads/option-a.webp", title: "Option A: Dropdown-Based Selection" })}><img src="/uploads/option-a.webp" {...dims("/uploads/option-a.webp")} alt="Option A: Dropdown-based folder path selection" loading="lazy" /></button>
                   <h4>Allowed users to select folder paths via a dropdown.</h4>
                   <p><span className="lbl">Limitation · </span>Lacked visibility into hierarchy and made it difficult to understand structure at a glance.</p>
                 </div>
                 <div className="card sel">
                   <div className="top"><span className="opt">Option B · Selected</span><span className="desc">Tree Navigation</span></div>
-                  <button type="button" className="shot" onClick={() => setShot({ src: "/uploads/option-b.png", title: "Option B: Tree Navigation" })}><img src="/uploads/option-b.png" {...dims("/uploads/option-b.png")} alt="Option B: Persistent folder tree navigation" loading="lazy" /></button>
+                  <button type="button" className="shot" onClick={() => setShot({ src: "/uploads/option-b.webp", title: "Option B: Tree Navigation" })}><img src="/uploads/option-b.webp" {...dims("/uploads/option-b.webp")} alt="Option B: Persistent folder tree navigation" loading="lazy" /></button>
                   <h4>Introduced a persistent folder tree.</h4>
                   <p>Enables users to explore hierarchy and understand context while auditing access.</p>
                 </div>
