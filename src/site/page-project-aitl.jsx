@@ -385,7 +385,9 @@ function AITLCarousel({ items, label }) {
     const measure = () => {
       const stage = stageRef.current;
       if (!stage) return;
-      const visible = stage.clientWidth - 128; // subtract 64px L/R padding
+      // Read the padding rather than assuming 64px: it follows --aitl-pad.
+      const cs = getComputedStyle(stage);
+      const visible = stage.clientWidth - parseFloat(cs.paddingLeft) - parseFloat(cs.paddingRight);
       setDist(Math.max(0, trackWidth - visible));
     };
     measure();
@@ -460,15 +462,22 @@ function AITLCarousel({ items, label }) {
 
   // Wide: scroll-pinned horizontal pan — break out of the label
   // gutter + section padding to use the full content width.
+  //
+  // --aitl-pad is the section's side padding, 64px by default. The site-wide
+  // rule in shared.jsx narrows that padding to 40px at 1180px and below, and
+  // aitl-impact.css follows it here. Hardcoding 64 overshot the page edge by
+  // 24px on each side in that band and made the page scroll sideways
+  // (roadmap item 13).
   return (
     <div
       ref={wrapRef}
+      className="aitl-pan"
       style={{
         position: "relative",
         height: `calc(100vh + ${dist}px)`,
-        marginLeft: "calc(-180px - 32px - 64px)",
-        marginRight: "-64px",
-        width: "calc(100% + 180px + 32px + 128px)"
+        marginLeft: "calc(-180px - 32px - var(--aitl-pad, 64px))",
+        marginRight: "calc(-1 * var(--aitl-pad, 64px))",
+        width: "calc(100% + 180px + 32px + 2 * var(--aitl-pad, 64px))"
       }}>
       
       <div
@@ -481,7 +490,7 @@ function AITLCarousel({ items, label }) {
           flexDirection: "column",
           justifyContent: "center",
           overflow: "hidden",
-          padding: "0 64px"
+          padding: "0 var(--aitl-pad, 64px)"
         }}>
         
         {header}

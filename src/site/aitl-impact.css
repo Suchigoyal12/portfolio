@@ -116,3 +116,15 @@
   .aitl-impact .changed-grid { grid-template-columns: minmax(0, 1fr); }
   .aitl-impact .changed-card.span { grid-column: auto; }
 }
+
+/* The walkthrough carousels' full-width breakout (AITLCarousel in
+ * page-project-aitl.jsx) has to know the section's side padding. These two
+ * values mirror the site-wide overrides in shared.jsx, which narrow section
+ * padding to 40px at 1180px and 24px at 900px. If those change, change these.
+ * Roadmap item 13. */
+@media (max-width: 1180px) {
+  .aitl-pan { --aitl-pad: 40px; }
+}
+@media (max-width: 900px) {
+  .aitl-pan { --aitl-pad: 24px; }
+}
