@@ -286,7 +286,7 @@ The site works, the case studies are strong, attribution is honest. Everything b
 
 **Verified on the `testing` preview first, then on production after PR #4:** all seven routes 200; `/banana`, `/work/banana`, `/work/check-access/banana` 404 and render NotFound; `/about/` 308 to `/about`; `www` still redirects to the apex; résumé, favicon and `og-image.png` 200; the long read's link still opens in the stage; no page errors.
 
-**12 — Per-route meta and link-preview prerendering.** So each case study previews with its own title and thumbnail rather than one shared card.
+**12 — Per-route meta and link-preview prerendering.** So each case study previews with its own title and thumbnail rather than one shared card. *Deferred 2026-09-23, Suchi's call: taken up with item 20 after the design-led pieces (items 19, 8, 14), since those will change what each page should preview as.*
 
 **13 — AI Trust Layer sideways scroll. DONE (2026-09-23), live via PR #5.** *(Anchor tuning across 900–1440 beyond this defect stays optional refinement.)*
 
@@ -323,7 +323,11 @@ AITL fell less (about 40%) because most of its screenshots were never oversized,
 
 **Found by Suchi while reviewing, fixed here:** the long read's Option A and Option B screenshots had been swapped since the original export (`option-a` showed the folder tree, `option-b` the dropdown). The files were renamed so each name matches what it shows; the page code did not change.
 
-**16 — Accessibility pass.** Alt text on case-study images, contrast on the muted greys, keyboard navigability. Being asked about accessibility in an interview with a failing site is a bad look.
+**16 — Accessibility pass. AUDITED 2026-09-23, DEFERRED.** Full report: **[Portfolio accessibility audit](https://claude.ai/code/artifact/4460f0e4-832f-4f6a-a538-f8801fe315cc)**.
+
+Audited against WCAG 2.2 AA on the `stage-2` preview: an axe-core scan of every page and stage frame, a keyboard-only walkthrough, and a code review. **Suchi's call: none of it is a blocker; take it up once the design-led changes are done** (after items 19, 8, 14, and before 12 + 20), and re-run the scan first because those changes will move things.
+
+In one line each: **A** contrast, about 250 failures, nearly all the `--muted` grey (2.89:1 on `--bg`, needs 4.5), plus small `--accent` text (3.93), fixable as two token changes but a visible design call; **B** keyboard, the full-size screenshot viewer does not take focus, and two focus rings are missing; **C** structure, no `main`/`h1` on Home and About, the About radios lack a group, three skipped heading levels, one tab title for every page; **D** motion, the pillar videos and audit diagram ignore reduced motion; **E** alt text, four to reword and two icons to empty, wording is Suchi's. Already sound: alt text present everywhere, every control named, the contact overlay is a model dialog.
 
 **17 — Dead code. DONE (2026-09-23).**
 
@@ -350,7 +354,7 @@ Items 1 and 2a/2b fixed the two things that were outright broken — a blank `/a
 - The long read's phone rhythm. Item 2b stops it overflowing mechanically; how it should read at 390 — type scale, section rhythm, where the reels sit — is design work and lands here, not there.
 - The long read's missing sidebar on mobile, moved here 2026-08-19 from item 3. Below 900 a slug renders the case study directly (not the stage), so there is no rail on any width there regardless of the `is-fullscreen` question item 3 is deciding for desktop — a phone visitor to this page has `← BACK` / `NEXT PROJECT` only, full stop.
 
-**20 — The link-preview card, designed.** Item 5 ships a 1200x630 render of the homepage as `og:image`. It is honest and it beats a bare URL, but it is a screenshot, not a card: at preview size the body copy and pills are unreadable, and the composition was laid out for a 100vh screen rather than a 1.91:1 crop.
+**20 — The link-preview card, designed.** *Deferred 2026-09-23 with item 12, after the design-led pieces.* Item 5 ships a 1200x630 render of the homepage as `og:image`. It is honest and it beats a bare URL, but it is a screenshot, not a card: at preview size the body copy and pills are unreadable, and the composition was laid out for a 100vh screen rather than a 1.91:1 crop.
 
 Suchi is supplying a design. When it lands: export at 1200x630, replace `public/og-image.png`, and update `og:image:alt` in `index.html` to describe the card rather than the homepage. Nothing else changes — the meta plumbing, dimensions and absolute URL are already in place.
 
@@ -391,6 +395,6 @@ Also outstanding, logged not fixed: the hero type-scale inconsistency (short ren
 3. Items 5–7 — first impression.
 4. Items 8–9 — positioning.
 5. **Apply.**
-6. Everything below the line, in whatever order the job search suggests.
+6. Everything below the line. **Order set 2026-09-23:** design-led pieces first (item 19 mobile, item 8 colophon, item 14 motion), then accessibility (item 16, from the [audit doc](https://claude.ai/code/artifact/4460f0e4-832f-4f6a-a538-f8801fe315cc)), then search and sharing (item 12 with item 20). Item 18, analytics, is read whenever enough data exists.
 
 Steps 1–4 are days, not weeks. Nothing above the line is large; several are under an hour. The hard part is step 5, and it is hard for psychological reasons rather than technical ones.
