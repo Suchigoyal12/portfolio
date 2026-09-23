@@ -300,7 +300,28 @@ The site works, the case studies are strong, attribution is honest. Everything b
 
 **14 — Remaining motion.** Cross-page transitions as progressive enhancement; Work-on-blurred-Homepage with ESC and right-edge hover.
 
-**15 — Image weight, full.** `srcset` across the site; the six PNGs over 700KB re-encoded; the two ~1.7MB video posters to WebP; the 1.37MB CV compressed.
+**15 — Image weight, full. DONE (2026-09-23), 15a + 15b. 15c and the CV decided against.**
+
+*Measured first, on production, reading each page top to bottom:* Home, About, Work, Admin Shell and the short Check Access were already light (0.2–0.8 MB). The weight was in three pages: AI Trust Layer 4.8 MB, the long read 4.2 MB (1.77 MB of it before first paint), Release Notes 2.8 MB. The cause was image size, not format alone: AITL screenshots were 5760px wide for a card that displays at most ~1000px, and the long-read posters 7808px.
+
+**15a — case-study screenshots to lossless WebP.** 26 images (AITL, Release Notes, the long read, and the three pillar posters shared with the short version). Suchi's call: **lossless**, so every pixel of the shipped image is exact; tested against lossy q90 on one screenshot (151 KB vs 106 KB), the gap was not worth any risk to small UI text. Images whose long side is over 3200px are resized to **2880px**, the full width of a 1440px laptop at 2x and the largest any lightbox shows them (AITL's lightbox is `maxWidth: 1280`, the long read's is full-window). 2880 cost only 5% more than 2560 in total. Images at or under 3200px keep their pixels, because **resizing an image only slightly over the cap made it bigger**: resampling a flat UI screenshot adds soft edges that lossless compression handles badly (gov-deploy-error: 133 KB PNG, 185 KB resized, 44 KB at original size).
+
+**15b — homepage photo**, the one image on the first screen: 331 KB PNG → 200 KB lossless WebP. Lossy q92 only reached SSIM 0.987 on a photo, so lossless. Already exactly 2x its display size, not resized.
+
+**`cwebp -exact` matters.** By default lossless WebP rewrites the colour under fully transparent pixels. Invisible, but not exact, and the homepage photo and the Option A/B images have real transparency. All 27 files now decode **pixel-exact** against their (resized) masters (PSNR inf).
+
+**Pipeline:** PNG masters live in `masters/images/<public path>` (excluded from deploy by `.vercelignore`, same pattern as the video and About masters). `python3 tools/encode-screenshots.py` rebuilds every WebP; then `node tools/gen-image-dims.mjs`.
+
+**Results, full read on the preview:** long read 4.2 → **0.8 MB**, AITL 4.8 → **2.8 MB**, Release Notes 2.8 → **1.6 MB**, homepage 0.6 → 0.5 MB, short Check Access 0.8 → 0.6 MB. `dist/` 25 MB → 16 MB. Homepage (1440, 390) and Release Notes pixel-identical to production at 2x; where resized screenshots display, 0.1–0.5% of pixels differ, all on text edges from the browser downscaling a different source, and not distinguishable in zoomed crops. No failed requests; the one empty `<img>` on the long read is the lightbox's placeholder, identical on production.
+
+AITL fell less (about 40%) because most of its screenshots were never oversized, so lossless conversion is the only saving there. A near-lossless setting would take it further; not done, because Suchi chose zero loss.
+
+**Decided against, 2026-09-23, Suchi's call:**
+- **15c, long-lived caching for `/bundle/`.** Safe (hashed filenames), but it only saves two revalidation round trips on *repeat* visits and nothing on the first visit, which is the one that matters. Images keep the default `max-age=0, must-revalidate`; a long cache on non-hashed image names would serve stale screenshots after a replacement.
+- **Compressing the CV.** It only downloads on click, so it never slows a page, and 1.47 MB is normal for a designed PDF. Left at full quality.
+- **`srcset`.** After 15a it would only help phones, so it belongs with the mobile pass (item 19).
+
+**Found by Suchi while reviewing, fixed here:** the long read's Option A and Option B screenshots had been swapped since the original export (`option-a` showed the folder tree, `option-b` the dropdown). The files were renamed so each name matches what it shows; the page code did not change.
 
 **16 — Accessibility pass.** Alt text on case-study images, contrast on the muted greys, keyboard navigability. Being asked about accessibility in an interview with a failing site is a bad look.
 
