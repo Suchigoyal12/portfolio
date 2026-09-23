@@ -13,6 +13,10 @@
 //
 // When the stage is ported (brief 2.1), WORK_CARDS drops its hand-maintained
 // `href` strings and reads PROJECT_ROUTES for iframe sources instead.
+//
+// ADDING A ROUTE? It also needs a line in vercel.json's `rewrites`, or direct
+// visits to it get the 404 page (roadmap item 11). The build checks this and
+// fails with a message if one is missing: tools/postbuild.mjs.
 
 export const PROJECT_ROUTES = [
   { key: "check-access",  n: 1, path: "/work/check-access",   title: "UNIFYING FRAGMENTED PERMISSIONS" },

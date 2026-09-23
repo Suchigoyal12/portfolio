@@ -109,17 +109,50 @@ A fresh reader will be tempted to correct several of these. All are deliberate.
 
 **Scaling reference widths must match exactly.** The `fit()` system uses a 1300px reference. Homepage and About both use it, and cross-page positional continuity depends on the reference being identical. It is not a number to tidy.
 
+### From the React migration
+
+These were decided mid-migration and used to live only in commit messages.
+
+**The long read opts out of the shared responsive stylesheet.** `useProjectShell({ responsive: false })` is used by that one page only, because the shared `main h1 { font-size: 80px !important }` would resize its hero.
+
+**`/work/:slug?/:sub?` is one route, not five.** Keeping every case study under a single `<Route>` means the stage never unmounts, so its four iframes never reload when you switch cards. Do not split it into per-page routes.
+
+**URL updates on Work use `replace`, not `push`.** One press of the browser's back button leaves Work, instead of retracing every card the visitor looked at.
+
+**sessionStorage keys are `work:fs`, `work:scroll:<path>` and `work:frame:<cardKey>`.** Scroll is keyed by the framed *path*, not the card, so the long read's scroll position is never restored onto the short version.
+
+**Four unreachable `nativeFsRef` branches were dropped in the port; two `exitFullscreen` calls were kept.** Fullscreen is in-page only by design. Do not restore native `requestFullscreen()`.
+
+**`LeftRail` carries `background: var(--bg)` and `z-index: 40`.** Carried over from the long read's hand-written rail. It affects all five case studies.
+
+**Below 900px a slug renders its case study, not the stage.** Otherwise the mobile list's links lead straight back to the mobile list. This is the least obvious decision here and the most likely to be "corrected."
+
+**`vercel.json` lists every route by hand, and unknown URLs return a real 404.** Only the real routes are rewritten to `index.html`; everything else gets `dist/404.html` (a copy of the app, so visitors still see the site's own NotFound page) with a 404 status. A catch-all rewrite looks simpler and is wrong: it answers 200 for every mistyped URL, which search engines count as a soft-404. A new route needs a rewrite line; `tools/postbuild.mjs` fails the build if one is missing. Roadmap item 11.
+
+**The `frameSrc` guard is a security check, not tidiness.** A stored or URL-seeded frame path is accepted only if it is the card's own route or a segment below it, because that value ends up in an iframe `src`.
+
+**About's `shownMode` is derived, not stored.** `mode` starts `null` and only a tap writes it; below 900 a null mode *displays* as THE DESIGNER. The obvious simplification, `useState("designer")`, is wrong: it deletes the authored desktop first paint (two unselected radios, a choice to make) and moves `/about` away from the Stage 1 reference at every measured width.
+
+### Approved differences from Stage 1
+
+Parity was the goal for the migration gate, not for the site. These two differences are deliberate. Do not "restore" them to match the reference.
+
+**Cormorant Garamond requests a true italic 700.** Stage 1 only loaded italic 400, so bold italic was synthesized. The real weight moves framed Check Access to about 0.019% and keeps `/work` at about 2.3% at 900 (a line break shifts). Matching the reference would degrade 13 elements across the site.
+
+**Every rail link keeps a reserved gutter.** Stage 1 indented only the active link, so the labels jumped 14px sideways on every navigation. With the travelling marker (roadmap item 9) the labels have to hold still. This costs about 0.04% on Homepage and About.
+
 ---
 
 ## Open threads
 
-**The About page voiceover recording does not exist.** It gates real cue timings, image reveals and scroll sync on the PERSON branch. Nothing on that branch progresses until it is recorded.
+**Interaction concept, queued:** the Work stage manager overlaid on a blurred Homepage, with ESC and right-edge hover replacing back-navigation entirely. Now roadmap item 14.
 
-**Project pages have no navigation when opened by direct URL.** The Work stage manager owns that state and writes it into the framed page; the page cannot set it for itself. Being fixed in the React conversion. Until then, share the Homepage or Work URL rather than a direct case study link.
+Everything else still open lives in `POST_MIGRATION_ROADMAP_V2.md`, below the line.
 
-**Interaction concept, queued:** the Work stage manager overlaid on a blurred Homepage, with ESC and right-edge hover replacing back-navigation entirely. Waiting on the React shell.
-
-**Left-nav tab travel animation** — 270–340ms, ease-out-expo. The reason the React migration is happening. Not part of the migration itself.
+**Resolved since this file was written:**
+- *About voiceover recording.* Recorded and live, `USE_AUDIO` is `true`, synthetic timeline kept as the fallback. Roadmap item 10.
+- *Project pages opened by direct URL had no navigation.* Direct links now open inside the stage, and a long-read link opens fullscreen with its table of contents. Roadmap item 3.
+- *Left-nav tab travel animation.* Shipped at 280ms, out-quart (chosen over ease-out-expo on a live comparison), with `prefers-reduced-motion` support. Roadmap item 9.
 
 ---
 
