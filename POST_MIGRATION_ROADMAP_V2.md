@@ -44,6 +44,10 @@ So `/work`'s 2.268% at 900 does **not** go away, and should not be chased. *(Re-
 **0.4 — Promote, and delete `legacy/` in the same pass.**
 Deletion is safe: 4.9MB, 38 files, imported by nothing, already `.vercelignore`d, absent from `dist/`, and recoverable from commit `a997fbb` indefinitely. Keep it until this moment only because it's a convenient local copy of the comparison target; the day that stops being true is this day.
 
+**⚠ 2026-09-23 — THE STAGE 1 REFERENCE DEPLOYMENT IS GONE.** `https://portfolio-dk8r4mnca-suchi2.vercel.app` now returns **410 Gone** on every path; Vercel pruned it. Live comparison is dead. Only `--golden` works, and only at **1300**, because that is the one width the goldens were captured at. Parity at 1440/1150/900 can no longer be measured against Stage 1 at all.
+
+**And the goldens have drifted from the current build at 1300.** Measured 2026-09-23 on `HEAD` before item 17: `/work` **0.192%** (recorded 0.083%), framed long read **0.072%** (recorded 0.000%), framed Check Access fails on size, **4862px vs the golden's 4935px**. The likely cause is the deliberate Check Access solution-section changes of 2026-08-22 (pillar walkthroughs, autoplay, overlay text removed), which were never re-baselined. So these figures are now a *before/after* tool (did this change move anything?) rather than a Stage 1 parity measure. Undecided: whether to re-capture the goldens from the current build as a new baseline. Doing so gives up the last link to Stage 1, so it is Suchi's call.
+
 **Known unverified surfaces.** Three things the harness cannot see, recorded so a green table is not mistaken for full coverage. None is a defect; each is a deliberate trade for deterministic capture.
 
 - **The `is-fullscreen` rendering state has never been compared.** `--framed` strips the class from both sides, mirroring what the stage does to its child on load. So every case study is verified in its windowed state only — the section-rail layout that appears in fullscreen is unmeasured on all five pages.
@@ -286,7 +290,11 @@ The site works, the case studies are strong, attribution is honest. Everything b
 
 **16 — Accessibility pass.** Alt text on case-study images, contrast on the muted greys, keyboard navigability. Being asked about accessibility in an interview with a failing site is a bad look.
 
-**17 — Dead code.** `PROJECT_DATA` carries ~110 lines for `datasync-design-system` and `datasync-onboarding`, which have no page, route or card. `NEXT_HREF` has one entry nothing reads, shadowed by `OVERRIDE`.
+**17 — Dead code. DONE (2026-09-23).**
+
+Both `datasync-*` entries removed from `PROJECT_DATA`, along with `NEXT_HREF` and the fallback branch of `NextProject` that only existed to serve them. Check Access is the only page `ProjectDetailPage` renders, so its next project (002, AI Trust Layer) is now written directly. 139 lines out.
+
+**Verified:** golden parity at 1300 on framed Check Access, `/work` and the framed long read is identical to the pixel with and without the change (A/B by stash, run twice). In the stage, NEXT PROJECT still hands focus to the AI Trust Layer card without navigating the iframe, no page errors.
 
 **18 — Analytics, actually read.** Once applications are out: which case studies get opened, how long people stay, where they bounce. A quiet advantage most candidates don't use.
 
@@ -321,7 +329,9 @@ Suchi is supplying a design. When it lands: export at 1200x630, replace `public/
 
 ---
 
-## Not a task — documentation debt, do it at the first natural pause
+## Documentation debt. DONE (2026-09-23)
+
+*All nine are now in `PROJECT_CONTEXT.md` under "From the React migration", together with the two approved Stage 1 divergences (italic 700, reserved rail gutter). The list is kept below for reference.*
 
 Eight decisions were made mid-migration and exist only in commit messages. They belong in `PROJECT_CONTEXT.md` under *Decisions that will look wrong from outside*, because a future session will otherwise try to "fix" them:
 
