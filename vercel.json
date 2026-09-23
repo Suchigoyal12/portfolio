@@ -3,7 +3,14 @@
   "framework": "vite",
   "buildCommand": "npm run build",
   "outputDirectory": "dist",
+  "trailingSlash": false,
   "rewrites": [
-    { "source": "/(.*)", "destination": "/index.html" }
+    { "source": "/about", "destination": "/index.html" },
+    { "source": "/work", "destination": "/index.html" },
+    { "source": "/work/check-access", "destination": "/index.html" },
+    { "source": "/work/check-access/full", "destination": "/index.html" },
+    { "source": "/work/ai-trust-layer", "destination": "/index.html" },
+    { "source": "/work/admin-shell", "destination": "/index.html" },
+    { "source": "/work/release-notes", "destination": "/index.html" }
   ]
 }

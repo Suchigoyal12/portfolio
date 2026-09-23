@@ -127,6 +127,8 @@ These were decided mid-migration and used to live only in commit messages.
 
 **Below 900px a slug renders its case study, not the stage.** Otherwise the mobile list's links lead straight back to the mobile list. This is the least obvious decision here and the most likely to be "corrected."
 
+**`vercel.json` lists every route by hand, and unknown URLs return a real 404.** Only the real routes are rewritten to `index.html`; everything else gets `dist/404.html` (a copy of the app, so visitors still see the site's own NotFound page) with a 404 status. A catch-all rewrite looks simpler and is wrong: it answers 200 for every mistyped URL, which search engines count as a soft-404. A new route needs a rewrite line; `tools/postbuild.mjs` fails the build if one is missing. Roadmap item 11.
+
 **The `frameSrc` guard is a security check, not tidiness.** A stored or URL-seeded frame path is accepted only if it is the card's own route or a segment below it, because that value ends up in an iframe `src`.
 
 **About's `shownMode` is derived, not stored.** `mode` starts `null` and only a tap writes it; below 900 a null mode *displays* as THE DESIGNER. The obvious simplification, `useState("designer")`, is wrong: it deletes the authored desktop first paint (two unselected radios, a choice to make) and moves `/about` away from the Stage 1 reference at every measured width.
