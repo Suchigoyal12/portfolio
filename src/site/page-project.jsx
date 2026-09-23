@@ -76,116 +76,6 @@ const PROJECT_DATA = {
       pull: "Honestly, it was one of the best deliverables I saw this year and I really had little-to-no comments to add after it was shipped.",
       pullAttribution: "SORIN VISAN, PLATFORM PRODUCT MANAGER, UIPATH"
     }
-  },
-  "datasync-design-system": {
-    no: "001",
-    title: "Unified Design System",
-    headline: ["UNIFIED", "DESIGN SYSTEM."],
-    client: "DataSync Inc.",
-    role: "Junior Product Designer",
-    timeline: "'24-'25",
-    sector: "B2B / SaaS Enterprise",
-    summary:
-    "Migrated 45+ legacy sketch components to a unified Figma structure utilizing local variables. Reduced engineering QA kickbacks by roughly 15%.",
-    tags: ["Design System", "Tokens", "Figma"],
-    readingTime: 6,
-    problem: {
-      title: "The Situation",
-      body: "DataSync had grown from a single product to four surfaces in eighteen months. Each surface had forked its own component set. Engineers were re-implementing the same modal, button, and table across four codebases, and design QA was catching the divergence months too late.",
-      stats: [
-      { k: "45+", v: "LEGACY COMPONENTS" },
-      { k: "4", v: "PRODUCT SURFACES" },
-      { k: "12", v: "MO. OF DRIFT" }]
-
-    },
-    approach: {
-      title: "Approach",
-      body: "I treated the system as a contract between design and engineering, not a finished product. Token migration came first (color, spacing, type) because tokens are the only thing both disciplines have to agree on every day. Components followed, audited surface by surface.",
-      bullets: [
-      "Audit every shipped component against its Figma source.",
-      "Map tokens to local Figma variables before touching components.",
-      "Re-build the 12 most-used components from scratch with variants.",
-      "Document decisions inline so the system reads like a contract."]
-
-    },
-    solution: {
-      title: "Solution",
-      body: "A unified Figma file with local variables, paired with a Storybook surface that engineers could fork from. The system now has one source of truth per token, and the QA loop runs against the system instead of against eyeballs.",
-      artifacts: [
-      { label: "TOKENS", desc: "Color, spacing, type, radius: local variables." },
-      { label: "COMPONENTS", desc: "12 atomic + 8 molecular, fully variant-mapped." },
-      { label: "STORYBOOK", desc: "Read-only mirror, hosted alongside the Figma source." }]
-
-    },
-    outcomes: {
-      title: "Outcomes",
-      stats: [
-      { k: "−15%", v: "ENG. QA KICKBACKS", note: "Q1-Q3, '25" },
-      { k: "12 → 1", v: "SOURCE OF TRUTH" },
-      { k: "4×", v: "FASTER COMPONENT SHIP" }],
-
-      body: "QA kickbacks measurably dropped in the quarters following rollout. The team uses the system without thinking about it, which is the highest compliment a system can earn."
-    },
-    reflection: {
-      title: "Reflection",
-      body: "Design systems are easy to start and hard to maintain. The hardest part wasn't building. It was teaching the team to amend the system instead of forking it. I'd spend more time, earlier, on governance rituals next round.",
-      pull: "The beauty is in the utility."
-    }
-  },
-  "datasync-onboarding": {
-    no: "002",
-    title: "Multi-Tenant Onboarding",
-    headline: ["MULTI-TENANT", "ONBOARDING."],
-    client: "DataSync Inc.",
-    role: "Junior Product Designer",
-    timeline: "'24",
-    sector: "B2B / SaaS Enterprise",
-    summary:
-    "Redesigned the multi-tenant setup flow. Replaced a 6-step wizard with a contextual sidebar approach. Time-to-first-value improved.",
-    tags: ["Onboarding", "Flows", "IA"],
-    readingTime: 8,
-    problem: {
-      title: "The Situation",
-      body: "New admins arriving at DataSync had to complete a 6-step wizard before they could see their data. The wizard locked the product in a modal. Admins dropped off at step 3, the step where they had to invite their team without knowing what the product looked like yet.",
-      stats: [
-      { k: "6", v: "WIZARD STEPS" },
-      { k: "Step 3", v: "DROP-OFF POINT" },
-      { k: "0%", v: "PRODUCT VISIBLE" }]
-
-    },
-    approach: {
-      title: "Approach",
-      body: "I argued for inverting the relationship: show the product first, scaffold setup as a sidebar that runs alongside it. Setup becomes a conversation with the product rather than a gate in front of it.",
-      bullets: [
-      "Map every wizard step to a piece of the product UI it gates.",
-      "Identify which steps are truly blocking vs. defer-able.",
-      "Move blocking steps inline; move defer-able steps to a checklist.",
-      "Keep the product visible at all times; context teaches faster than copy."]
-
-    },
-    solution: {
-      title: "Solution",
-      body: "A contextual setup sidebar that lives next to the product. Tasks complete as the admin clicks into product surfaces. The wizard is gone; the checklist remains, dismissable.",
-      artifacts: [
-      { label: "SIDEBAR", desc: "Persistent setup checklist, contextual to current page." },
-      { label: "INLINE PROMPTS", desc: "Setup steps fire where they're relevant, not upfront." },
-      { label: "EMPTY STATES", desc: "Empty product surfaces become teaching moments." }]
-
-    },
-    outcomes: {
-      title: "Outcomes",
-      stats: [
-      { k: "↑", v: "TIME-TO-FIRST-VALUE" },
-      { k: "−40%", v: "DROP-OFF AT STEP 3" },
-      { k: "+22%", v: "TEAM INVITES SENT" }],
-
-      body: "Time-to-first-value improved meaningfully: admins now see their data within 90 seconds. Team invites went up because admins invite once they understand what they're inviting people to."
-    },
-    reflection: {
-      title: "Reflection",
-      body: "Wizards feel safe to PMs because they're a sequence. But sequences punish exploration. The lesson: trust the product to teach itself when you give it room to.",
-      pull: "Show the product. The product teaches."
-    }
   }
 };
 
@@ -718,7 +608,7 @@ function ProjectDetailPage({ projectId }) {
 
           {/* NEXT PROJECT */}
           <section style={{ padding: "56px 64px", borderTop: "1px solid var(--line)" }}>
-            <NextProject currentId={projectId} />
+            <NextProject />
           </section>
         </article>
       }
@@ -769,19 +659,6 @@ function CSSection({ id, no, data, children, hideBody, frameSlot }) {
 
 }
 
-// The two entries pointing at project-design-system.html and
-// project-onboarding.html are gone — brief 2.7. Neither page was ever part of
-// this export; they were addresses for work that does not exist here.
-//
-// What is left is never read either, because OVERRIDE below shadows the only
-// project id that reaches this map. It stays because the map is the fallback
-// path's shape, and emptying it entirely would mean deciding what the fallback
-// should do — which belongs with the two unrendered PROJECT_DATA entries it
-// serves, not here.
-const NEXT_HREF = {
-  "uipath-check-access": "/work/check-access"
-};
-
 // Map a next-project href to its Stage Manager card key so the bottom
 // link can hand off to the parent stack instead of navigating the iframe.
 //
@@ -799,21 +676,12 @@ function goToNextCard(e, href) {
     window.parent.postMessage({ type: "work:focus", key: NEXT_CARD_KEY[href] }, "*");
   }
 }
-function NextProject({ currentId }) {
-  const OVERRIDE = {
-    "uipath-check-access": { no: "002", title: "AI Trust Layer", href: "/work/ai-trust-layer" }
-  };
-  let nextNo, nextTitle, nextHref;
-  if (OVERRIDE[currentId]) {
-    ({ no: nextNo, title: nextTitle, href: nextHref } = OVERRIDE[currentId]);
-  } else {
-    const ids = Object.keys(PROJECT_DATA);
-    const idx = ids.indexOf(currentId);
-    const next = ids[(idx + 1) % ids.length];
-    nextNo = PROJECT_DATA[next].no;
-    nextTitle = PROJECT_DATA[next].title;
-    nextHref = NEXT_HREF[next];
-  }
+// Check Access is the only case study rendered by this page, and its next
+// project is AI Trust Layer. The other case studies carry their own pages.
+function NextProject() {
+  const nextNo = "002";
+  const nextTitle = "AI Trust Layer";
+  const nextHref = "/work/ai-trust-layer";
   return (
     <a
       href={nextHref}
