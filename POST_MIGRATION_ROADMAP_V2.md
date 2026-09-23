@@ -288,7 +288,7 @@ The site works, the case studies are strong, attribution is honest. Everything b
 
 **12 — Per-route meta and link-preview prerendering.** So each case study previews with its own title and thumbnail rather than one shared card.
 
-**13 — AI Trust Layer sideways scroll. DONE (2026-09-23), PR #5.** *(Anchor tuning across 900–1440 beyond this defect stays optional refinement.)*
+**13 — AI Trust Layer sideways scroll. DONE (2026-09-23), live via PR #5.** *(Anchor tuning across 900–1440 beyond this defect stays optional refinement.)*
 
 **Re-measured first.** After the 2026-09-18 copy rewrite the 900px overflow was gone; what remained was **24px at every window from about 1150 to 1424** (frame widths 906–1180), in the stage. 900, 1024 and 1440+ were clean.
 
