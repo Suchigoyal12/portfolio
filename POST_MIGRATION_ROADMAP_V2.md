@@ -107,7 +107,7 @@ Found by sweeping all four case studies rather than the two the original entry n
 
 Suchi's call, and the right one: fixing these piecemeal buys a phone layout nobody designed. Mobile needs a real pass, not four more breakpoints bolted on one at a time, and it is being taken up as one piece of work later. Item 2 above the line is therefore complete at 2a + 2b — the two surfaces that were actually recorded as blockers.
 
-**One exception is not cosmetic and does not belong in a mobile pass:** AI Trust Layer overflows at **900 and 1150**, inside the band the audit called clean. That is a desktop defect, and it is item 13's problem, not item 19's.
+**One exception is not cosmetic and does not belong in a mobile pass:** AI Trust Layer overflows at **900 and 1150**, inside the band the audit called clean. That is a desktop defect, and it is item 13's problem, not item 19's. *(Fixed 2026-09-23, see item 13.)*
 
 **2d — Every narrow-screen rule is scoped `:not(.is-framed)`, and it has to be.**
 
@@ -288,7 +288,15 @@ The site works, the case studies are strong, attribution is honest. Everything b
 
 **12 — Per-route meta and link-preview prerendering.** So each case study previews with its own title and thumbnail rather than one shared card.
 
-**13 — Anchor tuning, 900–1440.** The audit found this band clean on the React build — no overflow, no blank content, on any route. The previously flagged 900px `<main>` squeeze was caused by a temporary `is-fullscreen` class and does not reproduce. This item is now optional refinement, not repair.
+**13 — AI Trust Layer sideways scroll. DONE (2026-09-23), PR #5.** *(Anchor tuning across 900–1440 beyond this defect stays optional refinement.)*
+
+**Re-measured first.** After the 2026-09-18 copy rewrite the 900px overflow was gone; what remained was **24px at every window from about 1150 to 1424** (frame widths 906–1180), in the stage. 900, 1024 and 1440+ were clean.
+
+**Cause:** the four walkthrough carousels break out of the section padding to run full width, and hardcoded that padding as 64px. The site-wide rule in `shared.jsx` narrows section padding to 40px at 1180px and below, so the breakout overshot by 24px on each side; the left overshoot was clipped, the right one scrolled. Fixed with `--aitl-pad` (set in `aitl-impact.css` to follow the site rule: 64 / 40 at ≤1180 / 24 at ≤900). The pan distance had the same assumption (`clientWidth - 128`) and now reads the real padding; without that the pan ran 48px past its last screen.
+
+**Verified:** 0px sideways scroll at nine widths 900–1680; before/after screenshots mid-carousel at 1150 and 1300 **pixel-identical**; pan lengths and card sizes identical at every width. The Stage 1 golden for this page is now a different length (copy rewrite) and was not usable.
+
+**Also fixed in the same PR, found by Suchi on the preview: the carousels now fit the widest screen in a single look.** Card height came from the window height alone (`clamp(60vh, 360, 600)`) and never checked width, so on narrow screens every screen rendered 2 to 2.5 times wider than the strip (903px in 358px at 390). Each carousel now caps its shared height so its widest screen fits the strip (narrow) or the pan stage (wide). **Suchi's rule: a single screen should always fit the width on a phone or small window.** One height per carousel was her choice over per-screen fitting, accepting that the portrait screens in AI Governance come out about 135px wide on a phone (tap opens full size). Width is read with a `ResizeObserver`: the first measurement can happen while the page is hidden and returns 0, which collapsed every card to caption width. 1200px and up is pixel-identical before and after (A/B at 1300/1440/1680); 1150 shrinks about 4%.
 
 **14 — Remaining motion.** Cross-page transitions as progressive enhancement; Work-on-blurred-Homepage with ESC and right-edge hover.
 
@@ -308,7 +316,7 @@ Both `datasync-*` entries removed from `PROJECT_DATA`, along with `NEXT_HREF` an
 
 Items 1 and 2a/2b fixed the two things that were outright broken — a blank `/about` and two sideways-scrolling Check Access pages. Everything else about how this site behaves on a phone lands here, deliberately unfixed until it can be designed rather than patched.
 
-**Still overflowing at 390** (measured 2026-08-19, moved here from item 2c): `/work/admin-shell` 228px, `/work/ai-trust-layer` 94px, `/work/release-notes` 81px. All three are the same `1fr` min-content defect that 2a and 2b fixed, so the mechanical remedy is known and cheap — it is being held back on purpose, not for lack of a fix. *(AITL's 900/1150 overflow is not in this bucket — see item 2c.)*
+**Still overflowing at 390** (measured 2026-08-19, moved here from item 2c): `/work/admin-shell` 228px, `/work/ai-trust-layer` 94px, `/work/release-notes` 81px. *(2026-09-23: on AI Trust Layer the 94px is the NEXT PROJECT / 003 footer link, not the carousels, which now fit.)* All three are the same `1fr` min-content defect that 2a and 2b fixed, so the mechanical remedy is known and cheap — it is being held back on purpose, not for lack of a fix. *(AITL's 900/1150 overflow is not in this bucket — see item 2c.)*
 
 **And the rest:**
 
@@ -317,7 +325,7 @@ Items 1 and 2a/2b fixed the two things that were outright broken — a blank `/a
 - The new mobile toggle row's spacing, gap and 12px label size were set once and screenshot-approved, not designed against the rail's rhythm.
 - `.lyrics` keeps its 300px `max-height` and its inner scroll on touch — a nested scroll region inside a scrolling page. Overlaps item 10.
 - The two `role="radio"` buttons have no `role="radiogroup"` parent, on both compositions. Overlaps item 16.
-- Item 13's anchor tuning is the same kind of work one band up — and note item 2c found the 900–1440 band is *not* clean on AI Trust Layer, so item 13 is no longer purely optional.
+- Item 13's anchor tuning is the same kind of work one band up. The AI Trust Layer defect in that band is fixed (item 13); the rest is optional.
 - The long read's phone rhythm. Item 2b stops it overflowing mechanically; how it should read at 390 — type scale, section rhythm, where the reels sit — is design work and lands here, not there.
 - The long read's missing sidebar on mobile, moved here 2026-08-19 from item 3. Below 900 a slug renders the case study directly (not the stage), so there is no rail on any width there regardless of the `is-fullscreen` question item 3 is deciding for desktop — a phone visitor to this page has `← BACK` / `NEXT PROJECT` only, full stop.
 
