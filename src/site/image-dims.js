@@ -47,7 +47,7 @@ const DIMS = {
   "/site/assets/release-notes/widget.webp": [2040, 1275],
   "/trace-origins.webp": [2880, 1640],
   "/uploads/container.png": [55, 53],
-  "/uploads/homepage-photo.png": [508, 700],
+  "/uploads/homepage-photo.webp": [508, 700],
   "/uploads/iitg-logo.png": [132, 132],
   "/uploads/option-a.webp": [2880, 1616],
   "/uploads/option-b.webp": [2880, 1618],

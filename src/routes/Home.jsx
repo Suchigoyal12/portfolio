@@ -131,7 +131,7 @@ export default function Home() {
         <div className="stage" ref={stageRef}>
 
           {/* Zone 1: Left rail */}
-          <div className="photo"><img src="/uploads/homepage-photo.png" {...dims("/uploads/homepage-photo.png")} alt="Profile photo" /></div>
+          <div className="photo"><img src="/uploads/homepage-photo.webp" {...dims("/uploads/homepage-photo.webp")} alt="Profile photo" /></div>
 
           <SiteRail />
 
@@ -262,7 +262,7 @@ export default function Home() {
 
       {/* Mobile fallback (<900px) — mirrors work.html's stacked MobileList pattern */}
       <div className="mobile-stack">
-        <div className="photo" style={{ position: "static", width: 127, height: 175, marginBottom: 24 }}><img src="/uploads/homepage-photo.png" {...dims("/uploads/homepage-photo.png")} alt="Profile photo" /></div>
+        <div className="photo" style={{ position: "static", width: 127, height: 175, marginBottom: 24 }}><img src="/uploads/homepage-photo.webp" {...dims("/uploads/homepage-photo.webp")} alt="Profile photo" /></div>
 
         <div className="wordmark" style={{ position: "static", marginBottom: 28 }}>
           <div className="mark" style={{ fontSize: 48 }}>SuCHI</div>
