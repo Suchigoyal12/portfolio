@@ -292,7 +292,7 @@ function AdminShellPublicPage() {
 
   const mailto =
   "mailto:" + SITE.email +
-  "?subject=Request%20access%20%E2%80%94%20UiPath%20Admin%20Shell%20case%20study" +
+  "?subject=Request%20access%3A%20UiPath%20Admin%20Shell%20case%20study" +
   "&body=Hi%20Suchi%2C%20I%27d%20like%20access%20to%20the%20full%20Admin%20Shell%20case%20study.";
 
   return (

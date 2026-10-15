@@ -15,3 +15,6 @@ dist/
 # file over 100MB and all three exceed it. The web-ready .mp4 files built
 # from these ARE committed, in public/.
 *.mov
+
+# Reading-copy preview (tools/reading-copy.mjs). Local review only.
+reading-copy-preview/

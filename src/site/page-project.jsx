@@ -425,7 +425,7 @@ function ProjectDetailPage({ projectId }) {
                     <a className="evo-step" href="/work/check-access/full#v1">
                       <span className="evo-tip">Read in detail ↗</span>
                       <div className="evo-tile">
-                        <img src="/uploads/sentiment-icon.png" {...dims("/uploads/sentiment-icon.png")} alt="sentiment" loading="lazy" />
+                        <img src="/uploads/sentiment-icon.png" {...dims("/uploads/sentiment-icon.png")} alt="" loading="lazy" />
                       </div>
                       <div className="evo-label">Private Preview</div>
                       <div className="evo-desc">Enterprise admin insight.</div>
@@ -451,7 +451,7 @@ function ProjectDetailPage({ projectId }) {
                     <a className="evo-step" href="/work/check-access/full#v2">
                       <span className="evo-tip">Read in detail ↗</span>
                       <div className="evo-tile">
-                        <img src="/uploads/container.png" {...dims("/uploads/container.png")} alt="verified" loading="lazy" />
+                        <img src="/uploads/container.png" {...dims("/uploads/container.png")} alt="" loading="lazy" />
                       </div>
                       <div className="evo-label">The Solution</div>
                       <div className="evo-desc">Centralized, explicit, and traceable.</div>

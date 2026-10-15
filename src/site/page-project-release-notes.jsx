@@ -545,7 +545,7 @@ function ReleaseNotesProjectPage() {
                   subtitle="UiPath Docs, 2023: release docs lived one bulk page deep per product line, behind extensive navigation."
                   tag="BEFORE">
                   
-                  <Frame src={FRAMES.before} alt="Before · 2022: the old documentation portal" />
+                  <Frame src={FRAMES.before} alt="Before · 2023: the old documentation portal" />
                 </PreviewPanel>
               </div>
             </div>

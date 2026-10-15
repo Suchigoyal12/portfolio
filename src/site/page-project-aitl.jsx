@@ -1185,7 +1185,7 @@ function AITLProjectPage() {
               append:
               <Body mt={16}>
                 <strong>$1.99M across 97 deals</strong> was recorded as lost to insufficient auditing at the platform
-                level - the gap this feature was scoped against.
+                level, the gap this feature was scoped against.
               </Body>
             }}
             right={{
