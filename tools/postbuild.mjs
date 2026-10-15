@@ -15,7 +15,9 @@
 // 2. Each route gets its own file with its reading copy inside, the text of
 //    the page for readers that don't run JavaScript (tools/reading-copy.mjs).
 //    "/" is index.html; /about is about.html; /work/check-access/full is
-//    work/check-access/full.html. Visitors see no difference.
+//    work/check-access/full.html. Visitors see no difference. Each file
+//    also names its own address in canonical and og:url, not the
+//    homepage's, and the build fails if one does not.
 //
 // 3. The build fails if a route in src/routes.js has no rewrite, or its
 //    rewrite points anywhere but its own file. Without one, clicking through
@@ -41,6 +43,26 @@ const DIST = path.join(ROOT, "dist");
 fs.copyFileSync(path.join(DIST, "index.html"), path.join(DIST, "404.html"));
 
 await writeReadingCopy(DIST);
+
+// Each route's file must name its own address, once, in both canonical and
+// og:url. Every file starts as a copy of index.html, which names the
+// homepage; if that slipped through, Google would read every case study as
+// a duplicate of the homepage. The domain is read from the source
+// index.html, independently of the step that wrote the files.
+const home = fs.readFileSync(path.join(ROOT, "index.html"), "utf8").match(/<link rel="canonical" href="([^"]+)">/)[1];
+const badAddress = ROUTES.filter((route) => {
+  const html = fs.readFileSync(path.join(DIST, routeFile(route)), "utf8");
+  const url = route === "/" ? home : new URL(home).origin + route;
+  const canonicals = [...html.matchAll(/<link rel="canonical" href="([^"]+)">/g)].map((m) => m[1]);
+  const ogUrls = [...html.matchAll(/<meta property="og:url" content="([^"]+)">/g)].map((m) => m[1]);
+  return canonicals.join() !== url || ogUrls.join() !== url;
+});
+
+if (badAddress.length) {
+  console.error(`\nThese pages' files do not name their own address in canonical and og:url: ${badAddress.join(", ")}`);
+  console.error(`Each must say https://<domain><path>, for example .../about. See inject() in tools/reading-copy.mjs.\n`);
+  process.exit(1);
+}
 
 // "/" needs no rewrite: Vercel serves dist/index.html for it directly.
 const vercel = JSON.parse(fs.readFileSync(path.join(ROOT, "vercel.json"), "utf8"));

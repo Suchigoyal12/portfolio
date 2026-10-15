@@ -628,10 +628,24 @@ const HEAD = `<style>#reading-copy{display:none}</style>` +
   `#reading-copy img{max-width:100%;height:auto}</style></noscript>`;
 const ROOT_EL = '<div id="root"></div>';
 
-function inject(template, copy) {
+// Each route's own address, in the two tags that name it. index.html says
+// the homepage, and every route's file starts as a copy of it; left alone,
+// every case study would tell Google it is a duplicate of the homepage.
+// The domain comes from index.html's canonical, so it is still set in one
+// place. Title, description and image stay site-wide (roadmap items 12, 20).
+const CANONICAL = /<link rel="canonical" href="([^"]+)">/;
+const OG_URL = /<meta property="og:url" content="[^"]+">/;
+const pageUrl = (home, route) => (route === "/" ? home : new URL(home).origin + route);
+
+function inject(template, copy, route) {
   if (!template.includes(ROOT_EL) || !template.includes("</head>")) {
     throw new Error(`reading-copy: index.html no longer has ${ROOT_EL} and </head>`);
   }
+  const home = template.match(CANONICAL)?.[1];
+  if (!home || !OG_URL.test(template)) {
+    throw new Error(`reading-copy: index.html no longer has its canonical link and og:url`);
+  }
+  const url = pageUrl(home, route);
   // Images go inside <noscript>. Hidden is not enough: a hidden image is not
   // fetched while it sits in the page, but the moment React clears the root
   // the browser fetches every image it removed (measured: AI Trust Layer
@@ -640,6 +654,8 @@ function inject(template, copy) {
   // scripts-off browsers read it as an ordinary image.
   const images = copy.replace(/<img [^>]*>/g, (img) => `<noscript>${img}</noscript>`);
   return template
+    .replace(CANONICAL, `<link rel="canonical" href="${url}">`)
+    .replace(OG_URL, `<meta property="og:url" content="${url}">`)
     .replace("</head>", `${HEAD}\n</head>`)
     .replace(ROOT_EL, `<div id="root"><div id="reading-copy">\n${images}\n</div></div>`);
 }
@@ -654,7 +670,7 @@ export async function writeReadingCopy(dist) {
   for (const route of ROUTES) {
     const file = path.join(dist, routeFile(route));
     fs.mkdirSync(path.dirname(file), { recursive: true });
-    fs.writeFileSync(file, inject(template, copy[route]));
+    fs.writeFileSync(file, inject(template, copy[route], route));
   }
   return copy;
 }

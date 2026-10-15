@@ -9,6 +9,11 @@
        route, because per-route tags need prerendering (roadmap item 12) and a
        single honest card beats a bare URL today.
 
+       The one exception is the page's address. In the source, canonical and
+       og:url below name the homepage; the build rewrites both in each
+       route's own file to that route's address (tools/reading-copy.mjs), so
+       a case study is not read as a duplicate of the homepage.
+
        The four absolute URLs below are the live apex domain, set 2026-08-21
        when it went live (roadmap item 6). They must stay absolute and must
        stay on this host: og:image and twitter:image are what LinkedIn, Slack
