@@ -1,4 +1,4 @@
-// Runs after `vite build`. Three jobs.
+// Runs after `vite build`. Four jobs.
 //
 // vercel.json rewrites only the site's real routes, each to its own file.
 // Anything else falls through to dist/404.html, which Vercel serves with a
@@ -22,6 +22,13 @@
 //    to a new case study would work but opening its link directly, or
 //    reloading it, would show the 404 page. This check is the only thing
 //    standing between "added a case study" and that.
+//
+// 4. dist/sitemap.xml is written from the same route list, so a new case
+//    study appears in it without anyone remembering to add it. The detailed
+//    Admin Shell is not in src/routes.js, so it can never be listed. The
+//    domain is read from index.html's canonical link rather than typed again
+//    here, and the build fails if public/robots.txt points its Sitemap: line
+//    anywhere else: one less absolute URL to miss when the domain changes.
 import fs from "fs";
 import path from "path";
 import { fileURLToPath } from "url";
@@ -47,3 +54,26 @@ if (wrong.length) {
   console.error(`or direct visits to those pages will show the 404 page.\n`);
   process.exit(1);
 }
+
+const html = fs.readFileSync(path.join(DIST, "index.html"), "utf8");
+const canonical = html.match(/<link rel="canonical" href="([^"]+)"/)?.[1];
+if (!canonical) {
+  console.error(`\nindex.html has no <link rel="canonical">; the sitemap needs it for the domain.\n`);
+  process.exit(1);
+}
+const origin = new URL(canonical).origin;
+
+const robots = fs.readFileSync(path.join(DIST, "robots.txt"), "utf8");
+const sitemapUrl = `${origin}/sitemap.xml`;
+if (!robots.split("\n").some((l) => l.trim() === `Sitemap: ${sitemapUrl}`)) {
+  console.error(`\npublic/robots.txt needs the line "Sitemap: ${sitemapUrl}",`);
+  console.error(`matching the canonical link in index.html.\n`);
+  process.exit(1);
+}
+
+const urls = ROUTES.map((r) => `  <url><loc>${origin}${r}</loc></url>`);
+fs.writeFileSync(
+  path.join(DIST, "sitemap.xml"),
+  `<?xml version="1.0" encoding="UTF-8"?>\n` +
+    `<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${urls.join("\n")}\n</urlset>\n`,
+);
