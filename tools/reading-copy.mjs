@@ -32,8 +32,14 @@
 // Only routes in src/routes.js are read, so the unpublished Admin Shell case
 // study cannot reach the output.
 //
-// Step 3 of the plan wires extractReadingCopy() into the build. Until then
-// this only writes a preview for review.
+// IN THE BUILD (tools/postbuild.mjs calls writeReadingCopy): each route gets
+// its own copy of index.html with its reading copy inside the app's root
+// element, and vercel.json points each route at its file. A visitor's
+// browser never shows it: a style in <head> hides it before anything is
+// drawn, and React replaces the root's contents when the app starts. A
+// reader that does not run JavaScript gets the text; a browser with
+// JavaScript off shows it, through <noscript>.
+import { execSync } from "child_process";
 import fs from "fs";
 import http from "http";
 import path from "path";
@@ -599,8 +605,63 @@ export async function extractReadingCopy(dist = path.join(ROOT, "dist")) {
   }
 }
 
+// Chromium for the build. The browser goes inside node_modules ("0"), where
+// Vercel's build cache keeps it between deploys. Vercel's build image lacks
+// two libraries Chromium needs (NSS and NSPR): measured on a preview build
+// 2026-10-15, launch fails without them and works with them.
+function ensureBrowser() {
+  process.env.PLAYWRIGHT_BROWSERS_PATH = "0";
+  const run = (cmd) => execSync(cmd, { cwd: ROOT, stdio: ["ignore", "ignore", "inherit"] });
+  if (process.env.VERCEL) run("dnf install -y nss nspr");
+  run("node_modules/.bin/playwright install chromium --only-shell");
+}
+
+// Where each route's file lives in dist/, and what vercel.json must point
+// the route at. "/" is index.html itself.
+export const routeFile = (route) => (route === "/" ? "index.html" : `${route.slice(1)}.html`);
+
+// Hidden before the first paint for every browser; shown again only where
+// scripts are off. Readers that ignore CSS (crawlers, AI fetch tools) see
+// the text either way.
+const HEAD = `<style>#reading-copy{display:none}</style>` +
+  `<noscript><style>#reading-copy{display:block;max-width:720px;margin:40px auto;padding:0 16px}` +
+  `#reading-copy img{max-width:100%;height:auto}</style></noscript>`;
+const ROOT_EL = '<div id="root"></div>';
+
+function inject(template, copy) {
+  if (!template.includes(ROOT_EL) || !template.includes("</head>")) {
+    throw new Error(`reading-copy: index.html no longer has ${ROOT_EL} and </head>`);
+  }
+  // Images go inside <noscript>. Hidden is not enough: a hidden image is not
+  // fetched while it sits in the page, but the moment React clears the root
+  // the browser fetches every image it removed (measured: AI Trust Layer
+  // went from 4 image downloads to 17). With scripts on, <noscript> content
+  // is never parsed as markup, so nothing is fetched; crawlers and
+  // scripts-off browsers read it as an ordinary image.
+  const images = copy.replace(/<img [^>]*>/g, (img) => `<noscript>${img}</noscript>`);
+  return template
+    .replace("</head>", `${HEAD}\n</head>`)
+    .replace(ROOT_EL, `<div id="root"><div id="reading-copy">\n${images}\n</div></div>`);
+}
+
+// The build step. Reads every route from the finished dist/, then writes
+// each route's file. The reading happens first, from the untouched
+// index.html, so no file is read after it has been changed.
+export async function writeReadingCopy(dist) {
+  ensureBrowser();
+  const template = fs.readFileSync(path.join(dist, "index.html"), "utf8");
+  const copy = await extractReadingCopy(dist);
+  for (const route of ROUTES) {
+    const file = path.join(dist, routeFile(route));
+    fs.mkdirSync(path.dirname(file), { recursive: true });
+    fs.writeFileSync(file, inject(template, copy[route]));
+  }
+  return copy;
+}
+
 // CLI: write a preview, one file per route, for reading before it ships.
 if (process.argv[1] && fileURLToPath(import.meta.url) === path.resolve(process.argv[1])) {
+  ensureBrowser();
   const outDir = path.join(ROOT, "reading-copy-preview");
   fs.rmSync(outDir, { recursive: true, force: true });
   fs.mkdirSync(outDir);

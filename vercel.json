@@ -5,12 +5,12 @@
   "outputDirectory": "dist",
   "trailingSlash": false,
   "rewrites": [
-    { "source": "/about", "destination": "/index.html" },
-    { "source": "/work", "destination": "/index.html" },
-    { "source": "/work/check-access", "destination": "/index.html" },
-    { "source": "/work/check-access/full", "destination": "/index.html" },
-    { "source": "/work/ai-trust-layer", "destination": "/index.html" },
-    { "source": "/work/admin-shell", "destination": "/index.html" },
-    { "source": "/work/release-notes", "destination": "/index.html" }
+    { "source": "/about", "destination": "/about.html" },
+    { "source": "/work", "destination": "/work.html" },
+    { "source": "/work/check-access", "destination": "/work/check-access.html" },
+    { "source": "/work/check-access/full", "destination": "/work/check-access/full.html" },
+    { "source": "/work/ai-trust-layer", "destination": "/work/ai-trust-layer.html" },
+    { "source": "/work/admin-shell", "destination": "/work/admin-shell.html" },
+    { "source": "/work/release-notes", "destination": "/work/release-notes.html" }
   ]
 }
