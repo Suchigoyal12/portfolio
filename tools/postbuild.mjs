@@ -24,6 +24,11 @@
 //    to a new case study would work but opening its link directly, or
 //    reloading it, would show the 404 page. This check is the only thing
 //    standing between "added a case study" and that.
+//    It also fails if a route's file has no permanent redirect from its
+//    .html address back to the route (/about.html to /about, /index.html
+//    to /). Vercel serves every file at its own address too, where React
+//    Router finds no route and shows NotFound with a 200: a second,
+//    broken address for every page.
 //
 // 4. dist/sitemap.xml is written from the same route list, so a new case
 //    study appears in it without anyone remembering to add it. The detailed
@@ -74,6 +79,18 @@ if (wrong.length) {
   console.error(`Each needs { "source": "<path>", "destination": "/<path>.html" },`);
   console.error(`for example { "source": "/about", "destination": "/about.html" },`);
   console.error(`or direct visits to those pages will show the 404 page.\n`);
+  process.exit(1);
+}
+
+// "/" is included: index.html is a second address for the homepage too.
+const redirects = new Map((vercel.redirects ?? []).filter((r) => r.permanent === true).map((r) => [r.source, r.destination]));
+const unredirected = ROUTES.filter((r) => redirects.get(`/${routeFile(r)}`) !== r);
+
+if (unredirected.length) {
+  console.error(`\nvercel.json is missing or misdirects the permanent redirect for: ${unredirected.join(", ")}`);
+  console.error(`Each needs { "source": "/<path>.html", "destination": "<path>", "permanent": true },`);
+  console.error(`for example { "source": "/about.html", "destination": "/about", "permanent": true },`);
+  console.error(`or the page's file stays reachable as a second address showing NotFound.\n`);
   process.exit(1);
 }
 

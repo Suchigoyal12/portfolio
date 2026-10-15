@@ -4,6 +4,16 @@
   "buildCommand": "npm run build",
   "outputDirectory": "dist",
   "trailingSlash": false,
+  "redirects": [
+    { "source": "/index.html", "destination": "/", "permanent": true },
+    { "source": "/about.html", "destination": "/about", "permanent": true },
+    { "source": "/work.html", "destination": "/work", "permanent": true },
+    { "source": "/work/check-access.html", "destination": "/work/check-access", "permanent": true },
+    { "source": "/work/check-access/full.html", "destination": "/work/check-access/full", "permanent": true },
+    { "source": "/work/ai-trust-layer.html", "destination": "/work/ai-trust-layer", "permanent": true },
+    { "source": "/work/admin-shell.html", "destination": "/work/admin-shell", "permanent": true },
+    { "source": "/work/release-notes.html", "destination": "/work/release-notes", "permanent": true }
+  ],
   "rewrites": [
     { "source": "/about", "destination": "/about.html" },
     { "source": "/work", "destination": "/work.html" },
