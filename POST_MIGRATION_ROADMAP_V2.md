@@ -386,7 +386,7 @@ Suchi is supplying a design. When it lands: export at 1200x630, replace `public/
 
 **Verified,** locally, against the same build without the reading copy: full-page screenshots at 1440, 1300, 900 and 390 are identical apart from motion, and that motion difference is the same size as comparing today's build with itself. Zero extra image downloads, no new page errors, `npm run check:copy` passes.
 
-**Deploy:** *pending.* Preview: _not yet checked._ Production: _not yet deployed._
+**Deploy.** *Preview checked 2026-10-15* (`stage-2` at `e195674`, https://portfolio-9t8rtb69q-suchi2.vercel.app): the Vercel build passed, which means Chromium ran there and every build check held; all 8 routes return 200 with their reading copy, one `h1` and their own `canonical`, including `/work/check-access` beside its `/full` sub-page (the one thing only Vercel could confirm); `robots.txt` and `sitemap.xml` are served; `/banana`, `/work/banana` and `/work/check-access/banana` are 404; `/about/` 308s to `/about`; in a real browser at 800 and 1440 the copy is gone after start (including inside the stage iframe), there are no console errors, and Vercel Analytics loads. Also noted: `/about.html` (and each route file) answers directly as a second address; nothing links to it and its canonical names `/about`, so it is left as optional tidying. *Production: pending,* until the pull request into `main` is merged.
 
 *For whoever works here next:*
 
