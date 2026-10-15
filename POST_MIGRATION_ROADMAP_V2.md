@@ -188,7 +188,7 @@ Live at **`https://suchigoyal.com`** — apex is primary, `www` redirects to it.
 > **⚠ `tools/compare.mjs` STILL POINTS AT A `vercel.app` URL, AND MUST.**
 > `REFERENCE = "https://portfolio-dk8r4mnca-suchi2.vercel.app"` is the frozen Stage 1 per-deployment URL. It is deliberately not the production alias, and it must not be updated to `suchigoyal.com` — that would make the harness diff the React build against itself and report 0.000% forever, destroying the baseline silently. A repo-wide grep for `vercel.app` will surface it; leave it alone. The comment above it says the same thing.
 
-*Also checked and left alone:* `MIGRATION_BRIEF.md` records the Stage 1 deploy target as a `*.vercel.app` subdomain — historically accurate, not a live reference. **No `robots.txt` or `sitemap.xml` exists** in `public/` or at root, so neither carried a stale absolute URL. A sitemap would help Search Console and pairs naturally with item 12's prerendering; not created here.
+*Also checked and left alone:* `MIGRATION_BRIEF.md` records the Stage 1 deploy target as a `*.vercel.app` subdomain — historically accurate, not a live reference. **No `robots.txt` or `sitemap.xml` exists** in `public/` or at root, so neither carried a stale absolute URL. A sitemap would help Search Console and pairs naturally with item 12's prerendering; not created here. *(2026-10-15: both now exist, see item 21.)*
 
 *Unaffected:* item 11's soft-404 rewrite has nothing to do with the host and stays below the line.
 
@@ -280,13 +280,15 @@ The site works, the case studies are strong, attribution is honest. Everything b
 
 **11 — Soft-404. DONE (2026-09-23), live on suchigoyal.com.**
 
-`vercel.json` now rewrites only the seven real routes to `index.html`. Everything else falls through to `dist/404.html`, a copy of the built `index.html` written by `tools/postbuild.mjs`, so the app still boots and renders its own NotFound page, now with a **404** status. `trailingSlash: false` redirects `/about/` to `/about` rather than letting it 404.
+`vercel.json` now rewrites only the seven real routes to `index.html`. Everything else falls through to `dist/404.html`, a copy of the built `index.html` written by `tools/postbuild.mjs`, so the app still boots and renders its own NotFound page, now with a **404** status. `trailingSlash: false` redirects `/about/` to `/about` rather than letting it 404. *(2026-10-15: the rewrites now point each route at its own file, `about.html`, `work/ai-trust-layer.html` and so on, rather than at `index.html`; see item 21. The 404 behavior and the guard are unchanged; the guard now also checks each rewrite points at the right file.)*
 
 **The route list is maintained by hand, and the build guards it.** `tools/postbuild.mjs` fails the build if any path in `src/routes.js` has no rewrite. Without that, a new case study would work when clicked through to and show the 404 page when opened directly or reloaded. Tested both ways: one rewrite removed exits 1 with a message naming the path; restored exits 0.
 
 **Verified on the `testing` preview first, then on production after PR #4:** all seven routes 200; `/banana`, `/work/banana`, `/work/check-access/banana` 404 and render NotFound; `/about/` 308 to `/about`; `www` still redirects to the apex; résumé, favicon and `og-image.png` 200; the long read's link still opens in the stage; no page errors.
 
-**12 — Per-route meta and link-preview prerendering.** So each case study previews with its own title and thumbnail rather than one shared card. *Deferred 2026-09-23, Suchi's call: taken up with item 20 after the design-led pieces (items 19, 8, 14), since those will change what each page should preview as.*
+**12 — Per-route meta and link-preview prerendering. PARTLY DONE (2026-10-15), via item 21.** So each case study previews with its own title and thumbnail rather than one shared card. *Deferred 2026-09-23, Suchi's call: taken up with item 20 after the design-led pieces (items 19, 8, 14), since those will change what each page should preview as.*
+
+*Done as part of item 21:* every route now has its own prerendered HTML file, and each one names its own address in `canonical` and `og:url` (the build fails if any file gets it wrong). *Still open, and still deferred with item 20:* the title, description, `og:image` and `twitter:` tags are the same on every page. The place to add them is now obvious: the per-route files are written by `inject()` in `tools/reading-copy.mjs`, which already rewrites the two address tags.
 
 **13 — AI Trust Layer sideways scroll. DONE (2026-09-23), live via PR #5.** *(Anchor tuning across 900–1440 beyond this defect stays optional refinement.)*
 
@@ -365,6 +367,34 @@ Suchi is supplying a design. When it lands: export at 1200x630, replace `public/
 **Check Access short version — the three pillar walkthroughs are wired.** `CheckAccessSolutionSection` carried `pillarSrcs = [null, null, null]` with a "until wired up" comment; the three MP4s existed at the repo root and mapped 1:1 to the pillars by name. Clicking a pillar now plays its own walkthrough. The `<video>` also needed `muted`, `playsInline`, `loop` and a `poster` — a bare `src` renders a blank frame that never plays. `preload="metadata"`, so nobody who does not click a pillar downloads three videos. Two consequences worth knowing: the frame's "PLACEHOLDER · PRODUCT SCREEN" label swaps to the pillar's name while a real screen is playing (leaving it would tell a recruiter the work is unfinished), and the written stand-in description is hidden while playing, because it described the very thing now visible and rendered as unreadable dark text over the footage.
 
 **A card no longer reopens on the long read after you navigated back. REGRESSION FROM ITEM 3, introduced here and fixed here.** The stage records which page a card is showing from the iframe's document `load` event. Following the link *into* the long read is a plain `<a>`, so it is a real document load and records itself. Item 3 replaced `← BACK`'s `history.back()` — which popped to a real document load, and re-recorded as a side effect — with a client-side `navigate()`. No document is replaced, so the stage never learned the card came back, and `work:frame:check-access` stayed pointing at the long read forever: leaving `/work` and returning restored the long version. The long read now posts a `work:frame` message on back-navigation, and the stage applies it through the same guard `frameSrc` uses (the card's own route or a segment below it, because the value ends up in an iframe `src`).
+
+**21 — Readable without JavaScript. DONE (2026-10-15) on `stage-2`, five commits (`7148736`, `cc8560d`, `92f16c8`, `73f1eef`, `e195674`). Not yet deployed.**
+
+**What was wrong.** The site is a React app, so the HTML the server sends is an empty shell and everything a visitor reads is drawn by JavaScript in their browser. Anything that fetches a page without running JavaScript got a blank page: AI fetch tools (someone asking ChatGPT or Claude about the site), AI crawlers, and the screeners in hiring systems that open a portfolio link. People see the site fine; machines that read on someone's behalf saw nothing.
+
+**How it was found.** Investigating a Zscaler block at Piramal. That block was a separate problem, a categorization issue, and was handled outside the repo with Zscaler, Cloudflare, Broadcom, Cisco Talos and FortiGuard. Nothing here fixes it and nothing here was needed for it; the blank page was found along the way.
+
+**What was done.**
+
+- **A "reading copy" of every page, generated at build time.** `tools/reading-copy.mjs` opens the built site in headless Chromium (through Playwright), reads each route in `src/routes.js` at 800px, and flattens what is on screen into plain HTML: one `h1` per page, sections and subheadings, links, and each image's description. Nothing is hand-written, so the copy cannot drift from the pages. Interface hints are left out, About is read in both branches (THE DESIGNER and THE PERSON), and AI Trust Layer's system map is read from its drawing. Admin Shell is not in `src/routes.js`, so it cannot reach the output.
+- **Each route has its own file.** `tools/postbuild.mjs` writes one HTML file per route (`about.html`, `work/ai-trust-layer.html`, and so on) with that page's copy inside the app's root element, and the `vercel.json` rewrites point each route at its file instead of `index.html`.
+- **Visitors never see it.** A style in `<head>` hides the copy before anything is drawn, and React replaces it when the app starts. Images in the copy sit inside `<noscript>`, because without that the browser downloaded every image React removed (AI Trust Layer went from 4 image downloads to 17). A browser with JavaScript switched off shows the copy, through the same `<noscript>`.
+- **Chromium runs in Vercel's build.** Vercel's build machine is missing two libraries Chromium needs (NSS and NSPR), so the build installs them first, only when it is running on Vercel, then installs Chromium. Measured on a preview build on 2026-10-15. **The build fails if the copy cannot be generated**, so a broken step stops the deploy rather than quietly shipping blank pages.
+- **Each page names its own address.** Every route's file starts as a copy of `index.html`, so after the step above every case study told Google its real address was the homepage. The build now rewrites `canonical` and `og:url` in each file to that page's own address, and fails if any file gets it wrong. This is part of item 12; title, description and `og:image` stay site-wide, deferred with item 20.
+- **`robots.txt` and a sitemap.** `public/robots.txt` lets every search engine and AI assistant read the whole site by default, so there is no list of chatbots to keep up to date. Only crawlers that collect pages to train AI models are asked to stay out: GPTBot, ClaudeBot, anthropic-ai, CCBot, Google-Extended, Applebot-Extended, Meta-ExternalAgent, Bytespider, cohere-training-data-crawler. `dist/sitemap.xml` is written by the build from the route list, so it lists the 8 public pages and can never list Admin Shell; the build fails if `robots.txt` points at any other sitemap address. *Open caveat:* Google's documentation is unclear on whether `Google-Extended` also keeps the site out of answers in the Gemini app, not just out of training. If Suchi wants Gemini fully in, deleting that one line is the fix.
+- **Copy fixes found while reading every page as plain text.** Hyphens used as dashes on Home, AI Trust Layer and the Check Access long read became a colon, comma and colon. Admin Shell's request-access email subject had an encoded em dash, now a colon. "Artefact" became "Artifact" in the Check Access audit diagram. Release Notes' before-screenshot alt text said 2022, now 2023 to match its caption and the screenshot. The Check Access evolution icons got empty alt text, since they are decorative. `check:copy` now also catches percent-encoded em dashes and "artefact".
+
+**Verified,** locally, against the same build without the reading copy: full-page screenshots at 1440, 1300, 900 and 390 are identical apart from motion, and that motion difference is the same size as comparing today's build with itself. Zero extra image downloads, no new page errors, `npm run check:copy` passes.
+
+**Deploy:** *pending.* Preview: _not yet checked._ Production: _not yet deployed._
+
+*For whoever works here next:*
+
+- **Adding a page now takes two edits:** the route in `src/routes.js`, and a rewrite in `vercel.json` pointing at its own `.html` file (not `index.html`). The build names the missing or wrong rewrite if you forget.
+- **`tools/postbuild.mjs` cannot be re-run on a `dist/` that has already been built.** Run the full `npm run build`.
+- **To read the copy yourself:** build, then `node tools/reading-copy.mjs`, which writes a local preview to `reading-copy-preview/` (not committed).
+- The sitemap takes its domain from the `canonical` link in `index.html`. If that tag's shape changes, check the sitemap step in `tools/postbuild.mjs`.
+- `dist/404.html` keeps the homepage's address in its `canonical`. Deliberate and harmless: it is copied before the per-page rewrite, and a 404 page has no address of its own.
 
 ---
 
