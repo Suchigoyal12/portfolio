@@ -731,7 +731,7 @@ export default function CheckAccessFull() {
             <div className="lbl">Section 10<br />Impact</div>
             <div>
               <h2>Bringing clarity to complex governance<span className="acc">.</span></h2>
-              <p className="body">The redesigned Check Access experience significantly improved the efficiency and clarity of access audits. A user's complete access across services &amp; folders, in a single query- grouped, scannable, read in one pass.</p>
+              <p className="body">The redesigned Check Access experience significantly improved the efficiency and clarity of access audits. A user's complete access across services &amp; folders, in a single query: grouped, scannable, read in one pass.</p>
               <div className="impact-hero"><span className="o">~13</span> services <span className="c">·</span> Private Preview <span className="c">→</span> GA in <span className="o">4</span> months</div>
               <div className="impact-note" style={{ fontFamily: '"JetBrains Mono"' }}>Built to move three numbers the team owned: adoption, audit-time, and access-related support load.</div>
             </div>

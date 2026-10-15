@@ -19,8 +19,10 @@ const DIST = path.join(ROOT, "dist");
 
 execSync("npm run build", { cwd: ROOT, stdio: "ignore" });
 
-// The em dash, literal or as the escape a minifier may write instead.
-const EM_DASH = /—|\\u2014|&mdash;|&#8212;/g;
+// The em dash, literal or as the escape a minifier may write instead, or
+// percent-encoded in a URL (a mailto subject line reaches the visitor's email
+// app as copy).
+const EM_DASH = /—|\\u2014|&mdash;|&#8212;|%E2%80%94/gi;
 
 // British stems. Add to this list rather than loosening it. "labelledby" is
 // excluded because aria-labelledby is an HTML attribute name, not copy.
@@ -31,7 +33,7 @@ const BRITISH = new RegExp(
     "normalis", "utilis", "realis(?:e|ed|es|ing|ation)", "scrutinis", "emphasis[ei]", "synthesis[ei]",
     "analys(?:e|ed|es|ing)\\b", "behaviour", "colour", "favour", "honour", "labour",
     "labell(?!edby)", "modell", "travell", "cancell", "centre", "licence",
-    "catalogue", "programme", "judgement", "whilst", "amongst",
+    "catalogue", "programme", "artefact", "judgement", "whilst", "amongst",
   ].join("|") + ")\\w*",
   "gi",
 );

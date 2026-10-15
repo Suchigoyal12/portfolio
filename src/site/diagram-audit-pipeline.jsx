@@ -89,7 +89,7 @@ const PIPELINE_NODES = [
 },
 {
   id: 5,
-  title: "Service Artefact Matrix",
+  title: "Service Artifact Matrix",
   dot: "oklch(0.55 0.18 20)",
   render: () => {
     const folderSvg = (size) => <svg width={size} height={size} viewBox="0 0 16 16" fill="none"><path d="M1 3h5l2 2h7v9H1z" fill="oklch(0.65 0.15 75)" stroke="oklch(0.5 0.12 60)" strokeWidth="1" /></svg>;
@@ -777,7 +777,7 @@ function shortTitle(t) {
     "Cloud Level": "CLOUD",
     "Tenant Sprawl": "TENANT",
     "Service Sprawl": "SERVICE",
-    "Artefact Matrix": "ARTEFACT",
+    "Artifact Matrix": "ARTIFACT",
     "Rule Evaluation Engine": "RULES",
     "The Friction": "FRICTION"
   };

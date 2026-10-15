@@ -33,7 +33,7 @@ const PANEL_L   = [335.14, 190];  // panel biases left toward the rail as width 
 const TOOLING_L = [738,    585];  // tooling packs rightward, glued near the right rail
 
 const BACKGROUND_COPY =
-  "The (un)glamorous work holds everything up. UiPath's admin layer- the control plane behind every business automation, 10,000+ customer enterprises. Joined as the most junior designer on it. Led it within the year. Systems, governance, the edge cases that decide whether software earns trust. Depth over breadth.";
+  "The (un)glamorous work holds everything up. UiPath's admin layer: the control plane behind every business automation, 10,000+ customer enterprises. Joined as the most junior designer on it. Led it within the year. Systems, governance, the edge cases that decide whether software earns trust. Depth over breadth.";
 
 export default function Home() {
   // Roadmap item 8 — the tooling "+" toggle. Click state, not hover: it has
