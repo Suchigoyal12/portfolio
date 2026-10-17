@@ -105,10 +105,103 @@ function dotStyle(dot) {
   };
 }
 
+// ── Large card spec ─────────────────────────────────────────
+// The stack card is designed at 216×156. Scaled up uniformly, its 10px
+// labels become 20px and the doodle hugs the corner, which reads as an
+// enlarged thumbnail rather than a card. So a wider card is laid out at its
+// real size from a second spec, drawn for the 424px Work grid card and agreed
+// in the pile-to-grid motion study:
+//
+//   · headline 20 → 34px, slightly tighter leading and tracking
+//   · number and label 10 → 11px only; small type steps up far less than
+//     the card does
+//   · padding 16/22 → 28/32px
+//   · doodle 1.6×, centered on the right instead of anchored to the corner
+//
+// Between 216 and 424 every value is blended by width, so a card growing out
+// of the stack never jumps. The blend reads the card's LIVE width through CSS
+// container units (cqw), not the width React was given: when the grid opens
+// into the stage, the cards' boxes are mid-transition, and a face laid out for
+// the destination size would sit shrunken in a still-large card (or spill out
+// of a still-small one) for the whole move. With cqw the browser re-blends
+// every frame on its own. Each value is a straight line in width, clamped at
+// both specs:  a + (width − 216) · (b − a) / 208.
+//
+// At exactly 216 the blend lands on the small spec's positions. At rest at 216
+// and below the original scaled render is still used, so the stack cards are
+// untouched; the fluid face appears only on wider cards and during a move.
+const CARD_W_LG = 424;
+const SPEC_SM = { px: 22, py: 16, gap: 16, num: 10, head: 20, lh: 23, ls: -0.4, meta: 10 };
+const SPEC_LG = { px: 32, py: 28, gap: 20, num: 11, head: 34, lh: 35.36, ls: -0.952, meta: 11 };
+const DOODLE_LG = 1.6;
+const DOODLE_RIGHT_LG = 26;
+
+function fluid(a, b) {
+  const k = (b - a) / (CARD_W_LG - CARD_W);
+  return `clamp(${Math.min(a, b)}px, calc(${a}px + (100cqw - ${CARD_W}px) * ${k.toFixed(6)}), ${Math.max(a, b)}px)`;
+}
+const FLUID = Object.fromEntries(Object.keys(SPEC_SM).map((k) => [k, fluid(SPEC_SM[k], SPEC_LG[k])]));
+
+function FluidCardFace({ c, revealStatus }) {
+  const d = c.doodle;
+  // The doodle is placed from the right edge and the vertical center, so its
+  // position stays a straight line in width: hugging the corner at 216,
+  // centered on the right at 424.
+  const right = CARD_W - (d.x + d.w);
+  const cy = d.y + d.h / 2 - CARD_H / 2;
+  const metaStyle = { ...CARD_META_STYLE, fontSize: FLUID.meta, lineHeight: 1.2 };
+  return (
+    <div style={{ position: "absolute", inset: 0, containerType: "inline-size" }}>
+      <div style={{
+        position: "absolute", inset: 0,
+        boxSizing: "border-box", padding: `${FLUID.py} ${FLUID.px}`,
+        display: "flex", flexDirection: "column",
+        background: CARD_BG, borderRadius: 14, overflow: "hidden"
+      }}>
+        <span style={{ ...CARD_NUM_STYLE, fontSize: FLUID.num, lineHeight: 1.2, position: "relative", zIndex: 2 }} className="card-num">{c.num}</span>
+
+        <h3 style={{
+          fontFamily: SANS, fontSize: FLUID.head, fontWeight: 800, lineHeight: FLUID.lh,
+          letterSpacing: FLUID.ls, textTransform: "uppercase", color: INK,
+          margin: `${FLUID.gap} 0 0`, whiteSpace: "pre-line", position: "relative", zIndex: 2
+        }}>{c.headline}</h3>
+
+        <div style={{
+          marginTop: "auto", position: "relative", zIndex: 2,
+          display: "flex", justifyContent: "space-between", alignItems: "center"
+        }}>
+          <span style={metaStyle} className="card-meta">{c.label}</span>
+          <span style={{
+            display: "flex", alignItems: "center", gap: 4,
+            opacity: revealStatus ? 1 : 0,
+            transform: revealStatus ? "translateX(0)" : "translateX(4px)",
+            transition: "opacity 0.3s ease, transform 0.3s ease"
+          }}>
+            <span style={dotStyle(c.dot)} />
+            <span style={metaStyle} className="card-meta">{c.status}</span>
+          </span>
+        </div>
+
+        <img src={d.src} {...dims(d.src)} alt="" style={{
+          position: "absolute", zIndex: 3, pointerEvents: "none",
+          right: fluid(right, DOODLE_RIGHT_LG),
+          top: `calc(50% + ${fluid(cy, 2)})`,
+          transform: "translateY(-50%)",
+          width: fluid(d.w, d.w * DOODLE_LG),
+          height: fluid(d.h, d.h * DOODLE_LG)
+        }} />
+      </div>
+    </div>
+  );
+}
+
 // ── Stack card — rendered at natural 216×156 and scaled to the
 // box the stage hands it (boxW). transform-origin top-left so the
-// scaled render exactly fills a box of width boxW × boxW·156/216. ──
-function CardFace({ c, boxW = CARD_W, revealStatus = false }) {
+// scaled render exactly fills a box of width boxW × boxW·156/216.
+// Wider than 216, or while the card is moving (`fluid`), the large spec
+// above takes over. ──
+function CardFace({ c, boxW = CARD_W, revealStatus = false, fluid: moving = false }) {
+  if (boxW > CARD_W || moving) return <FluidCardFace c={c} revealStatus={revealStatus} />;
   const scale = boxW / CARD_W;
   return (
     <div style={{

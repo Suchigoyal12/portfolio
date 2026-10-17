@@ -36,14 +36,16 @@ const DUR = 280;
 const EASE = "cubic-bezier(0.25, 1, 0.5, 1)";
 const FADE = 180;
 
-// Where the marker retreats to when the destination has no rail. /work is the
-// only such route today; every project URL lives under it.
+// Where the marker retreats to when the destination has no rail: an open
+// project. The /work grid carries the rail (roadmap item 14), so the marker
+// rests on "the work" there and fades from that spot when a project opens.
 const EXIT_HREF = "/work";
 
 function railHrefFor(pathname) {
   if (pathname === "/") return "/";
   if (pathname === "/about") return "/about";
-  return null; // /work and everything under it: no rail on the far side
+  if (pathname === "/work") return "/work";
+  return null; // an open project: no rail on the far side
 }
 
 export default function RailTravel() {
@@ -91,7 +93,7 @@ export default function RailTravel() {
 
     // The desktop rail. Below 900 .canvas is display:none, so a zero-width
     // rect is how we know we are looking at a rail that is not on screen.
-    const rails = Array.from(document.querySelectorAll("html.rail-route .rail-nav"));
+    const rails = Array.from(document.querySelectorAll("html.rail-route .rail-nav, .wk-rail .rail-nav"));
     const rail = rails.find((r) => r.getBoundingClientRect().width > 0);
 
     if (rail) {
