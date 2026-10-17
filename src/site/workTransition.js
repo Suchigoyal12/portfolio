@@ -20,6 +20,23 @@
 // Desktop only (900px and up). Phones keep their plain list and plain links.
 // Under prefers-reduced-motion nothing travels; each half is a short fade.
 
+// ── EXPERIMENT (branch experiment-blur-ground, preview only, never merged) ──
+// The ground behind /work is the Homepage itself, blurred, instead of solid
+// Work beige; it stays behind the grid, the stage and direct visits. The
+// Homepage does not scroll away or sink back: it blurs in place. And the
+// pile plays on every arrival, not only the first in a tab.
+export const GROUND = "blur";
+export const PILE_EVERY_TIME = true;
+export const BLUR_PX = 18;
+export const BLUR_DIM = 0.12;      // rgb(14,14,12) veil
+export const BLUR_DESAT = 0.18;
+export const BLUR_IN_MS = 750;
+export const BLUR_IN_EASE = "cubic-bezier(0.16, 1, 0.3, 1)";
+export const BLUR_OUT_MS = 520;
+export const BLUR_OUT_EASE = "cubic-bezier(0.3, 0, 0.2, 1)";
+export const BLUR_LAND_START = 300; // no empty beat to wait out: the pile lands sooner
+export const blurFilter = (k) => `blur(${(BLUR_PX * k).toFixed(2)}px) saturate(${(1 - BLUR_DESAT * k).toFixed(3)})`;
+
 export const CREAM = "#FBFAF6"; // Homepage ground (--bg-landing, Home.css)
 export const BEIGE = "#E8E4DC"; // Work ground (--bg, Work.css)
 
