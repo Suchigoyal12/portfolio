@@ -227,6 +227,18 @@ Two layouts; both use the same anatomy.
 - **Stacked card** — vertical, used in 3-up grids on Works. Hairline top border (`border-top: 1px solid var(--ink)`), 24px padding.
 - **Index row** — horizontal, used in long lists. Grid `grid-template-columns: 80px 1fr 200px 120px` (no, title+sum, tags, metric). Hairline between rows.
 
+**Work stage card** (the four project cards on `/work`, `src/site/work-cards.jsx`). Two specs, blended by the card's live width:
+
+| | Small, 216×156 (stack, pile) | Large, 424 wide (grid) |
+|---|---|---|
+| Padding | 16 / 22px | 28 / 32px |
+| Number | mono 800, 10px | 11px |
+| Headline | DM Sans 800, 20px, leading 23px | 34px, leading 35.4px, slightly tighter tracking |
+| Label, status | mono, 10px | 11px |
+| Doodle | as drawn, hugging the right corner | 1.6×, centered on the right, 26px in |
+
+Type steps up far less than the card does; a uniformly scaled card read as an enlarged thumbnail. Between the two widths every value blends in a straight line, through CSS container units, so a card moving between sizes stays composed on every frame. At rest at 216px and below, the original scaled render is used unchanged.
+
 ### 3.3 Buttons
 
 The system uses three button registers.
@@ -431,6 +443,37 @@ Terms of the exception — it stays legal only while all of these hold:
 - **One per site.** No second ambient loop anywhere without a new exception entry here.
 
 Geometry derives from item count (`PHOTOS.length`): strip width, loop-reset point, and duration all recompute; the full set is duplicated once in the DOM and the track translates by exactly one set's width before resetting to 0.
+
+### 4.8 Place-change exception: Homepage ⇄ Work, and the Work stage
+
+Roadmap item 14, agreed 2026-10 through two interactive motion studies. These moves carry the visitor between places rather than responding to a control, so they run longer than §4.2's 600ms ceiling. It is the site's one orchestrated motion moment. Source of truth for every number: `src/site/workTransition.js` (Homepage ⇄ Work) and the constants at the top of `src/site/work-stage.jsx` (the grid and the stage).
+
+**Homepage → Work** (scroll down once, or "the work" in the rail; desktop only)
+
+| Beat | Duration | Easing | Notes |
+|---|---|---|---|
+| Homepage content scrolls off upward | 720ms | `cubic-bezier(0.76, 0, 0.24, 1)` | Every zone moves as one block; the rail stays put. The rail marker travels to "the work" (280ms, §rail) as the scroll starts. |
+| Ground, cream → Work beige | 420ms | `ease` | Only after the page has gone, so cream and beige never meet at an edge. |
+| Cards land as a fanned pile | 520ms each, 70ms apart | `cubic-bezier(0.34, 1.45, 0.64, 1)` | 04 first, 01 last on top; each drops 80px with a small bounce. |
+| Pile holds | 260ms | | Long enough to register as a pile. |
+| Pile deals out into the 2×2 grid | 780ms each, 70ms apart | `cubic-bezier(0.22, 1, 0.36, 1)` | 01 first. |
+
+- **First visit only.** The pile plays once per tab session (`sessionStorage` `work:pile-seen`). Every later arrival fades the cards up into their grid places: 450ms, 60ms apart, `cubic-bezier(0.16, 1, 0.3, 1)`.
+- **Going back** is not the entrance reversed: the cards fade where they are (240ms), the ground returns to cream (200ms), then the Homepage content slides back down (620ms, `cubic-bezier(0.65, 0, 0.35, 1)`). Browser Back plays the slide too.
+- **No arrival animation.** Direct visits and reloads show the destination at rest, per the site's no-entrance rule.
+
+**The /work grid and the Stage Manager**
+
+| Move | Duration | Easing | What shows inside the card |
+|---|---|---|---|
+| Grid → project | 700ms, chosen card first, others 35ms apart | `cubic-bezier(0.65, 0, 0.35, 1)` | The face fades out (245ms); the case study fades in only after landing (300ms). |
+| Project → grid | 460ms | `cubic-bezier(0.4, 0, 0.2, 1)` | The case study fades out first (130ms); the face returns a little before halfway. |
+| Project → project (stack card clicked) | 640ms | `cubic-bezier(0.65, 0, 0.35, 1)` | The case study travels inside its card, scaled rather than reflowed, so the window is never empty. The leaving page fades just past halfway and its face follows. |
+| Stack hover, fullscreen stack slide | 520ms | `cubic-bezier(.2,.8,.2,1)` | Unchanged from the original stage. |
+
+**Scroll as a step.** One fresh gesture moves one step: the wheel must rest 300ms first, counting scrolls inside a case study, so momentum never skips ahead. Homepage ⇄ grid needs 40px of travel; grid → 01 and closing a project from the empty space around it need 140px. Scrolling inside an open case study only ever scrolls the case study. Esc, the red dot and Back remain the primary ways out.
+
+**Reduced motion:** nothing travels. Each change is a short fade (about 200ms).
 
 ---
 

@@ -300,7 +300,23 @@ The site works, the case studies are strong, attribution is honest. Everything b
 
 **Also fixed in the same PR, found by Suchi on the preview: the carousels now fit the widest screen in a single look.** Card height came from the window height alone (`clamp(60vh, 360, 600)`) and never checked width, so on narrow screens every screen rendered 2 to 2.5 times wider than the strip (903px in 358px at 390). Each carousel now caps its shared height so its widest screen fits the strip (narrow) or the pan stage (wide). **Suchi's rule: a single screen should always fit the width on a phone or small window.** One height per carousel was her choice over per-screen fitting, accepting that the portrait screens in AI Governance come out about 135px wide on a phone (tap opens full size). Width is read with a `ResizeObserver`: the first measurement can happen while the page is hidden and returns 0, which collapsed every card to caption width. 1200px and up is pixel-identical before and after (A/B at 1300/1440/1680); 1150 shrinks about 4%.
 
-**14 — Remaining motion.** Cross-page transitions as progressive enhancement; Work-on-blurred-Homepage with ESC and right-edge hover.
+**14 — Remaining motion. BUILT (2026-10-18) on branch `work-transition`, not yet merged or live.** Commits `23d6981` (grid) and `5fbebff` (transition), plus the records commit.
+
+*The concept changed during design.* The queued idea, Work overlaid on a blurred Homepage, was studied first (study 1: depth recede, 2×2 grid, blur and solid grounds, a Contact-overlay preset) and set aside as too plain. The chosen direction came from a second study after cindyly.design, "pile to grid", with Suchi's settings: one flow, fanned pile, Work beige ground, scroll on opens 01, no heading. The full spec, every duration and curve, is DESIGN_SYSTEM §4.8; the card's two sizes are §3.2.
+
+*What a visitor gets (desktop, 900px and up):*
+- **Homepage → Work:** scroll down once, or "the work". The page scrolls off with the rail held still, the ground turns beige, the cards land as a pile and deal into a 2×2 grid. The pile plays once per tab; later arrivals fade the cards up into the grid.
+- **`/work` is now the grid**, at the large card size, with the site rail on the Homepage rail's exact pixels. Project URLs still open straight onto the stage. Opening from the grid adds a history entry, so Back returns to it.
+- **Leaving a project:** Esc, the red dot, Back, or a fresh scroll up in the empty space around it (guarded so reading momentum can never close it).
+- **Project to project:** 640ms, and the case study travels inside its card, so the stage never shows an empty window. All four case studies preload once the page is at rest.
+- **Back to the Homepage:** scroll up from the grid, "my context", or Back. Cards fade, ground returns to cream, Homepage slides down.
+- **Unchanged:** phones, About, the case studies, Contact, and every page at rest.
+
+*Decisions made along the way:* scrolling inside an open case study only scrolls it (it never closes the project); the pile has no URL; direct visits and reloads never animate; the contact pill is hidden on the grid because the rail carries contact; the queued right-edge hover is the existing fullscreen stack reveal, unchanged.
+
+**Verified:** stack cards' 702 measured elements identical across 18 views; Homepage, About and an open project pixel-identical at rest (1440 and 1100); rail on `/work` on the same pixels as the Homepage at five widths (within 0.01px where fit() scales); every path scripted end to end (entrance, long momentum glide, both returns, rail clicks, Back and Forward, direct visits, reloads, reduced motion, long-read deep link) with no console errors; open, close and swap hold 60fps on a production build once Chrome's battery saver is off. Suchi reviewed it by hand on localhost.
+
+*Open:* the grid cards, like the stack cards before them, cannot be reached by keyboard. Now that the grid is the main way into the work, this should lead item 16's keyboard pass (audit B).
 
 **15 — Image weight, full. DONE (2026-09-23), 15a + 15b. 15c and the CV decided against.**
 
