@@ -29,8 +29,13 @@ const ITEMS = [
   { to: "/about", label: "who am i?" },
 ];
 
-export default function SiteRail({ variant = "desktop" }) {
+// `active` overrides which item is lit, for a page that has announced where
+// it is going before the route changes (the Homepage ⇄ Work transition).
+// `onGo(to, event)` lets a page play its exit first: return true to take the
+// navigation over, and the link's own navigation is cancelled.
+export default function SiteRail({ variant = "desktop", active = null, onGo = null }) {
   const { pathname } = useLocation();
+  const lit = active || pathname;
 
   // Mobile copies carry an inline 12px on every item, as authored.
   const itemStyle = variant === "mobile" ? { fontSize: 12 } : undefined;
@@ -42,7 +47,8 @@ export default function SiteRail({ variant = "desktop" }) {
         <Link
           key={item.to}
           to={item.to}
-          className={pathname === item.to ? "active" : undefined}
+          className={lit === item.to ? "active" : undefined}
+          onClick={onGo ? (e) => { if (onGo(item.to, e)) e.preventDefault(); } : undefined}
           style={itemStyle}>
           {item.label}
         </Link>

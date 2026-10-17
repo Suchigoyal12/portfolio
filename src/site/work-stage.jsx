@@ -4,6 +4,7 @@ import { WORK_CARDS, CardFace, MONO as W_MONO, SANS as W_SANS, ACCENT, CARD_W as
 import { useContact } from "../components/ContactOverlay.jsx";
 import SiteRail from "../layouts/SiteRail.jsx";
 import { REFERENCE as FIT_REFERENCE } from "../hooks/useFit.js";
+import * as WT from "./workTransition.js";
 import "../routes/Work.css";
 
 // =============================================================
@@ -119,6 +120,12 @@ const MORPH_EASE = "cubic-bezier(0.65, 0, 0.35, 1)";
 const MORPH_STAGGER = 35;
 const UNMORPH_MS = 460;
 const UNMORPH_EASE = "cubic-bezier(0.4, 0, 0.2, 1)";
+// Project to project (a stack card clicked while a project is open). It was
+// 520ms on a quick-start curve, which read as abrupt beside the grid's open;
+// it now shares that move's in-out curve and its rule that the case study
+// arrives only once the card has landed (agreed 2026-10). Hovering the stack
+// and the fullscreen stack slide keep SWAP_MS.
+const SWAP_MOVE_MS = 640;
 
 // Scroll as a step, not a scroll: from the grid, scrolling on opens 01; in
 // the empty space around an open project, scrolling up closes it. Three
@@ -290,22 +297,67 @@ function ChromeBar({ c, onClose, onPrev, onNext, onFullscreen, radius = 0 }) {
 // ============================================================
 function CardWindow({
   c, src, layout, isFocused, isInStack, isHovered, isMounted, paused, fs, tx = 0,
-  iframeRef, onClick, onHover, onUnhover, onIframeLoad, chromeProps, morph = null
+  iframeRef, onClick, onHover, onUnhover, onIframeLoad, chromeProps, morph = null, moving = false, frameBox = null
 }) {
   const { left, top, width, height, rotateY, scale = 1, ty = 0, zIndex, radius } = layout;
   // Chrome bar shows only when focused AND not in fullscreen.
   const chromeOn = isFocused && !fs;
-  // `morph` is set while the grid opens or closes: { dir, delay } for this
-  // card. Otherwise the original swap motion applies, unchanged.
-  const ms = morph ? (morph.dir === "open" ? MORPH_MS : UNMORPH_MS) : SWAP_MS;
-  const ease = morph ? (morph.dir === "open" ? MORPH_EASE : UNMORPH_EASE) : EASE;
+  // `morph` is set while the grid opens or closes, or two projects swap:
+  // { dir, delay } for this card. Otherwise (hover, the fullscreen stack) the
+  // original motion applies, unchanged.
+  const ms = morph ? (morph.dir === "open" ? MORPH_MS : morph.dir === "swap" ? SWAP_MOVE_MS : UNMORPH_MS) : SWAP_MS;
+  const ease = morph ? (morph.dir === "close" ? UNMORPH_EASE : MORPH_EASE) : EASE;
   const d = morph ? ` ${morph.delay}ms` : "";
   const transition = paused ? "none" : morph && morph.reduced ? "opacity 200ms ease" :
   `left ${ms}ms ${ease}${d}, top ${ms}ms ${ease}${d}, width ${ms}ms ${ease}${d}, height ${ms}ms ${ease}${d}, transform ${ms}ms ${ease}${d}, opacity 360ms ease`;
 
-  const opening = morph && morph.dir === "open" && isFocused;
-  const closing = morph && morph.dir === "close";
-  const landed = morph && !morph.reduced ? MORPH_MS + 30 : 0;
+  // Arriving on stage (from the grid, or by swap) and leaving it.
+  const opening = morph && (morph.dir === "open" || morph.dir === "swap") && isFocused;
+  const closing = morph && (morph.dir === "close" || morph.dir === "swap" && morph.wasFocused);
+  const landed = morph && !morph.reduced ? (morph.dir === "swap" ? SWAP_MOVE_MS : MORPH_MS) + 30 : 0;
+  // Every case study is laid out once, at the open frame's size, and scaled
+  // to its card's width, so it never reflows while a card moves. The scale
+  // shares the card's own duration, curve and delay, so the two stay locked.
+  //
+  // What shows during a move depends on the move (agreed 2026-10):
+  //   swap (project to project)  the case study travels with its card. The
+  //        one coming in grows from a live thumbnail into the page; the one
+  //        leaving shrinks into the stack until its face settles over it. A
+  //        swap is page to page, and an empty window there read as a gap.
+  //   open / close (the grid)    the card carries its face, and the case study
+  //        fades in only once the card has landed, and out first on the way
+  //        back. Here the card itself is the subject; a page inside it read
+  //        as clutter.
+  // In fullscreen the open frame fills the window exactly as before.
+  const travel = !!morph && morph.dir === "swap";
+  const fsFocused = fs && isFocused;
+  let frameStyle;
+  if (fsFocused || !frameBox) {
+    frameStyle = {
+      width: "100%",
+      height: chromeOn ? `calc(100% - ${CHROME_H}px)` : "100%",
+      marginTop: chromeOn ? CHROME_H : 0,
+      transition: "opacity 280ms ease 120ms, margin-top 420ms " + EASE + ", height 420ms " + EASE
+    };
+  } else {
+    const k = width / frameBox.width;
+    frameStyle = {
+      width: frameBox.width,
+      height: frameBox.height - CHROME_H,
+      transformOrigin: "0 0",
+      transform: `translateY(${CHROME_H * k}px) scale(${k})`,
+      transition: paused || morph && morph.reduced ? "none" :
+      `transform ${ms}ms ${ease}${d}` + (
+      closing ? travel ? `, opacity 140ms ease ${Math.round(ms * 0.5)}ms` : ", opacity 130ms ease" : "")
+    };
+  }
+
+  // The leaving card's page and face hand over in sequence, not on top of
+  // each other, so two layers of type never show at once. In a swap the page
+  // goes just past halfway and the face follows; closing to the grid the page
+  // has already gone, and the face returns a little before halfway.
+  const faceIn = travel ? `wkFade 200ms ease ${Math.round(ms * 0.62)}ms both` :
+  `wkFade 220ms ease ${Math.round(UNMORPH_MS * 0.45)}ms both`;
 
   return (
     <div
@@ -343,13 +395,11 @@ function CardWindow({
           title={c.title}
           onLoad={isFocused && onIframeLoad ? (e) => onIframeLoad(e.target) : undefined}
           style={{
-            width: "100%",
-            height: chromeOn ? `calc(100% - ${CHROME_H}px)` : "100%",
-            marginTop: chromeOn ? CHROME_H : 0,
+            ...frameStyle,
             border: 0, display: "block",
             opacity: isFocused ? 1 : 0,
-            transition: (opening ? `opacity 300ms ease ${landed}ms` : closing ? "opacity 130ms ease" : "opacity 280ms ease 120ms") +
-            ", margin-top 420ms " + EASE + ", height 420ms " + EASE,
+            animation: opening && morph.reduced ? "wkFade 200ms ease both" :
+            opening && !travel ? `wkFade 300ms ease ${landed}ms both` : "none",
             pointerEvents: isFocused ? "auto" : "none",
             background: "#FBFAF6"
           }} /> :
@@ -362,10 +412,10 @@ function CardWindow({
           position: "absolute", inset: 0, pointerEvents: "none",
           opacity: isFocused ? 0 : 1,
           transition: opening ? "opacity 245ms cubic-bezier(0.2, 0, 0, 1)" : "none",
-          animation: closing && morph.wasFocused ? `wkFade 220ms ease ${Math.round(UNMORPH_MS * 0.45)}ms both` : "none"
+          animation: closing && morph.wasFocused ? faceIn : "none"
         }}>
             {/* `fluid` while moving: the face follows the card's live size */}
-            <CardFace c={c} boxW={width} revealStatus={isHovered} fluid={!!morph} />
+            <CardFace c={c} boxW={width} revealStatus={isHovered} fluid={!!morph || moving} />
           </div> :
         null}
 
@@ -418,7 +468,9 @@ export default function WorkStage({ focused, seedFrame = null, seedFs = false })
   // original could only ever open on 01; now /work/ai-trust-layer opens
   // straight onto 02, and seeding this wrong left the focused card with no
   // iframe in it at all.
-  const [mounted, setMounted] = React.useState(() => new Set([order[0]]));
+  // On the grid nothing is open, so no case study loads at first. 01 is
+  // preloaded once the grid has settled, because scrolling on opens it.
+  const [mounted, setMounted] = React.useState(() => focused ? new Set([order[0]]) : new Set());
 
   // Each card's iframe source, resolved once. Normally the project's own
   // route; after a reload, whatever page that card was actually showing.
@@ -624,7 +676,8 @@ export default function WorkStage({ focused, seedFrame = null, seedFs = false })
   React.useEffect(() => {
     if (!morph) return undefined;
     // Held until the case study has faded in (open) or the face has (close).
-    const hold = morph.dir === "open" ? MORPH_MS + MORPH_STAGGER * 3 + 380 : UNMORPH_MS + 260;
+    const hold = morph.dir === "open" ? MORPH_MS + MORPH_STAGGER * 3 + 380 :
+    morph.dir === "swap" ? SWAP_MOVE_MS + 380 : UNMORPH_MS + 260;
     const t = setTimeout(() => {
       if (morphRef.current && morphRef.current.id === morph.id) {morphRef.current = null;bumpMorph();}
     }, reducedMotion ? 220 : hold);
@@ -634,9 +687,112 @@ export default function WorkStage({ focused, seedFrame = null, seedFs = false })
     if (!morph) return null;
     if (reducedMotion) return { dir: morph.dir, delay: 0, reduced: true };
     if (morph.dir === "close") return { dir: "close", delay: 0, wasFocused: cardKey === morph.key };
+    if (morph.dir === "swap") return { dir: "swap", delay: 0, wasFocused: cardKey === morph.prev };
     const seq = [morph.key, ...WORK_CARDS.map((c) => c.key).filter((k) => k !== morph.key)];
     return { dir: "open", delay: seq.indexOf(cardKey) * MORPH_STAGGER };
   }
+
+  // ── Homepage ⇄ Work (roadmap item 14, step 3) ──
+  // See workTransition.js. Arriving from Home, the ground turns from cream to
+  // beige and the cards land as a pile, then deal out into the grid (first
+  // time in the tab), or simply fade up into their places (every time after).
+  // The cards' React layout is the grid throughout; the entrance is played on
+  // top with the Web Animations API, so it never fights the stage's own CSS
+  // transitions and leaves nothing behind when it ends.
+  const [entering, setEntering] = React.useState(false);
+  const enteringRef = React.useRef(false);
+  enteringRef.current = entering;
+  const entranceRan = React.useRef(false);
+  React.useLayoutEffect(() => {
+    if (entranceRan.current) return;
+    entranceRan.current = true;
+    const at = WT.handoff.leftHomeAt;
+    WT.handoff.leftHomeAt = 0;
+    const el = containerRef.current;
+    if (!overview || !el || !at || performance.now() - at > 1500) return;
+    const reduced = WT.reducedMotion();
+    const pile = !reduced && !WT.ssGet(WT.PILE_SEEN_KEY);
+    if (pile) WT.ssSet(WT.PILE_SEEN_KEY, "1");
+    setEntering(true);
+    const anims = [el.animate([{ backgroundColor: WT.CREAM }, { backgroundColor: WT.BEIGE }],
+    { duration: reduced ? 200 : WT.GROUND_MS, easing: "ease", fill: "backwards" })];
+    const vw = window.innerWidth, vh = window.innerHeight;
+    WORK_CARDS.forEach((c, i) => {
+      const card = el.querySelector(`[data-card-key="${c.key}"]`);
+      if (!card) return;
+      if (reduced) {
+        anims.push(card.animate([{ opacity: 0 }, { opacity: 1 }], { duration: 200, fill: "backwards" }));
+        return;
+      }
+      if (!pile) {
+        anims.push(card.animate([{ translate: "0 24px", opacity: 0 }, { translate: "0 0", opacity: 1 }],
+        { duration: WT.RISE_MS, easing: WT.RISE_EASE, delay: WT.RISE_START + i * WT.RISE_STAGGER, fill: "backwards" }));
+        return;
+      }
+      // Land: 04 first, 01 last on top. Then deal: 01 first.
+      const p = WT.PILE[i];
+      const g = getGridLayout({ vw, vh, cardKey: c.key });
+      const landAt = WT.LAND_START + (WORK_CARDS.length - 1 - i) * WT.LAND_STAGGER;
+      const dealAt = WT.LAND_START + (WORK_CARDS.length - 1) * WT.LAND_STAGGER + WT.LAND_MS + WT.PILE_HOLD + i * WT.DEAL_STAGGER;
+      anims.push(card.animate([{ translate: `0 ${-WT.LAND_DROP}px`, scale: 1.06 }, { translate: "0 0", scale: 1 }],
+      { duration: WT.LAND_MS, easing: WT.LAND_EASE, delay: landAt, fill: "backwards" }));
+      anims.push(card.animate([{ opacity: 0 }, { opacity: 1 }], { duration: 240, delay: landAt, fill: "backwards" }));
+      anims.push(card.animate([
+      { left: (vw - CARD_NAT_W) / 2 + p.x + "px", top: (vh - CARD_NAT_H) / 2 + 10 + p.y + "px", width: CARD_NAT_W + "px", height: CARD_NAT_H + "px", rotate: p.r + "deg" },
+      { left: g.left + "px", top: g.top + "px", width: g.width + "px", height: g.height + "px", rotate: "0deg" }],
+      { duration: WT.DEAL_MS, easing: WT.DEAL_EASE, delay: dealAt, fill: "backwards" }));
+    });
+    Promise.all(anims.map((a) => a.finished)).then(() => {
+      setEntering(false);
+      // Momentum from the scroll that started all this must not open 01.
+      lastWheelRef.current = performance.now();
+      gestureRef.current = null;
+    }).catch(() => {});
+  }, []);
+
+  // Load every case study once the page is at rest, one at a time, so a card
+  // always has its page ready to travel with it. 01 first: scrolling on from
+  // the grid opens it. Waits out entrances and moves so loading never
+  // competes with motion.
+  React.useEffect(() => {
+    if (entering || morph) return undefined;
+    const missing = WORK_CARDS.map((c) => c.key).filter((k) => !mounted.has(k));
+    if (!missing.length) return undefined;
+    const t = setTimeout(() => setMounted((m) => {const n = new Set(m);n.add(missing[0]);return n;}), mounted.size ? 400 : 600);
+    return () => clearTimeout(t);
+  }, [entering, morph && morph.id, mounted]);
+
+  // Leaving the grid for Home, by scrolling up or the rail's "my context":
+  // the cards fade where they are and the ground goes back to cream, then the
+  // route changes and Home slides its content back down.
+  const leavingHomeRef = React.useRef(false);
+  const [railActive, setRailActive] = React.useState(null);
+  function leaveForHome() {
+    const el = containerRef.current;
+    if (!overviewRef.current || leavingHomeRef.current || enteringRef.current || morphRef.current || !el) return;
+    leavingHomeRef.current = true;
+    setRailActive("/");
+    WT.previewRail("/");
+    const reduced = WT.reducedMotion();
+    const anims = [el.animate([{ backgroundColor: WT.BEIGE }, { backgroundColor: WT.CREAM }],
+    { duration: reduced ? 200 : WT.BACK_GROUND_MS, easing: "ease", fill: "forwards" })];
+    el.querySelectorAll("[data-card-key]").forEach((card) => anims.push(
+      card.animate([{ opacity: 1 }, { opacity: 0 }], { duration: reduced ? 200 : WT.BACK_FADE_MS, easing: "ease", fill: "forwards" })
+    ));
+    Promise.all(anims.map((a) => a.finished)).then(() => {
+      WT.handoff.faded = true;
+      navigate("/");
+    }).catch(() => {});
+  }
+  const leaveForHomeRef = React.useRef(leaveForHome);
+  leaveForHomeRef.current = leaveForHome;
+  // Back from the grid lands on Home with no state; this is how Home knows.
+  // A layout-effect cleanup, deliberately: React runs those before the next
+  // page's layout effects, where Home looks for this. A plain effect's
+  // cleanup runs after them, and Home would never see it.
+  React.useLayoutEffect(() => () => {
+    if (overviewRef.current && window.location.pathname === "/") WT.handoff.leftGridAt = performance.now();
+  }, []);
 
   // The grid has no fullscreen; leaving for it drops out of fullscreen first.
   React.useEffect(() => {if (overview && fsRef.current) setFs(false);}, [overview]);
@@ -653,7 +809,11 @@ export default function WorkStage({ focused, seedFrame = null, seedFs = false })
     });
     setHovered(null);
     setSwapping(true);
-    swapTimer.current = setTimeout(() => {setSwapping(false);swapTimer.current = null;}, SWAP_MS + 40);
+    swapTimer.current = setTimeout(() => {setSwapping(false);swapTimer.current = null;}, SWAP_MOVE_MS + 40);
+    // Recorded before the re-render this handler causes, so the cards pick up
+    // the swap's timing in the same commit as their new positions.
+    const prevId = morphRef.current ? morphRef.current.id : 0;
+    morphRef.current = { id: prevId + 1, dir: "swap", key, prev };
 
     // Record the focused project in the URL. `replace`, not push: moving a
     // card is a change of view, not a navigation, and the chrome bar's ‹ ›
@@ -798,13 +958,14 @@ export default function WorkStage({ focused, seedFrame = null, seedFs = false })
       const now = performance.now();
       const gap = now - lastWheelRef.current;
       lastWheelRef.current = now;
-      if (morphRef.current) {gestureRef.current = null;return;}
+      if (morphRef.current || enteringRef.current || leavingHomeRef.current) {gestureRef.current = null;return;}
       if (gap > FRESH_MS) gestureRef.current = { acc: 0 };
       const g = gestureRef.current;
       if (!g) return;
       g.acc += e.deltaY * (e.deltaMode === 1 ? 16 : e.deltaMode === 2 ? 800 : 1);
       if (overviewRef.current) {
-        if (g.acc >= STEP_PX) {gestureRef.current = null;openFromGridRef.current(WORK_CARDS[0].key);}
+        if (g.acc >= STEP_PX) {gestureRef.current = null;openFromGridRef.current(WORK_CARDS[0].key);} else
+        if (g.acc <= -WT.STEP_PX && window.innerWidth >= 900) {gestureRef.current = null;leaveForHomeRef.current();}
         return;
       }
       // Only the empty space around an open project: not the stack cards, not
@@ -823,6 +984,10 @@ export default function WorkStage({ focused, seedFrame = null, seedFs = false })
 
   // Same centering offset getLayout uses; 0 below STAGE_CAP.
   const offsetX = Math.max(0, (vp.w - STAGE_CAP) / 2);
+
+  // The open project's windowed frame at this viewport: the size every case
+  // study is laid out at, wherever its card currently is.
+  const frameBox = getLayout({ vw: vp.w, vh: vp.h, focusedKey: "_", stackOrder: [], cardKey: "_", fs: false });
 
   const chromeProps = {
     // Keyed on our own fs state, not isNativeFs(): fullscreen is in-page and
@@ -845,7 +1010,9 @@ export default function WorkStage({ focused, seedFrame = null, seedFs = false })
           getLayout({ vw: vp.w, vh: vp.h, focusedKey, stackOrder, cardKey: c.key, fs });
           // No hover while the grid opens or closes: cards gliding under a still
           // pointer would otherwise catch it and swerve mid-move.
-          if (hovered === c.key && !morph) layout = overview ? gridHover(layout) : isInStack ? hoverNudge(layout) : layout;
+          if (hovered === c.key && !morph && !entering) layout = overview ? gridHover(layout) : isInStack ? hoverNudge(layout) : layout;
+          // In the pile, 01 sits on top.
+          if (entering) layout = { ...layout, zIndex: 40 - WORK_CARDS.indexOf(c) };
           // In fullscreen the stack slides fully off the right edge (hidden) and
           // slides back in on right-edge hover. translateX drives the motion.
           let tx = 0;
@@ -860,14 +1027,16 @@ export default function WorkStage({ focused, seedFrame = null, seedFs = false })
               tx={tx}
               isFocused={isFocused}
               isInStack={isInStack}
-              isHovered={hovered === c.key && !morph}
+              isHovered={hovered === c.key && !morph && !entering}
+              moving={entering}
               isMounted={mounted.has(c.key)}
               paused={false}
               iframeRef={(el) => {iframeRefs.current[c.key] = el;}}
               onIframeLoad={(el) => syncIframeFs(el, fsRef.current, c.key)}
               morph={morphFor(c.key)}
-              onClick={() => overview ? openFromGrid(c.key) : focusProject(c.key)}
-              onHover={() => {if (!morphRef.current) setHovered(c.key);if (fs) revealStack();}}
+              frameBox={frameBox}
+              onClick={() => enteringRef.current || leavingHomeRef.current ? null : overview ? openFromGrid(c.key) : focusProject(c.key)}
+              onHover={() => {if (!morphRef.current && !enteringRef.current) setHovered(c.key);if (fs) revealStack();}}
               onUnhover={() => {setHovered(null);if (fs) scheduleHideStack();}}
               chromeProps={isFocused ? chromeProps : null} />);
 
@@ -906,7 +1075,11 @@ export default function WorkStage({ focused, seedFrame = null, seedFs = false })
                 `opacity 260ms ease ${morph ? 280 : 0}ms, visibility 0s` :
                 "opacity 200ms ease, visibility 0s linear 200ms"
               }}>
-              <SiteRail />
+              <SiteRail active={railActive} onGo={(to) => {
+                if (to !== "/" || !overview) return false;
+                leaveForHome();
+                return true;
+              }} />
             </div>);
 
         })()}

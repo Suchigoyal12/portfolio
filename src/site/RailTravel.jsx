@@ -60,6 +60,9 @@ export default function RailTravel() {
   const placedRef = useRef(false); // has the marker ever been positioned?
   const lastPathRef = useRef(null); // null until the first render completes
   const fadeTimer = useRef(0);
+  // A destination announced before the route changes (workTransition.js
+  // previewRail). Cleared by the next real navigation.
+  const previewRef = useRef(null);
 
   const reduced =
     typeof window !== "undefined" &&
@@ -111,7 +114,7 @@ export default function RailTravel() {
       });
     }
 
-    const activeHref = railHrefFor(pathname);
+    const activeHref = previewRef.current || railHrefFor(pathname);
     const target = activeHref ? cacheRef.current[activeHref] : cacheRef.current[EXIT_HREF];
     if (!target) {
       // Landed somewhere with no rail and no history of one — a cold load on
@@ -168,6 +171,7 @@ export default function RailTravel() {
     // no colour change worth transitioning.
     if (lastPathRef.current !== null && lastPathRef.current !== pathname) {
       document.documentElement.classList.add("rail-travel-ready");
+      previewRef.current = null;
     }
     lastPathRef.current = pathname;
     // Two passes: one now, one after paint. The rail on a freshly mounted route
@@ -177,6 +181,20 @@ export default function RailTravel() {
     const raf = window.requestAnimationFrame(sync);
     return () => window.cancelAnimationFrame(raf);
   }, [narrow, sync, pathname]);
+
+  // Homepage ⇄ Work: the page announces where it is going as its exit starts,
+  // so the marker and the link colours travel then, not 720ms later when the
+  // route actually changes. A preview counts as the first navigation.
+  useEffect(() => {
+    if (narrow) return undefined;
+    const onPreview = (e) => {
+      previewRef.current = e.detail && e.detail.href;
+      document.documentElement.classList.add("rail-travel-ready");
+      sync();
+    };
+    window.addEventListener("rail:preview", onPreview);
+    return () => window.removeEventListener("rail:preview", onPreview);
+  }, [narrow, sync]);
 
   useEffect(() => {
     if (narrow) return undefined;
