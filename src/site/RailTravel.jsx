@@ -36,14 +36,16 @@ const DUR = 280;
 const EASE = "cubic-bezier(0.25, 1, 0.5, 1)";
 const FADE = 180;
 
-// Where the marker retreats to when the destination has no rail. /work is the
-// only such route today; every project URL lives under it.
+// Where the marker retreats to when the destination has no rail: an open
+// project. The /work grid carries the rail (roadmap item 14), so the marker
+// rests on "the work" there and fades from that spot when a project opens.
 const EXIT_HREF = "/work";
 
 function railHrefFor(pathname) {
   if (pathname === "/") return "/";
   if (pathname === "/about") return "/about";
-  return null; // /work and everything under it: no rail on the far side
+  if (pathname === "/work") return "/work";
+  return null; // an open project: no rail on the far side
 }
 
 export default function RailTravel() {
@@ -58,6 +60,9 @@ export default function RailTravel() {
   const placedRef = useRef(false); // has the marker ever been positioned?
   const lastPathRef = useRef(null); // null until the first render completes
   const fadeTimer = useRef(0);
+  // A destination announced before the route changes (workTransition.js
+  // previewRail). Cleared by the next real navigation.
+  const previewRef = useRef(null);
 
   const reduced =
     typeof window !== "undefined" &&
@@ -91,7 +96,7 @@ export default function RailTravel() {
 
     // The desktop rail. Below 900 .canvas is display:none, so a zero-width
     // rect is how we know we are looking at a rail that is not on screen.
-    const rails = Array.from(document.querySelectorAll("html.rail-route .rail-nav"));
+    const rails = Array.from(document.querySelectorAll("html.rail-route .rail-nav, .wk-rail .rail-nav"));
     const rail = rails.find((r) => r.getBoundingClientRect().width > 0);
 
     if (rail) {
@@ -109,7 +114,7 @@ export default function RailTravel() {
       });
     }
 
-    const activeHref = railHrefFor(pathname);
+    const activeHref = previewRef.current || railHrefFor(pathname);
     const target = activeHref ? cacheRef.current[activeHref] : cacheRef.current[EXIT_HREF];
     if (!target) {
       // Landed somewhere with no rail and no history of one — a cold load on
@@ -166,6 +171,7 @@ export default function RailTravel() {
     // no colour change worth transitioning.
     if (lastPathRef.current !== null && lastPathRef.current !== pathname) {
       document.documentElement.classList.add("rail-travel-ready");
+      previewRef.current = null;
     }
     lastPathRef.current = pathname;
     // Two passes: one now, one after paint. The rail on a freshly mounted route
@@ -175,6 +181,20 @@ export default function RailTravel() {
     const raf = window.requestAnimationFrame(sync);
     return () => window.cancelAnimationFrame(raf);
   }, [narrow, sync, pathname]);
+
+  // Homepage ⇄ Work: the page announces where it is going as its exit starts,
+  // so the marker and the link colours travel then, not 720ms later when the
+  // route actually changes. A preview counts as the first navigation.
+  useEffect(() => {
+    if (narrow) return undefined;
+    const onPreview = (e) => {
+      previewRef.current = e.detail && e.detail.href;
+      document.documentElement.classList.add("rail-travel-ready");
+      sync();
+    };
+    window.addEventListener("rail:preview", onPreview);
+    return () => window.removeEventListener("rail:preview", onPreview);
+  }, [narrow, sync]);
 
   useEffect(() => {
     if (narrow) return undefined;

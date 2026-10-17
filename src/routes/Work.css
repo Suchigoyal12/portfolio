@@ -44,9 +44,10 @@ html.work-route body {
 }
 .route-work ::selection { background: var(--accent); color: #fff; }
 
-/* Defined in the original and referenced by nothing in stage.jsx or cards.jsx.
-   Carried over verbatim rather than dropped — same treatment as the unused
-   blocks in the long Check Access page. */
+/* Defined in the original and carried over verbatim. wkPop and wkPulse are
+   still referenced by nothing; wkFade is now used by the /work grid, for the
+   chrome bar and contact button arriving with an opened case study and a
+   card's face returning as the grid closes. */
 @keyframes wkFade { from { opacity: 0; } to { opacity: 1; } }
 @keyframes wkPop  { from { opacity: 0; transform: translateY(-12px) scale(0.98); } to { opacity: 1; transform: translateY(0) scale(1); } }
 @keyframes wkPulse {

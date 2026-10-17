@@ -1,5 +1,10 @@
-import React, { useCallback, useEffect, useRef, useState } from "react";
+import React, { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import SiteRail from "../layouts/SiteRail.jsx";
+import {
+  CREAM, BEIGE, HOME_EXIT_MS, HOME_EXIT_EASE, HOME_RETURN_MS, HOME_RETURN_EASE,
+  BACK_GROUND_MS, FRESH_MS, STEP_PX, handoff, previewRail, reducedMotion
+} from "../site/workTransition.js";
 import { useFit } from "../hooks/useFit.js";
 import { usePanelFluid } from "../hooks/usePanelFluid.js";
 import "./Home.css";
@@ -67,6 +72,100 @@ export default function Home() {
 
   usePanelFluid({ panelRef, canvasRef: fluidRef });
 
+  // ── Homepage ⇄ Work (roadmap item 14) ─────────────────────────────────
+  // See site/workTransition.js. Every zone of the stage moves as one block,
+  // except the rail, which stays where it is: the /work grid has the same rail
+  // on the same pixels. `translate` rather than `transform`, so nothing the
+  // zones already transform is touched. Desktop only.
+  const navigate = useNavigate();
+  const [railActive, setRailActive] = useState(null);
+  const leavingRef = useRef(false);
+  const arrivingRef = useRef(false);
+  const arrivalRan = useRef(false);
+
+  const zones = useCallback(() => {
+    const stage = stageRef.current;
+    if (!stage) return { els: [], d: 0 };
+    // fit() scales the whole stage between 900 and 1300px; a zone's
+    // translate is in the stage's own pixels, so the distance that clears
+    // the window is the window height divided by that scale.
+    const s = stage.getBoundingClientRect().width / stage.offsetWidth || 1;
+    const els = Array.from(stage.children).filter((el) => !el.classList.contains("rail-nav"));
+    return { els, d: window.innerHeight / s };
+  }, []);
+
+  const leaveForWork = useCallback(() => {
+    if (leavingRef.current || arrivingRef.current) return;
+    leavingRef.current = true;
+    setRailActive("/work");
+    previewRail("/work");
+    const { els, d } = zones();
+    const reduced = reducedMotion();
+    const anims = els.map((el) => el.animate(
+      reduced ? [{ opacity: 1 }, { opacity: 0 }] : [{ translate: "0 0" }, { translate: `0 ${-d}px` }],
+      { duration: reduced ? 200 : HOME_EXIT_MS, easing: reduced ? "ease" : HOME_EXIT_EASE, fill: "forwards" }
+    ));
+    Promise.all(anims.map((a) => a.finished)).then(() => {
+      handoff.leftHomeAt = performance.now();
+      navigate("/work");
+    }).catch(() => {});
+  }, [navigate, zones]);
+
+  // Scroll down to leave: one fresh gesture, a deliberate amount.
+  useEffect(() => {
+    const el = canvasRef.current;
+    if (!el) return undefined;
+    let last = 0, acc = null;
+    const onWheel = (e) => {
+      if (window.innerWidth < 900) return;
+      const now = performance.now();
+      const gap = now - last;
+      last = now;
+      if (leavingRef.current || arrivingRef.current) { acc = null; return; }
+      if (gap > FRESH_MS) acc = 0;
+      if (acc === null) return;
+      acc += e.deltaY * (e.deltaMode === 1 ? 16 : e.deltaMode === 2 ? 800 : 1);
+      if (acc >= STEP_PX) { acc = null; leaveForWork(); }
+    };
+    el.addEventListener("wheel", onWheel, { passive: true });
+    return () => el.removeEventListener("wheel", onWheel);
+  }, [leaveForWork]);
+
+  // The rail's "the work" plays the same exit; every other item navigates.
+  const onRailGo = useCallback((to) => {
+    if (to !== "/work" || window.innerWidth < 900) return false;
+    leaveForWork();
+    return true;
+  }, [leaveForWork]);
+
+  // Returned to from the /work grid, by scrolling up, the rail or Back: the
+  // content slides back down. After useFit, so the stage scale is already set,
+  // and in a layout effect, so the first frame already shows it out of view.
+  // The ref keeps StrictMode's second effect pass from running it twice.
+  useLayoutEffect(() => {
+    if (arrivalRan.current) return;
+    arrivalRan.current = true;
+    const at = handoff.leftGridAt;
+    const faded = handoff.faded;
+    handoff.leftGridAt = 0;
+    handoff.faded = false;
+    if (!at || performance.now() - at > 1500 || window.innerWidth < 900) return;
+    arrivingRef.current = true;
+    const reduced = reducedMotion();
+    const { els, d } = zones();
+    // Back from the grid arrives with no fade on the Work side, so the ground
+    // makes the beige-to-cream change here instead.
+    if (!faded && canvasRef.current) {
+      canvasRef.current.animate([{ backgroundColor: BEIGE }, { backgroundColor: CREAM }],
+        { duration: BACK_GROUND_MS, easing: "ease", fill: "backwards" });
+    }
+    const anims = els.map((el) => el.animate(
+      reduced ? [{ opacity: 0 }, { opacity: 1 }] : [{ translate: `0 ${-d}px` }, { translate: "0 0" }],
+      { duration: reduced ? 200 : HOME_RETURN_MS, easing: reduced ? "ease" : HOME_RETURN_EASE, delay: faded || reduced ? 0 : 80, fill: "backwards" }
+    ));
+    Promise.all(anims.map((a) => a.finished)).then(() => { arrivingRef.current = false; }).catch(() => {});
+  }, [zones]);
+
   // ── "Visit UiPath" cursor tag ──────────────────────────────────────────
   // The link hides the real cursor (cursor: none) and this follows the
   // pointer in its place, rAF-throttled as in the original.
@@ -133,7 +232,7 @@ export default function Home() {
           {/* Zone 1: Left rail */}
           <div className="photo"><img src="/uploads/homepage-photo.webp" {...dims("/uploads/homepage-photo.webp")} alt="Profile photo" /></div>
 
-          <SiteRail />
+          <SiteRail active={railActive} onGo={onRailGo} />
 
           <div className="wordmark">
             <div className="mark">SuCHI</div>

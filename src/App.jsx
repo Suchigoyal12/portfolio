@@ -32,8 +32,8 @@ export default function App() {
   return (
     <ContactProvider>
       {/* Above <Routes> on purpose — the rail travel indicator has to outlive
-          every route change, including the one to /work where no rail exists.
-          See the note at the top of RailTravel.jsx. */}
+          every route change, including the one into an open project, where no
+          rail exists. See the note at the top of RailTravel.jsx. */}
       <RailTravel />
       <Routes>
         <Route element={<RailLayout />}>
