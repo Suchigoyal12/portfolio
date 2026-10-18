@@ -11,7 +11,13 @@
 @keyframes cmFade{from{opacity:0}to{opacity:1}}
 @keyframes cmPop{from{opacity:0;transform:translateY(12px) scale(.98)}to{opacity:1;transform:none}}
 @keyframes cmPulse{0%,100%{opacity:1}50%{opacity:.35}}
-.cm-overlay{position:fixed;inset:0;z-index:95;background:rgba(14,14,12,.5);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);display:flex;align-items:center;justify-content:center;animation:cmFade 220ms ease both;-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale}
+/* The backdrop matches the blur behind /work (roadmap item 14, 2026-10):
+   18px blur, 18% desaturation, a 12% dim, blurring in over 750ms on the same
+   expo-out curve. It was an 8px blur under a 50% tint, fading in over 220ms.
+   See site/workTransition.js. */
+@keyframes cmBlurIn{from{background:rgba(14,14,12,0);backdrop-filter:blur(0) saturate(1);-webkit-backdrop-filter:blur(0) saturate(1)}to{background:rgba(14,14,12,.12);backdrop-filter:blur(18px) saturate(.82);-webkit-backdrop-filter:blur(18px) saturate(.82)}}
+.cm-overlay{position:fixed;inset:0;z-index:95;background:rgba(14,14,12,.12);backdrop-filter:blur(18px) saturate(.82);-webkit-backdrop-filter:blur(18px) saturate(.82);display:flex;align-items:center;justify-content:center;animation:cmBlurIn 750ms cubic-bezier(0.16,1,0.3,1) both;-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale}
+@media (prefers-reduced-motion: reduce){.cm-overlay{animation:cmFade 200ms ease both}}
 .cm-card{width:min(560px,92vw);background:#FBFAF6;border:1px solid #D9D4C8;border-radius:18px;box-shadow:0 40px 80px -20px rgba(0,0,0,.45);overflow:hidden;font-family:'DM Sans',system-ui,sans-serif;animation:cmPop 320ms cubic-bezier(.22,1,.36,1) both}
 .cm-head{display:flex;justify-content:space-between;align-items:center;padding:16px 22px;border-bottom:1px solid #E8E4DC}
 .cm-kicker{font-family:'JetBrains Mono',ui-monospace,monospace;font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:#8A857C}

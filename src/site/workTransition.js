@@ -1,24 +1,40 @@
 // The Homepage ⇄ Work transition — roadmap item 14, step 3.
 //
-// Agreed in the pile-to-grid motion study (settings "one flow, fanned pile,
-// Work beige, scroll on opens 01"). Home and Work are separate routes, so each
-// page plays its own half and the hand-off between them is invisible:
+// Agreed in the pile-to-grid motion study, then revised after comparing two
+// live previews (2026-10): the blur ground, with the pile on every arrival.
+// Home and Work are separate routes, so each page plays its own half and the
+// hand-off between them is invisible:
 //
-//   leaving Home   the page's content scrolls off upward while the rail stays
-//                  put; only then does the route change to /work.
-//   arriving Work  the ground turns from Homepage cream to Work beige, the four
-//                  cards land as a fanned pile, the pile deals out into the
-//                  grid. The site rail on /work sits on the Homepage rail's
-//                  exact pixels, so it reads as one rail that never moved.
+//   leaving Home   the route changes at once; the Homepage stays where it is.
+//   arriving Work  /work draws the Homepage behind itself and blurs it in
+//                  place, while the four cards land as a fanned pile and deal
+//                  out into the grid. The site rail on /work sits on the
+//                  Homepage rail's exact pixels, so it reads as one rail.
+//   on /work       the blurred Homepage stays behind the grid, an open
+//                  project and direct visits: Work is one layer over Home.
+//   going back     the cards fade where they are and the Homepage comes back
+//                  into focus. After browser Back, Home clears its own blur.
 //
-// The pile plays once per tab session. Every later arrival skips it: the
-// cards fade up straight into their grid places (first-visit rule, 2026-10).
-//
-// Going back is not the entrance in reverse: the cards fade where they are,
-// the ground returns to cream, and the Homepage content slides back down.
+// The two flags keep the first version, which shipped first in PR #10: a
+// solid Work beige ground with the Homepage scrolling off upward (GROUND
+// "solid"), and the pile only once per tab with later arrivals fading up
+// (PILE_EVERY_TIME false). Contact's overlay matches the blur values here
+// (ContactOverlay.css).
 //
 // Desktop only (900px and up). Phones keep their plain list and plain links.
 // Under prefers-reduced-motion nothing travels; each half is a short fade.
+
+export const GROUND = "blur";            // "blur" | "solid"
+export const PILE_EVERY_TIME = true;
+export const BLUR_PX = 18;
+export const BLUR_DIM = 0.12;      // rgb(14,14,12) veil
+export const BLUR_DESAT = 0.18;
+export const BLUR_IN_MS = 750;
+export const BLUR_IN_EASE = "cubic-bezier(0.16, 1, 0.3, 1)";
+export const BLUR_OUT_MS = 520;
+export const BLUR_OUT_EASE = "cubic-bezier(0.3, 0, 0.2, 1)";
+export const BLUR_LAND_START = 300; // no empty beat to wait out: the pile lands sooner
+export const blurFilter = (k) => `blur(${(BLUR_PX * k).toFixed(2)}px) saturate(${(1 - BLUR_DESAT * k).toFixed(3)})`;
 
 export const CREAM = "#FBFAF6"; // Homepage ground (--bg-landing, Home.css)
 export const BEIGE = "#E8E4DC"; // Work ground (--bg, Work.css)

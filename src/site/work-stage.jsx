@@ -5,6 +5,7 @@ import { useContact } from "../components/ContactOverlay.jsx";
 import SiteRail from "../layouts/SiteRail.jsx";
 import { REFERENCE as FIT_REFERENCE } from "../hooks/useFit.js";
 import * as WT from "./workTransition.js";
+import Home from "../routes/Home.jsx";
 import "../routes/Work.css";
 
 // =============================================================
@@ -508,6 +509,8 @@ export default function WorkStage({ focused, seedFrame = null, seedFs = false })
   const [swapping, setSwapping] = React.useState(false);
   const iframeRefs = React.useRef({});
   const containerRef = React.useRef(null);
+  const backdropRef = React.useRef(null);   // the blurred Homepage (experiment)
+  const veilRef = React.useRef(null);
   const lastWheelRef = React.useRef(0);   // last wheel event, here or in a frame
   const gestureRef = React.useRef(null);  // { acc } while a fresh gesture runs
   const hideTimer = React.useRef(null);
@@ -711,11 +714,18 @@ export default function WorkStage({ focused, seedFrame = null, seedFs = false })
     const el = containerRef.current;
     if (!overview || !el || !at || performance.now() - at > 1500) return;
     const reduced = WT.reducedMotion();
-    const pile = !reduced && !WT.ssGet(WT.PILE_SEEN_KEY);
+    const pile = !reduced && (WT.PILE_EVERY_TIME || !WT.ssGet(WT.PILE_SEEN_KEY));
     if (pile) WT.ssSet(WT.PILE_SEEN_KEY, "1");
     setEntering(true);
-    const anims = [el.animate([{ backgroundColor: WT.CREAM }, { backgroundColor: WT.BEIGE }],
+    const blur = WT.GROUND === "blur" && backdropRef.current;
+    const anims = blur ? [
+    backdropRef.current.animate([{ filter: WT.blurFilter(0) }, { filter: WT.blurFilter(1) }],
+    { duration: reduced ? 200 : WT.BLUR_IN_MS, easing: WT.BLUR_IN_EASE, fill: "backwards" }),
+    veilRef.current.animate([{ opacity: 0 }, { opacity: WT.BLUR_DIM }],
+    { duration: reduced ? 200 : WT.BLUR_IN_MS, easing: WT.BLUR_IN_EASE, fill: "backwards" })] :
+    [el.animate([{ backgroundColor: WT.CREAM }, { backgroundColor: WT.BEIGE }],
     { duration: reduced ? 200 : WT.GROUND_MS, easing: "ease", fill: "backwards" })];
+    const landStart = blur ? WT.BLUR_LAND_START : WT.LAND_START;
     const vw = window.innerWidth, vh = window.innerHeight;
     WORK_CARDS.forEach((c, i) => {
       const card = el.querySelector(`[data-card-key="${c.key}"]`);
@@ -732,8 +742,8 @@ export default function WorkStage({ focused, seedFrame = null, seedFs = false })
       // Land: 04 first, 01 last on top. Then deal: 01 first.
       const p = WT.PILE[i];
       const g = getGridLayout({ vw, vh, cardKey: c.key });
-      const landAt = WT.LAND_START + (WORK_CARDS.length - 1 - i) * WT.LAND_STAGGER;
-      const dealAt = WT.LAND_START + (WORK_CARDS.length - 1) * WT.LAND_STAGGER + WT.LAND_MS + WT.PILE_HOLD + i * WT.DEAL_STAGGER;
+      const landAt = landStart + (WORK_CARDS.length - 1 - i) * WT.LAND_STAGGER;
+      const dealAt = landStart + (WORK_CARDS.length - 1) * WT.LAND_STAGGER + WT.LAND_MS + WT.PILE_HOLD + i * WT.DEAL_STAGGER;
       anims.push(card.animate([{ translate: `0 ${-WT.LAND_DROP}px`, scale: 1.06 }, { translate: "0 0", scale: 1 }],
       { duration: WT.LAND_MS, easing: WT.LAND_EASE, delay: landAt, fill: "backwards" }));
       anims.push(card.animate([{ opacity: 0 }, { opacity: 1 }], { duration: 240, delay: landAt, fill: "backwards" }));
@@ -774,7 +784,13 @@ export default function WorkStage({ focused, seedFrame = null, seedFs = false })
     setRailActive("/");
     WT.previewRail("/");
     const reduced = WT.reducedMotion();
-    const anims = [el.animate([{ backgroundColor: WT.BEIGE }, { backgroundColor: WT.CREAM }],
+    const blur = WT.GROUND === "blur" && backdropRef.current;
+    const anims = blur ? [
+    backdropRef.current.animate([{ filter: WT.blurFilter(1) }, { filter: WT.blurFilter(0) }],
+    { duration: reduced ? 200 : WT.BLUR_OUT_MS, easing: WT.BLUR_OUT_EASE, delay: reduced ? 0 : 60, fill: "forwards" }),
+    veilRef.current.animate([{ opacity: WT.BLUR_DIM }, { opacity: 0 }],
+    { duration: reduced ? 200 : WT.BLUR_OUT_MS, easing: WT.BLUR_OUT_EASE, delay: reduced ? 0 : 60, fill: "forwards" })] :
+    [el.animate([{ backgroundColor: WT.BEIGE }, { backgroundColor: WT.CREAM }],
     { duration: reduced ? 200 : WT.BACK_GROUND_MS, easing: "ease", fill: "forwards" })];
     el.querySelectorAll("[data-card-key]").forEach((card) => anims.push(
       card.animate([{ opacity: 1 }, { opacity: 0 }], { duration: reduced ? 200 : WT.BACK_FADE_MS, easing: "ease", fill: "forwards" })
@@ -1001,7 +1017,18 @@ export default function WorkStage({ focused, seedFrame = null, seedFs = false })
 
   return (
     <div className="route-work">
-      <div ref={containerRef} style={{ position: "fixed", inset: 0, overflow: "hidden", background: "var(--bg)", fontFamily: W_SANS }}>
+      <div ref={containerRef} style={{ position: "fixed", inset: 0, overflow: "hidden", background: WT.GROUND === "blur" ? WT.CREAM : "var(--bg)", fontFamily: W_SANS }}>
+        {/* Experiment: the Homepage, blurred, behind everything on /work. Not
+            interactive and hidden from assistive tech; the Work rail above it
+            is the real one. */}
+        {WT.GROUND === "blur" ?
+        <div aria-hidden="true" inert="" style={{ position: "absolute", inset: 0, zIndex: 0, pointerEvents: "none" }}>
+            <div ref={backdropRef} style={{ position: "absolute", inset: 0, filter: WT.blurFilter(1) }}>
+              <Home backdrop />
+            </div>
+            <div ref={veilRef} style={{ position: "absolute", inset: 0, background: "rgb(14, 14, 12)", opacity: WT.BLUR_DIM }} />
+          </div> :
+        null}
         {WORK_CARDS.map((c) => {
           const isFocused = c.key === focusedKey;
           const isInStack = !isFocused;

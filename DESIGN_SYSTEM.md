@@ -452,15 +452,17 @@ Roadmap item 14, agreed 2026-10 through two interactive motion studies. These mo
 
 | Beat | Duration | Easing | Notes |
 |---|---|---|---|
-| Homepage content scrolls off upward | 720ms | `cubic-bezier(0.76, 0, 0.24, 1)` | Every zone moves as one block; the rail stays put. The rail marker travels to "the work" (280ms, §rail) as the scroll starts. |
-| Ground, cream → Work beige | 420ms | `ease` | Only after the page has gone, so cream and beige never meet at an edge. |
-| Cards land as a fanned pile | 520ms each, 70ms apart | `cubic-bezier(0.34, 1.45, 0.64, 1)` | 04 first, 01 last on top; each drops 80px with a small bounce. |
+| The Homepage blurs in place | 750ms | `cubic-bezier(0.16, 1, 0.3, 1)` | To 18px blur, 18% desaturation and a 12% dim (`rgb(14,14,12)`). It does not move or sink back; the rail stays sharp on top, and its marker travels to "the work" (280ms) as the scroll starts. |
+| Cards land as a fanned pile | 520ms each, 70ms apart, from 300ms | `cubic-bezier(0.34, 1.45, 0.64, 1)` | 04 first, 01 last on top; each drops 80px with a small bounce. |
 | Pile holds | 260ms | | Long enough to register as a pile. |
 | Pile deals out into the 2×2 grid | 780ms each, 70ms apart | `cubic-bezier(0.22, 1, 0.36, 1)` | 01 first. |
 
-- **First visit only.** The pile plays once per tab session (`sessionStorage` `work:pile-seen`). Every later arrival fades the cards up into their grid places: 450ms, 60ms apart, `cubic-bezier(0.16, 1, 0.3, 1)`.
-- **Going back** is not the entrance reversed: the cards fade where they are (240ms), the ground returns to cream (200ms), then the Homepage content slides back down (620ms, `cubic-bezier(0.65, 0, 0.35, 1)`). Browser Back plays the slide too.
+- **The blurred Homepage is the ground for all of /work**: behind the grid, an open project, and direct visits. Work reads as one layer over Home.
+- **The pile plays on every arrival.** (A first-visit-only rule shipped first and was replaced after comparing live previews; `PILE_EVERY_TIME` in `workTransition.js` restores it.)
+- **Going back** is not the entrance reversed: the cards fade where they are (240ms) and the Homepage comes back into focus (520ms, `cubic-bezier(0.3, 0, 0.2, 1)`). After browser Back, the Homepage clears its own blur.
 - **No arrival animation.** Direct visits and reloads show the destination at rest, per the site's no-entrance rule.
+- **Contact's overlay uses the same blur, dim and 750ms blur-in**, so the site's two layers over the Homepage feel related.
+- The first version, a solid Work beige ground with the Homepage scrolling off upward (720ms, `cubic-bezier(0.76, 0, 0.24, 1)`), remains behind `GROUND = "solid"`.
 
 **The /work grid and the Stage Manager**
 

@@ -3,7 +3,8 @@ import { useNavigate } from "react-router-dom";
 import SiteRail from "../layouts/SiteRail.jsx";
 import {
   CREAM, BEIGE, HOME_EXIT_MS, HOME_EXIT_EASE, HOME_RETURN_MS, HOME_RETURN_EASE,
-  BACK_GROUND_MS, FRESH_MS, STEP_PX, handoff, previewRail, reducedMotion
+  BACK_GROUND_MS, FRESH_MS, STEP_PX, handoff, previewRail, reducedMotion,
+  GROUND, BLUR_OUT_MS, BLUR_OUT_EASE, blurFilter
 } from "../site/workTransition.js";
 import { useFit } from "../hooks/useFit.js";
 import { usePanelFluid } from "../hooks/usePanelFluid.js";
@@ -40,7 +41,9 @@ const TOOLING_L = [738,    585];  // tooling packs rightward, glued near the rig
 const BACKGROUND_COPY =
   "The (un)glamorous work holds everything up. UiPath's admin layer: the control plane behind every business automation, 10,000+ customer enterprises. Joined as the most junior designer on it. Led it within the year. Systems, governance, the edge cases that decide whether software earns trust. Depth over breadth.";
 
-export default function Home() {
+// `backdrop`: drawn blurred behind /work (experiment). No rail, no transition
+// logic, no interaction; the Work page owns all of that.
+export default function Home({ backdrop = false }) {
   // Roadmap item 8 — the tooling "+" toggle. Click state, not hover: it has
   // to persist after the pointer leaves, which the sitewide hover-group
   // mechanism (Home.css ~265) can't do. The two coexist deliberately — this
@@ -99,6 +102,13 @@ export default function Home() {
     leavingRef.current = true;
     setRailActive("/work");
     previewRail("/work");
+    // Blur ground: the Homepage stays where it is. The Work page draws it
+    // behind itself and blurs it in, so go now.
+    if (GROUND === "blur") {
+      handoff.leftHomeAt = performance.now();
+      navigate("/work");
+      return;
+    }
     const { els, d } = zones();
     const reduced = reducedMotion();
     const anims = els.map((el) => el.animate(
@@ -114,7 +124,7 @@ export default function Home() {
   // Scroll down to leave: one fresh gesture, a deliberate amount.
   useEffect(() => {
     const el = canvasRef.current;
-    if (!el) return undefined;
+    if (!el || backdrop) return undefined;
     let last = 0, acc = null;
     const onWheel = (e) => {
       if (window.innerWidth < 900) return;
@@ -143,7 +153,7 @@ export default function Home() {
   // and in a layout effect, so the first frame already shows it out of view.
   // The ref keeps StrictMode's second effect pass from running it twice.
   useLayoutEffect(() => {
-    if (arrivalRan.current) return;
+    if (arrivalRan.current || backdrop) return;
     arrivalRan.current = true;
     const at = handoff.leftGridAt;
     const faded = handoff.faded;
@@ -152,6 +162,17 @@ export default function Home() {
     if (!at || performance.now() - at > 1500 || window.innerWidth < 900) return;
     arrivingRef.current = true;
     const reduced = reducedMotion();
+    // Blur ground: the grid un-blurs the Homepage before it leaves, so there
+    // is nothing to do, except after browser Back, which skips that: the
+    // Homepage clears its own blur then.
+    if (GROUND === "blur") {
+      if (!faded && canvasRef.current) {
+        canvasRef.current.animate([{ filter: blurFilter(1) + " brightness(0.88)" }, { filter: blurFilter(0) + " brightness(1)" }],
+          { duration: reduced ? 200 : BLUR_OUT_MS, easing: BLUR_OUT_EASE, fill: "backwards" });
+      }
+      arrivingRef.current = false;
+      return;
+    }
     const { els, d } = zones();
     // Back from the grid arrives with no fade on the Work side, so the ground
     // makes the beige-to-cream change here instead.
@@ -232,7 +253,7 @@ export default function Home() {
           {/* Zone 1: Left rail */}
           <div className="photo"><img src="/uploads/homepage-photo.webp" {...dims("/uploads/homepage-photo.webp")} alt="Profile photo" /></div>
 
-          <SiteRail active={railActive} onGo={onRailGo} />
+          {backdrop ? null : <SiteRail active={railActive} onGo={onRailGo} />}
 
           <div className="wordmark">
             <div className="mark">SuCHI</div>

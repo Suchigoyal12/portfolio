@@ -145,7 +145,7 @@ Parity was the goal for the migration gate, not for the site. These two differen
 
 ## Open threads
 
-**Homepage ⇄ Work transition: built, not yet live.** The queued blurred-overlay concept was replaced after two motion studies by "pile to grid": the Homepage scrolls away under a fixed rail, the cards land as a pile and deal into a `/work` grid, and a card opens into the Stage Manager. On branch `work-transition`; roadmap item 14 has the record, DESIGN_SYSTEM §4.8 the spec.
+**Homepage ⇄ Work transition: live.** "Pile to grid": the Homepage blurs in place under a fixed rail, the cards land as a pile and deal into a `/work` grid, and a card opens into the Stage Manager. The blurred Homepage stays behind all of /work, and Contact's overlay matches it. Roadmap item 14 has the record, DESIGN_SYSTEM §4.8 the spec.
 
 Everything else still open lives in `POST_MIGRATION_ROADMAP_V2.md`, below the line.
 
